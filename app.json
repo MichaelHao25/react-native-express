@@ -1,0 +1,12 @@
+{
+  "name": "expressapp",
+  "displayName": "expressapp",
+  "expo": {
+    "name": "expressapp",
+    "slug": "expressapp",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
