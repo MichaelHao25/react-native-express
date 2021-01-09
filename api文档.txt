@@ -1,0 +1,150 @@
+http://t.0lz.net
+
+1,管理登录接口 
+/user/login 地址
+请求 post
+  username : 用户名 
+ password : 密码
+
+返回:
+   {
+	code:200
+	msg:"请求成功"
+	access_token:
+}
+//
+   {
+	code:404
+	msg: '请求失败'
+}
+--------------------------------------------------------------
+2.统计接口 
+ /order/count
+ 请求 post
+ access_token:
+返回 
+ 	{
+	code :200,
+	msg:"请求成功",
+	data:{	
+		wait_accept:待揽件数量,
+		end_accept:已揽件数量,
+		today_amount:今日总数,
+		month_amount:本月总数
+		}
+	}
+///////////////
+   	{
+		code:404
+		msg: '请求失败',
+	}
+---------------------------------------------------------------
+3获取揽件列表
+/order/accept_list  (post)
+access_token :
+page: 页数,
+limit: 每页数据显示 个数
+返回
+ 	{
+	code :200,
+	msg:"请求成功",
+	data:{	
+	     packageNum: 运单号,
+	     userID: 寄件人,
+	     address:寄件人地址,
+	     moblie: 寄件人电话,
+	    consignee:收件人,
+	     phone :收件人电话,
+	     pick_time:取件时间,
+	    expected_time:预约时间,
+	   status :0未取件 1取件
+		}
+	}
+
+	{
+		code:404
+		msg: '请求失败',
+	}
+------------------------------------------------------
+4创建运单接口
+/order/create
+请求 post
+
+access_token :
+memberID:寄件人,
+consigneeID:收件人,
+storeID:目的站,
+consignee_mobile : 收件人电话 
+consignee_address:收件人地址,
+
+supplierID:承运商,
+shippingID : 运输方式
+type:寄件方式  1上门取件 2 服务店寄件
+pickup_time: 取件时间  (当type为2 时必填,1时为空) 时间戳
+num: 件数,
+weight:重量,
+pack_name:品名
+pack_type : 包装 (1胶带)
+ 返回 	
+	{
+	code :200,
+	msg:"请求成功",
+	}
+
+	{
+		code:404
+		msg: '请求失败',
+	}
+-----------------------------------------
+5 通过运单号获取运单详情
+POST
+/order/detail_list
+请求
+access_token :
+packageNum: 运单号
+
+返回
+ 	{
+	code :200,
+	msg:"请求成功",
+	data:{	
+	supplierID:承运商,
+	memberID:寄件人,
+	consigneeID:收件人,
+	storeID:目的站,
+	consignee_mobile : 收件人电话 
+	consignee_address:收件人地址,
+	shippingID : 运输方式
+	type:寄件方式  1上门取件 2 服务店寄件
+	pickup_time: 取件时间  (当type为2 时必填,1时为空) 时间戳
+	num: 件数,
+	weight:重量,
+	pack_name:品名
+	pack_type : 包装 (1胶带)
+		}
+	}
+///////////////
+   	{
+		code:404
+		msg: '请求失败',
+	}
+
+
+
+  /order/supplier  承运商
+token 
+支持 id tel  username 查询
+
+/order/member  寄件人
+token 
+支持 id mobile username  type (1 客户 2 档口)
+
+/order/consignee 收件人 
+token 
+ 支持 id  mobile  consignee (姓名) 查询
+
+/order/store
+token 
+支持 id tel (负责人电话),name, zip (邮编查询)
+
+order/address  (token,userId )

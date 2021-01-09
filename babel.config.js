@@ -6,7 +6,7 @@ module.exports = function (api) {
             [
                 "import",
                 {
-                    "libraryName": "antd-mobile-rn"
+                    "libraryName": "@ant-design/react-native"
                 }
             ]
         ]
