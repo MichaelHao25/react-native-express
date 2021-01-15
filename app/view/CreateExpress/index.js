@@ -11,7 +11,6 @@ import {
   order_address
 } from "../../util/api";
 import AuthContext from "../../util/AuthContext";
-import theme from '../../theme'
 import { useState } from 'react';
 
 const App = ({ navigation }) => {

@@ -75,10 +75,7 @@ class Request {
                 console.log(body);
                 // dir会在正式版的模式下报错
                 console.log(res);
-                if (res.sessionid) {
-                    // console.log(`set sessionid ${res.sessionid}`)
-                    AsyncStorage.setItem('__sid', res.sessionid);
-                }
+
                 if (res.code !== 200) {
                     // console.log(`res.result false`)
                     Toast.fail(res.msg);
