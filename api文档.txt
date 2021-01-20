@@ -74,6 +74,7 @@ access_token :
 memberID:寄件人,
 consigneeID:收件人,
 storeID:目的站,
+address	寄件人地址id
 consignee_mobile : 收件人电话 
 consignee_address:收件人地址,
 
@@ -110,8 +111,9 @@ packageNum: 运单号
 	data:{	
 	supplierID:承运商,
 	memberID:寄件人,
+	
 	consigneeID:收件人,
-	storeID:目的站,
+	order_store:目的站,
 	consignee_mobile : 收件人电话 
 	consignee_address:收件人地址,
 	shippingID : 运输方式
