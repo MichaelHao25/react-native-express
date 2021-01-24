@@ -19,11 +19,17 @@ import { useReducer } from "react";
 import { useMemo } from "react";
 import { user_login } from "./app/util/api";
 import AuthContext from "./app/util/AuthContext";
-
+import CCCCTest from "./app/view/CCCCTest";
+import { View, Text } from "react-native";
+import JPush from "jpush-react-native";
 const Stack = createStackNavigator();
 
-export default () => {
+const App = () => {
   useEffect(() => {
+    JPush.addConnectEventListener((result) => {
+      console.log("connectListener:" + JSON.stringify(result));
+    });
+    JPush.init();
     SplashScreen.preventAutoHideAsync();
     AsyncStorage.getItem("token")
       .then((res) => {
@@ -74,10 +80,16 @@ export default () => {
   const authContext = useMemo(() => ({
     signIn(userInfo) {
       // 登录
-      user_login(userInfo).then(() => {
-        dispatch({
-          type: "SIGN_IN",
-          token: "---",
+      JPush.getRegistrationID(({ registerID }) => {
+        console.log("registerID:" + registerID);
+        user_login({
+          ...userInfo,
+          registerID,
+        }).then(() => {
+          dispatch({
+            type: "SIGN_IN",
+            token: "---",
+          });
         });
       });
     },
@@ -153,3 +165,15 @@ export default () => {
     </AuthContext.Provider>
   );
 };
+
+// export default () => {
+//   useEffect(() => {
+//     SplashScreen.hideAsync();
+//   }, []);
+//   return <View>
+//       <Text>3333</Text>
+//       <CCCCTest />
+//   </View>;
+// };
+
+export default App;

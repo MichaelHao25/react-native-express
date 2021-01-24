@@ -32,6 +32,12 @@
     android:allowBackup="false"
     android:theme="@style/AppTheme"
   >
+  <meta-data
+	android:name="JPUSH_CHANNEL"
+	android:value="developer-default" />
+<meta-data
+	android:name="JPUSH_APPKEY"
+	android:value="6b92b1e34d3b7568b5908bf2" />    
     <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="YOUR-APP-URL-HERE"/>
     <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="YOUR-APP-SDK-VERSION-HERE"/>
     <activity

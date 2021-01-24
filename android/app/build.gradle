@@ -130,13 +130,19 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-
+lintOptions {
+          abortOnError false
+      }
     defaultConfig {
         applicationId "com.expressapp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        manifestPlaceholders = [
+                  JPUSH_APPKEY: "6b92b1e34d3b7568b5908bf2",
+                  JPUSH_CHANNEL: "developer-default"
+          ]
     }
     splits {
         abi {
@@ -184,6 +190,8 @@ android {
 }
 
 dependencies {
+     implementation project(':jpush-react-native')  // 添加 jpush 依赖
+      implementation project(':jcore-react-native')  // 添加 jcore 依赖
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
