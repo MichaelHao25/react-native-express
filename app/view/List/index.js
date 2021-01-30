@@ -6,21 +6,35 @@ import {
   Button,
   WhiteSpace,
   Picker,
+  WingBlank,
+  Toast,
+  Modal,
 } from "@ant-design/react-native";
 import { useEffect } from "react";
-import { order_accept_list } from "../../util/api";
+import { order_accept_list, order_pickup, order_claim } from "../../util/api";
 import theme from "../../theme";
+import { useRef } from "react";
+import Print from "../../util/print";
 
 export default ({ navigation, route }) => {
+  const ref = useRef();
+  const blue = useRef();
+
   useEffect(() => {
     navigation.setOptions({ title: route.params.title });
+    blue.current = new Print();
+    return () => {
+      blue.current.disconnect();
+    };
   }, []);
   const onFetch = (page = 1, startFetch, abortFetch) => {
     order_accept_list({
       page,
       limit: 5,
+      status: route.params.status,
     })
       .then((res) => {
+        console.log(res);
         const { data } = res;
         startFetch(data, 5);
       })
@@ -28,10 +42,99 @@ export default ({ navigation, route }) => {
         abortFetch();
       });
   };
+  //   取件
+  const handle_order_pickup = ({ orderID, item }) => {
+    // console.log(ref.current.ulv.getRows());
+    // ref.current.ulv.getPage()
+    // ref.current.ulv.updateRows(,0)
+
+    Modal.alert("警告", "确认?", [
+      {
+        text: "取消",
+        style: "cancel",
+      },
+      {
+        text: "确定",
+        onPress: () => {
+          order_pickup({ orderID }).then((res) => {
+            console.log(res);
+            let dataSource = [...ref.current.ulv.getRows()];
+            dataSource = dataSource.filter((value) => {
+              if (value.orderID === orderID) {
+                value.status = 1;
+                return false;
+              }
+              return true;
+            });
+            ref.current.ulv.updateRows(dataSource, 0);
+            Toast.success("成功!", 2, () => {}, false);
+            handlePrint({ item });
+          });
+        },
+      },
+    ]);
+  };
+  // 领取
+  const handle_order_claim = ({ orderID }) => {
+    Modal.alert("警告", "确认?", [
+      {
+        text: "取消",
+        style: "cancel",
+      },
+      {
+        text: "确定",
+        onPress: () => {
+          order_claim({ orderID }).then((res) => {
+            console.log(res);
+            const dataSource = [...ref.current.ulv.getRows()];
+            dataSource.find((value) => {
+              if (value.orderID === orderID) {
+                value.adminID = 2;
+                return true;
+              }
+              return false;
+            });
+            ref.current.ulv.updateRows(dataSource, 0);
+            Toast.success("成功!", 2, () => {}, false);
+          });
+        },
+      },
+    ]);
+  };
+  const handlePrint = ({ item }) => {
+    const {
+      packageNum,
+      expected_time,
+      consignee: { name, mobile },
+      to,
+      shipping,
+      payment,
+      client_phone,
+    } = item;
+    blue.current.getPrint({
+      packageNum,
+      expected_time,
+      to,
+      shipping,
+      name,
+      mobile,
+      payment,
+      client_phone,
+    });
+    blue.current
+      .connect()
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   const renderHeader = () => {
     return (
       <View>
-        <View style={{ width: "50%" }}>
+        {/* <View style={{ width: "50%" }}>
           <Picker
             data={[
               {
@@ -39,11 +142,11 @@ export default ({ navigation, route }) => {
                 label: "筛选地区",
               },
               {
-                value: "all",
+                value: "shanghai",
                 label: "上海",
               },
               {
-                value: "all",
+                value: "hebei",
                 label: "河北",
               },
             ]}
@@ -55,7 +158,7 @@ export default ({ navigation, route }) => {
           >
             <List.Item arrow="horizontal" onPress={this.onPress}></List.Item>
           </Picker>
-        </View>
+        </View> */}
 
         <View
           style={{
@@ -84,47 +187,86 @@ export default ({ navigation, route }) => {
     );
   };
   const renderItem = (item) => {
-    // {
-    //     address: "上海市闸北区 电信ADSL"
-    //     consignee: "演示账号"
-    //     expected_time: "2020-12-23 23:30:27"
-    //     moblie: "18111111111"
-    //     orderID: "1"
-    //     packageNum: "1"
-    //     phone: "13453661048"
-    //     pick_time: "2020-12-04 21:12:16"
-    //     status: "1"
-    //     userID: "Monster"
-    // }
     return (
       <View
         style={{
           borderBottomColor: "#ddd",
           borderBottomWidth: 1 / PixelRatio.get(),
           paddingHorizontal: 15,
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
+          flexDirection: "column",
+          //   justifyContent: "space-between",
+          //   alignItems: "center",
           paddingVertical: 15,
         }}
       >
         <View style={{ flexDirection: "column" }}>
-          <Text style={{ fontSize: 17, color: "#333" }}>2012-12-30 12:00</Text>
-          <WhiteSpace />
-          <Text style={{ fontSize: 17, color: "#333" }}>
-            深圳-上海-快件(100件)
+          <Text style={{ fontSize: 20, color: "#333" }}>
+            {item.expected_time}
           </Text>
           <WhiteSpace />
-          <Text style={{ fontSize: 17, color: "#333" }}>
-            深圳南山区*****8号
+          <Text style={{ fontSize: 20, color: "#333" }}>
+            {item.channel}({item.num}件)
           </Text>
           <WhiteSpace />
-          <Text style={{ fontSize: 17, color: "#333" }}>朱坤(1363232323)</Text>
+          <Text style={{ fontSize: 20, color: "#333" }}>
+            {item.pickup.address}
+          </Text>
+          <WhiteSpace />
+          <Text style={{ fontSize: 20, color: "#333" }}>
+            寄:{item.pickup.name}({item.pickup.mobile})
+          </Text>
+          <WhiteSpace />
+          <Text style={{ fontSize: 20, color: "#333" }}>
+            收:{item.consignee.name}({item.consignee.mobile})
+          </Text>
+          <WhiteSpace />
+          <Text style={{ fontSize: 20, color: "#333" }}>
+            预估重量:{item.weight}kg
+          </Text>
+          <WhiteSpace />
+          <Text style={{ fontSize: 20, color: "#333" }}>{item.payment}</Text>
         </View>
-        <View style={{ width: 70 }}>
-          <Button type="primary">打印</Button>
-          <WhiteSpace />
-          <Button type="warning">放弃</Button>
+        <WhiteSpace />
+        <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
+          {item.adminID == 0 ? (
+            <WingBlank size="sm">
+              <Button
+                type="primary"
+                onPress={() => {
+                  handle_order_claim({ orderID: item.orderID });
+                }}
+              >
+                领取
+              </Button>
+            </WingBlank>
+          ) : null}
+          {item.status == 0 ? (
+            <WingBlank size="sm">
+              <Button
+                type="primary"
+                onPress={() => {
+                  handle_order_pickup({ orderID: item.orderID, item });
+                }}
+              >
+                取件
+              </Button>
+            </WingBlank>
+          ) : null}
+          {item.status == 1 ? (
+            <WingBlank size="sm">
+              <Button
+                type="primary"
+                onPress={() => {
+                  handlePrint({ item });
+                }}
+              >
+                打印
+              </Button>
+            </WingBlank>
+          ) : null}
+          {/* <WingBlank size="sm">
+            <Button type="warning">放弃</Button>
+          </WingBlank> */}
         </View>
       </View>
     );
@@ -133,9 +275,11 @@ export default ({ navigation, route }) => {
     <View style={{ backgroundColor: "#fff", flex: 1 }}>
       <View style={{ flex: 1 }}>
         <ListView
+          ref={ref}
           header={renderHeader}
           onFetch={onFetch}
           renderItem={renderItem}
+          displayDate
           keyExtractor={({ orderID }) => `key--${orderID}`}
         />
       </View>

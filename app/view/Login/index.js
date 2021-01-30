@@ -5,7 +5,7 @@ import AsyncStorage from "@react-native-community/async-storage";
 import AuthContext from "../../util/AuthContext";
 import { useEffect } from "react";
 
-const App = ({ navigation }) => {
+export default ({ navigation }) => {
   const [userInfo, setUserInfo] = useState({
     username: "admin",
     password: "123456",
@@ -47,4 +47,3 @@ const App = ({ navigation }) => {
     </>
   );
 };
-export default App;

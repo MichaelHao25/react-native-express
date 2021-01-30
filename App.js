@@ -14,12 +14,15 @@ import CreateExpress from "./app/view/CreateExpress";
 import Search from "./app/view/Search";
 import Set from "./app/view/Set";
 import PrintConfig from "./app/view/PrintConfig";
+import MergePackage from "./app/view/MergePackage";
+import RemovePackage from "./app/view/RemovePackage";
+import UnpackPackage from "./app/view/UnpackPackage";
+import OutStock from "./app/view/OutStock";
 
 import { useReducer } from "react";
 import { useMemo } from "react";
 import { user_login } from "./app/util/api";
 import AuthContext from "./app/util/AuthContext";
-import CCCCTest from "./app/view/CCCCTest";
 import { View, Text } from "react-native";
 import JPush from "jpush-react-native";
 const Stack = createStackNavigator();
@@ -131,7 +134,22 @@ const App = () => {
                   options={{ title: "首页" }}
                   component={Home}
                 />
-
+                
+                <Stack.Screen
+                  name="outStock"
+                  options={{ title: "出库" }}
+                  component={OutStock}
+                />
+                <Stack.Screen
+                  name="removePackage"
+                  options={{ title: "减包" }}
+                  component={RemovePackage}
+                />
+                <Stack.Screen
+                  name="unpackPackage"
+                  options={{ title: "拆包" }}
+                  component={UnpackPackage}
+                />
                 <Stack.Screen
                   name="list"
                   options={{ title: "列表" }}
@@ -156,6 +174,11 @@ const App = () => {
                   name="printConfig"
                   options={{ title: "打印机连接设置" }}
                   component={PrintConfig}
+                />
+                <Stack.Screen
+                  name="mergePackage"
+                  options={{ title: "合包" }}
+                  component={MergePackage}
                 />
               </>
             )}

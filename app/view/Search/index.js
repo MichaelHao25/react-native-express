@@ -5,7 +5,7 @@ import { order_consignee } from '../../util/api'
 import Storage from '@react-native-community/async-storage'
 import { useState } from 'react';
 
-const App = ({ navigation, route }) => {
+export default ({ navigation, route }) => {
   const ref = useRef()
   const type = route.params.type;
   const [list, setList] = useState({
@@ -80,4 +80,3 @@ const App = ({ navigation, route }) => {
     </ScrollView>
   </View>
 }
-export default App;

@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-community/async-storage";
 import { Toast, Portal } from '@ant-design/react-native';
 class Request {
-    static url = "http://t.0lz.net";
+    static url = "http://api.junchain.cn";
     static loadingTimer = 0;
     static loadingKey;
     static getToken = () => {

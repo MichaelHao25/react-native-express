@@ -3,7 +3,7 @@ import { ScrollView } from "react-native";
 import { List, Modal } from "@ant-design/react-native";
 import AuthContext from "../../util/AuthContext";
 
-const App = ({ navigation }) => {
+export default ({ navigation }) => {
   const { signOut } = React.useContext(AuthContext);
   return (
     <ScrollView style={{ flex: 1 }}>
@@ -33,4 +33,3 @@ const App = ({ navigation }) => {
     </ScrollView>
   );
 };
-export default App;

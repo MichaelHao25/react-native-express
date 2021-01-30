@@ -13,7 +13,7 @@ import {
 import AuthContext from "../../util/AuthContext";
 import { useState } from 'react';
 
-const App = ({ navigation }) => {
+export default ({ navigation }) => {
   const types = [
     'order_consignee',
   ]
@@ -145,4 +145,3 @@ const App = ({ navigation }) => {
     </ScrollView>
   );
 }
-export default App
