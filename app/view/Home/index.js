@@ -116,7 +116,7 @@ export default ({ navigation }) => {
             data={[
               {
                 icon: require("../../image/merge.png"),
-                text: `加包`,
+                text: `合包`,
               },
               {
                 icon: require("../../image/merge.png"),

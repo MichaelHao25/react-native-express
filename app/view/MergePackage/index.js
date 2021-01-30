@@ -32,7 +32,7 @@ export default ({ navigation, route }) => {
     weight: 0,
   });
   useEffect(() => {
-    navigation.setOptions({ title: route.params.type === 0 ? "加包" : "集包" });
+    navigation.setOptions({ title: route.params.type === 0 ? "合包" : "集包" });
     blue.current = new Print();
     return () => {
       blue.current.disconnect();
@@ -98,6 +98,7 @@ export default ({ navigation, route }) => {
   };
   const handleSubmitEditing = ({ nativeEvent: { text } }) => {
     const { input_sn_list } = state;
+    debugger;
     if (text === "") {
       input.current.focus();
       return;
@@ -120,7 +121,7 @@ export default ({ navigation, route }) => {
     }
     pack_addpack({
       codeNum: [...input_sn_list].join(","),
-      checkout: 0,
+      type: route.params.type + 1,
     }).then((res) => {
       if (res.success === false) {
         Toast.fail(res.msg);
@@ -139,19 +140,20 @@ export default ({ navigation, route }) => {
       // price: 111.01
 
       const { count, data, pcodeNum, price, weight } = res;
-      if (count) {
-        ref.current.ulv.updateRows(data, 0);
-        setState((state) => {
-          return {
-            ...state,
-            input_sn: "",
-            input_sn_list: [pcodeNum],
-            count,
-            price,
-            weight,
-          };
-        });
-      }
+      //   if (count) {
+      // 去掉的具体原因参考20210130下午五点钟的消息记录
+      ref.current.ulv.updateRows(data, 0);
+      setState((state) => {
+        return {
+          ...state,
+          input_sn: "",
+          input_sn_list: [pcodeNum],
+          count,
+          price,
+          weight,
+        };
+      });
+      //   }
     });
     // setState((state) => {
     //   const { input_sn_list } = state;
@@ -272,7 +274,7 @@ export default ({ navigation, route }) => {
             生成新条码
           </Button>
           <Button type="warning" onPress={handleMerge}>
-            {route.params.type === 0 ? "加包" : "集包"}
+            {route.params.type === 0 ? "合包" : "集包"}
           </Button>
         </View>
         <WhiteSpace />

@@ -33,8 +33,8 @@ export const pack_createcode = (body) => {
 };
 
 /**
- * 加包
- * 往包裹里面添加包裹
+ * 合包
+ * 往包裹里面添合包裹
  */
 export const pack_addpack = (body) => {
   return Request.fetch({
