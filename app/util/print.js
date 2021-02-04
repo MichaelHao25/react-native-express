@@ -105,7 +105,7 @@ class Print {
       // "TEXT 8 7 0 245 广东省深圳市南山区南海大道\r\n" +
       encode64gb2312(
         "! 0 200 200 400 1\r\n" +
-          "PAGE-WIDTH 560\r\n" +
+          "PAGE-WIDTH 520\r\n" +
           "GAP-SENSE 255\r\n" +
           "SET-TOF 0\r\n" +
           "LEFT\r\n" +

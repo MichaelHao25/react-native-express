@@ -4,7 +4,6 @@ import { Button, List, InputItem, WingBlank } from "@ant-design/react-native";
 import AsyncStorage from "@react-native-community/async-storage";
 import AuthContext from "../../util/AuthContext";
 import { useEffect } from "react";
-import usePdaScan from "react-native-pda-scan";
 
 export default ({ navigation }) => {
   const [userInfo, setUserInfo] = useState({
@@ -15,18 +14,6 @@ export default ({ navigation }) => {
   const handleLogin = () => {
     signIn(userInfo);
   };
-  const a = usePdaScan({
-    onEvent(e) {
-        console.log(333);
-        console.log(e);
-    },
-    onError(e) {
-        console.log(666);
-        console.log(e);
-    },
-    trigger: "always",
-  });
-  console.log(a);
   return (
     <>
       <List renderHeader={"用户登录"}>
