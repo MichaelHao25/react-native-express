@@ -18,6 +18,8 @@ import MergePackage from "./app/view/MergePackage";
 import RemovePackage from "./app/view/RemovePackage";
 import UnpackPackage from "./app/view/UnpackPackage";
 import OutStock from "./app/view/OutStock";
+import PrintPackageDetails from "./app/view/PrintPackageDetails";
+
 
 import { useReducer } from "react";
 import { useMemo } from "react";
@@ -135,6 +137,11 @@ const App = () => {
                   component={Home}
                 />
                 
+                <Stack.Screen
+                  name="scan"
+                  options={{ title: "扫描" }}
+                  component={PrintPackageDetails}
+                />
                 <Stack.Screen
                   name="outStock"
                   options={{ title: "出库" }}

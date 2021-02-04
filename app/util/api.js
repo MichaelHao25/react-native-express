@@ -77,6 +77,9 @@ export const pack_deletepack = () => {
   });
 };
 
+/**
+ * 查询包裹信息
+ */
 export const pack_scan = () => {
   return Request.fetch({
     url: "/pack/scan",

@@ -103,6 +103,10 @@ export default ({ navigation }) => {
         navigation.navigate("set");
         break;
       }
+      case 6: {
+        navigation.navigate("scan");
+        break;
+      }
       default:
         break;
     }
@@ -140,7 +144,7 @@ export default ({ navigation }) => {
               },
               {
                 icon: require("../../image/none.png"),
-                text: `空`,
+                text: `扫描`,
               },
             ]}
             renderItem={(item) => {

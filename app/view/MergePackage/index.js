@@ -98,7 +98,6 @@ export default ({ navigation, route }) => {
   };
   const handleSubmitEditing = ({ nativeEvent: { text } }) => {
     const { input_sn_list } = state;
-    debugger;
     if (text === "") {
       input.current.focus();
       return;
