@@ -18,11 +18,11 @@ import { useRef } from "react";
 import Print from "../../util/print";
 import { useState } from "react";
 import Sound from "react-native-sound";
+import usePdaScan from "react-native-pda-scan";
 
 export default ({ navigation, route }) => {
   const ref = useRef();
   const blue = useRef();
-  const input = useRef();
   const sound = useRef();
   const [state, setState] = useState({
     input_sn: "",
@@ -31,6 +31,9 @@ export default ({ navigation, route }) => {
     price: 0,
     weight: 0,
   });
+  /**
+   * 初始化链接蓝牙
+   */
   useEffect(() => {
     navigation.setOptions({ title: route.params.type === 0 ? "合包" : "集包" });
     blue.current = new Print();
@@ -38,29 +41,36 @@ export default ({ navigation, route }) => {
       blue.current.disconnect();
     };
   }, []);
+  /**
+   * 播放声音
+   */
   useEffect(() => {
     Sound.setCategory("Playback");
-    // See notes below about preloading sounds within initialization code below.
     sound.current = new Sound("error_error.mp3", Sound.MAIN_BUNDLE, (error) => {
       if (error) {
         console.log("failed to load the sound", error);
         return;
       }
-      // loaded successfully
-      //   console.log(
-      //     "duration in seconds: " +
-      //       whoosh.getDuration() +
-      //       "number of channels: " +
-      //       whoosh.getNumberOfChannels()
-      //   );
     });
     return () => {
       sound.current.release();
     };
   }, []);
-  useEffect(() => {
-    input.current.focus();
-  }, [state]);
+  usePdaScan({
+    onEvent(e) {
+      console.log(e);
+      handleSubmitEditing({
+        nativeEvent: {
+          text: e,
+        },
+      });
+    },
+    onError(e) {
+      console.log(e);
+    },
+    trigger: "always",
+  });
+
   const handlePrint = (item) => {
     blue.current.getPrint(item);
     blue.current
@@ -97,19 +107,14 @@ export default ({ navigation, route }) => {
     });
   };
   const handleSubmitEditing = ({ nativeEvent: { text } }) => {
+      
     const { input_sn_list } = state;
-    if (text === "") {
-      input.current.focus();
-      return;
-    }
+
     if (!input_sn_list.includes(text)) {
       input_sn_list.push(text);
     }
     if (input_sn_list.length < 2) {
       setState((state) => {
-        setTimeout(() => {
-          input.current.focus();
-        });
         return {
           ...state,
           input_sn: "",
@@ -125,13 +130,6 @@ export default ({ navigation, route }) => {
       if (res.success === false) {
         Toast.fail(res.msg);
         sound.current.play();
-        setState((state) => {
-          return {
-            ...state,
-            input_sn: "",
-            input_sn_list: [],
-          };
-        });
       }
       // count: "64"
       // data: (8)
@@ -146,7 +144,7 @@ export default ({ navigation, route }) => {
         return {
           ...state,
           input_sn: "",
-          input_sn_list: [pcodeNum],
+          input_sn_list: pcodeNum?[pcodeNum]:[],
           count,
           price,
           weight,
@@ -180,7 +178,7 @@ export default ({ navigation, route }) => {
       {
         text: "确定",
         onPress: () => {
-          debugger;
+       
 
           pack_createpack({
             pcodeNum: state.input_sn_list[0],
@@ -238,10 +236,8 @@ export default ({ navigation, route }) => {
             type="text"
             placeholder="等待扫描中.."
             value={state.input_sn}
-            autoFocus
             onChangeText={handleChangeText}
             onSubmitEditing={handleSubmitEditing}
-            ref={input}
           />
         </View>
         {[0, 1].map((value) => {

@@ -23,9 +23,9 @@ import { useRef } from "react";
 import Print from "../../util/print";
 import Sound from "react-native-sound";
 import { useState } from "react";
+import usePdaScan from "react-native-pda-scan";
 
 export default ({ navigation, route }) => {
-  const input = useRef();
   const ref = useRef();
   const sound = useRef();
   const [state, setState] = useState({
@@ -36,24 +36,25 @@ export default ({ navigation, route }) => {
   });
   useEffect(() => {
     Sound.setCategory("Playback");
-    // See notes below about preloading sounds within initialization code below.
     sound.current = new Sound("error_error.mp3", Sound.MAIN_BUNDLE, (error) => {
       if (error) {
         console.log("failed to load the sound", error);
         return;
       }
-      // loaded successfully
-    //   console.log(
-    //     "duration in seconds: " +
-    //       whoosh.getDuration() +
-    //       "number of channels: " +
-    //       whoosh.getNumberOfChannels()
-    //   );
     });
     return () => {
       sound.current.release();
     };
   }, []);
+  usePdaScan({
+    onEvent(e) {
+        handleChangeText(e);
+    },
+    onError(e) {
+    },
+    trigger: "always",
+  });
+
   // pack_subpack
   const handleChangeText = (text) => {
     setState((state) => {
@@ -82,9 +83,7 @@ export default ({ navigation, route }) => {
               sound.current.play();
               Modal.alert("提示", res.msg);
               setState((state) => {
-                setTimeout(() => {
-                  input.current.focus();
-                });
+           
                 return {
                   ...state,
                   input_sn: "",
@@ -93,9 +92,7 @@ export default ({ navigation, route }) => {
             } else {
               const { count, data, pcodeNum, price, weight } = res;
               setState((state) => {
-                setTimeout(() => {
-                  input.current.focus();
-                });
+               
                 ref.current.ulv.updateRows(data, 0);
                 return {
                   ...state,
@@ -155,8 +152,6 @@ export default ({ navigation, route }) => {
             type="text"
             placeholder="等待扫描中.."
             value={state.input_sn}
-            ref={input}
-            autoFocus
             onChangeText={handleChangeText}
           />
         </View>

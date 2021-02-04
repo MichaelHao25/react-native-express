@@ -23,10 +23,10 @@ import theme from "../../theme";
 import { useRef } from "react";
 import Print from "../../util/print";
 import { useState } from "react";
+import usePdaScan from "react-native-pda-scan";
 
 export default ({ navigation, route }) => {
   const ref = useRef();
-  const input = useRef();
 
   const [state, setState] = useState({
     input_sn: "",
@@ -52,7 +52,20 @@ export default ({ navigation, route }) => {
       });
     });
   }, []);
-
+  usePdaScan({
+    onEvent(e) {
+      console.log(e);
+      handleSubmitEditing({
+        nativeEvent: {
+          text: e,
+        },
+      });
+    },
+    onError(e) {
+      console.log(e);
+    },
+    trigger: "always",
+  });
   const handleChangeText = (text) => {
     setState((state) => {
       return {
@@ -63,17 +76,11 @@ export default ({ navigation, route }) => {
   };
   const handleSubmitEditing = ({ nativeEvent: { text } }) => {
     if (text === "") {
-      setTimeout(() => {
-        input.current.focus();
-      });
       return;
     }
     state.input_sn_list.add(text);
 
     setState((state) => {
-      setTimeout(() => {
-        input.current.focus();
-      });
       return {
         ...state,
         input_sn: "",
@@ -138,10 +145,8 @@ export default ({ navigation, route }) => {
           <InputItem
             autoCapitalize="none"
             type="text"
-            ref={input}
             placeholder="等待扫描中.."
             value={state.input_sn}
-            autoFocus
             onChangeText={handleChangeText}
             onSubmitEditing={handleSubmitEditing}
           />

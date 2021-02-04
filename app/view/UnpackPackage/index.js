@@ -23,12 +23,23 @@ import theme from "../../theme";
 import { useRef } from "react";
 import Print from "../../util/print";
 import { useState } from "react";
+import usePdaScan from "react-native-pda-scan";
+
+
 
 export default ({ navigation, route }) => {
   const [state, setState] = useState({
     input_sn: "",
   });
-  const input = useRef();
+  usePdaScan({
+    onEvent(e) {
+        handleChangeText(e);
+    },
+    onError(e) {
+        console.log(e);
+    },
+    trigger: "always",
+  });
   // pack_subpack
   const handleChangeText = (text) => {
     setState((state) => {
@@ -54,7 +65,6 @@ export default ({ navigation, route }) => {
             codeNum: state.input_sn,
           }).then((res) => {
             Modal.alert("提示", "拆包成功!");
-            input.current.focus();
           });
         },
       },
@@ -69,7 +79,6 @@ export default ({ navigation, route }) => {
           placeholder="等待扫描中.."
           value={state.input_sn}
           autoFocus
-          ref={input}
           onChangeText={handleChangeText}
         />
       </View>
