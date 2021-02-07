@@ -200,7 +200,7 @@ export default ({ navigation, route }) => {
             borderBottomWidth: 1 / PixelRatio.get(),
           }}
         >
-          <Text style={{ fontSize: 20, color: "#333" }}>
+          <Text style={{ fontSize: 12, color: "#333" }}>
             条码: {state.input_sn}
           </Text>
           {/* <Button size="small">清除</Button> */}

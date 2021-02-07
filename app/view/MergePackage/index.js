@@ -231,38 +231,6 @@ export default ({ navigation, route }) => {
             onSubmitEditing={handleSubmitEditing}
           />
         </View>
-        {[0, 1].map((value) => {
-          return (
-            <View
-              key={value}
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                paddingHorizontal: 15,
-                paddingVertical: 9,
-                alignItems: "center",
-                backgroundColor: "#f5f5f9",
-                borderBottomColor: "#ddd",
-                borderBottomWidth: 1 / PixelRatio.get(),
-              }}
-            >
-              <Text style={{ fontSize: 20, color: "#333" }}>
-                条码: {state.input_sn_list[value]}
-              </Text>
-              {/* <Button size="small">清除</Button> */}
-            </View>
-          );
-        })}
-
-        <WhiteSpace />
-        <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
-          <Button type="primary" onPress={handleCreateQrcode}>
-            生成新条码
-          </Button>
-          <Button type="warning" onPress={handleMerge}>
-            {route.params.type === 0 ? "合包" : "集包"}
-          </Button>
-        </View>
         <WhiteSpace />
         <View
           style={{
@@ -281,6 +249,39 @@ export default ({ navigation, route }) => {
             </Text>
           </View>
         </View>
+        {[0, 1].map((value) => {
+          return (
+            <View
+              key={value}
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                paddingHorizontal: 15,
+                paddingVertical: 9,
+                alignItems: "center",
+                backgroundColor: "#f5f5f9",
+                borderBottomColor: "#ddd",
+                borderBottomWidth: 1 / PixelRatio.get(),
+              }}
+            >
+              <Text style={{ fontSize: 12, color: "#333" }}>
+                条码: {state.input_sn_list[value]}
+              </Text>
+              {/* <Button size="small">清除</Button> */}
+            </View>
+          );
+        })}
+
+        <WhiteSpace />
+        <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
+          <Button type="primary" onPress={handleCreateQrcode}>
+            生成新条码
+          </Button>
+          <Button type="warning" onPress={handleMerge}>
+            {route.params.type === 0 ? "合包" : "集包"}
+          </Button>
+        </View>
+        <WhiteSpace />
         <View
           style={{
             flexDirection: "row",

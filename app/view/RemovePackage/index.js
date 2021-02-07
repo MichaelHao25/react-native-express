@@ -147,30 +147,6 @@ export default ({ navigation, route }) => {
             onChangeText={handleChangeText}
           />
         </View>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            paddingHorizontal: 15,
-            paddingVertical: 9,
-            alignItems: "center",
-            backgroundColor: "#f5f5f9",
-            borderBottomColor: "#ddd",
-            borderBottomWidth: 1 / PixelRatio.get(),
-          }}
-        >
-          <Text style={{ fontSize: 20, color: "#333" }}>
-            条码: {state.input_sn}
-          </Text>
-          {/* <Button size="small">清除</Button> */}
-        </View>
-
-        <WhiteSpace />
-        <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
-          <Button type="warning" onPress={handleRemovePackage}>
-            减包
-          </Button>
-        </View>
         <WhiteSpace />
         <View
           style={{
@@ -189,6 +165,31 @@ export default ({ navigation, route }) => {
             </Text>
           </View>
         </View>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            paddingHorizontal: 15,
+            paddingVertical: 9,
+            alignItems: "center",
+            backgroundColor: "#f5f5f9",
+            borderBottomColor: "#ddd",
+            borderBottomWidth: 1 / PixelRatio.get(),
+          }}
+        >
+          <Text style={{ fontSize: 12, color: "#333" }}>
+            条码: {state.input_sn}
+          </Text>
+          {/* <Button size="small">清除</Button> */}
+        </View>
+
+        <WhiteSpace />
+        <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
+          <Button type="warning" onPress={handleRemovePackage}>
+            减包
+          </Button>
+        </View>
+        <WhiteSpace />
         <View
           style={{
             flexDirection: "row",
