@@ -83,20 +83,31 @@ export default ({ navigation, route }) => {
       });
   };
   const handleCreateQrcode = () => {
-    pack_createcode({
-      type: route.params.type + 1,
-    }).then((res) => {
-      const { codeNum } = res;
-      setState((state) => {
-        return {
-          ...state,
-          input_sn_list: [codeNum],
-        };
-      });
-      handlePrint({
-        packageNum: codeNum,
-      });
-    });
+    Modal.alert("警告", "确定创建一个运单?", [
+      {
+        text: "取消",
+        style: "cancel",
+      },
+      {
+        text: "确定",
+        onPress: () => {
+          pack_createcode({
+            type: route.params.type + 1,
+          }).then((res) => {
+            const { codeNum } = res;
+            setState((state) => {
+              return {
+                ...state,
+                input_sn_list: [codeNum],
+              };
+            });
+            handlePrint({
+              packageNum: codeNum,
+            });
+          });
+        },
+      },
+    ]);
   };
   const handleChangeText = (text) => {
     setState((state) => {
