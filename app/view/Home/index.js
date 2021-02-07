@@ -146,6 +146,10 @@ export default ({ navigation }) => {
                 icon: require("../../image/none.png"),
                 text: `扫描`,
               },
+              {
+                icon: require("../../image/none.png"),
+                text: `已揽件`,
+              },
             ]}
             renderItem={(item) => {
               return (
@@ -186,14 +190,18 @@ export default ({ navigation }) => {
           }}
           extra={state.wait_accept}
         >
-          <Badge dot>
+          {parseInt(state.wait_accept) === 0 ? (
             <Text>待揽件数量</Text>
-          </Badge>
+          ) : (
+            <Badge dot>
+              <Text>待揽件数量</Text>
+            </Badge>
+          )}
         </List.Item>
         <List.Item
           arrow="horizontal"
           onPress={() => {
-            navigation.navigate("list", { title: "已揽件列表", status: 1 });
+            navigation.navigate("list", { title: "今日已揽件列表", status: 1 });
           }}
           extra={state.end_accept}
         >

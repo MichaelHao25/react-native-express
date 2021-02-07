@@ -61,6 +61,11 @@ export default ({ navigation, route }) => {
   usePdaScan({
     onEvent(e) {
         console.log(e);
+        handleSubmitEditing({
+            nativeEvent: {
+              text: e,
+            },
+          });
     },
     onError(e) {
         console.log(e);

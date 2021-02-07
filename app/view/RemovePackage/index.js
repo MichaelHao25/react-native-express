@@ -48,10 +48,9 @@ export default ({ navigation, route }) => {
   }, []);
   usePdaScan({
     onEvent(e) {
-        handleChangeText(e);
+      handleChangeText(e);
     },
-    onError(e) {
-    },
+    onError(e) {},
     trigger: "always",
   });
 
@@ -82,17 +81,10 @@ export default ({ navigation, route }) => {
             if (res.success === false) {
               sound.current.play();
               Modal.alert("提示", res.msg);
-              setState((state) => {
-           
-                return {
-                  ...state,
-                  input_sn: "",
-                };
-              });
             } else {
+              Modal.alert("提示", "减包成功!");
               const { count, data, pcodeNum, price, weight } = res;
               setState((state) => {
-               
                 ref.current.ulv.updateRows(data, 0);
                 return {
                   ...state,

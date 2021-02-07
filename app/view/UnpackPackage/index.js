@@ -25,18 +25,16 @@ import Print from "../../util/print";
 import { useState } from "react";
 import usePdaScan from "react-native-pda-scan";
 
-
-
 export default ({ navigation, route }) => {
   const [state, setState] = useState({
     input_sn: "",
   });
   usePdaScan({
     onEvent(e) {
-        handleChangeText(e);
+      handleChangeText(e);
     },
     onError(e) {
-        console.log(e);
+      console.log(e);
     },
     trigger: "always",
   });
@@ -64,7 +62,11 @@ export default ({ navigation, route }) => {
           pack_deletepack({
             codeNum: state.input_sn,
           }).then((res) => {
-            Modal.alert("提示", "拆包成功!");
+            if (res.success === false) {
+              Modal.alert("提示", res.msg);
+            } else {
+              Modal.alert("提示", "拆包成功!");
+            }
           });
         },
       },

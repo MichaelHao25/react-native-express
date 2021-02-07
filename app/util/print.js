@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import BleManager from "react-native-ble-manager";
 import { encode64gb2312 } from "./base64gb2312";
 import Storage from "@react-native-community/async-storage";
+import { Toast ,Portal} from "@ant-design/react-native";
 
 function _base64ToArrayBuffer(base64) {
   var binary_string = base64;
@@ -17,13 +18,17 @@ class Print {
   macAddress = "";
   data = [];
   initOver = false;
+  key = "";
   constructor(props) {
     // super(props);
     Storage.getItem("printDevice").then((res) => {
+      console.log("printDevice", res);
       if (res) {
         const blue = JSON.parse(res);
         this.macAddress = blue?.macAddress;
         this.init();
+      }else{
+        Toast.fail('请绑定打印机。')
       }
     });
   }
@@ -31,6 +36,7 @@ class Print {
     BleManager.start({ showAlert: false }).then(() => {
       // Success code
       console.log("Module initialized");
+      Toast.info('打印机初始化完毕。')
       this.initOver = true;
     });
   }
@@ -46,6 +52,7 @@ class Print {
       });
   }
   connect() {
+      this.key = Toast.loading('正在打印中...',0);
     return new Promise((resolve, reject) => {
       BleManager.connect(this.macAddress)
         .then(() => {
@@ -54,6 +61,7 @@ class Print {
           // 70*50mm
           BleManager.retrieveServices(this.macAddress).then(
             (peripheralInfo) => {
+              console.log("peripheralInfo");
               let serviceUUID = "";
               let characteristicUUID = "";
               peripheralInfo.characteristics.forEach((value) => {
@@ -75,6 +83,9 @@ class Print {
               )
                 .then(() => {
                   resolve("ok");
+                  Toast.success("指令发送完毕")
+                  Portal.remove(this.key)
+                  
                 })
                 .catch((error) => {
                   reject(error);
@@ -85,7 +96,9 @@ class Print {
         .catch((error) => {
           console.log(error);
           reject(error);
-        });
+          Toast.success("打印失败")
+          Portal.remove(this.key)
+        })
     });
   }
   getPrint({

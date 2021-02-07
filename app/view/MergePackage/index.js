@@ -107,22 +107,12 @@ export default ({ navigation, route }) => {
     });
   };
   const handleSubmitEditing = ({ nativeEvent: { text } }) => {
-      
     const { input_sn_list } = state;
 
     if (!input_sn_list.includes(text)) {
       input_sn_list.push(text);
     }
-    if (input_sn_list.length < 2) {
-      setState((state) => {
-        return {
-          ...state,
-          input_sn: "",
-          input_sn_list: [...input_sn_list],
-        };
-      });
-      return;
-    }
+
     pack_addpack({
       codeNum: [...input_sn_list].join(","),
       type: route.params.type + 1,
@@ -144,7 +134,7 @@ export default ({ navigation, route }) => {
         return {
           ...state,
           input_sn: "",
-          input_sn_list: pcodeNum?[pcodeNum]:[],
+          input_sn_list: pcodeNum ? [pcodeNum] : [],
           count,
           price,
           weight,
@@ -178,8 +168,6 @@ export default ({ navigation, route }) => {
       {
         text: "确定",
         onPress: () => {
-       
-
           pack_createpack({
             pcodeNum: state.input_sn_list[0],
           }).then((res) => {
@@ -199,7 +187,10 @@ export default ({ navigation, route }) => {
               return;
             }
             console.log(res);
-            Modal.alert("提示", "合包成功!");
+            Modal.alert(
+              "提示",
+              route.params.type == 0 ? "合包成功!" : "集包成功!"
+            );
             setState((state) => {
               return {
                 ...state,
