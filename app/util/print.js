@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import BleManager from "react-native-ble-manager";
 import { encode64gb2312 } from "./base64gb2312";
 import Storage from "@react-native-community/async-storage";
-import { Toast ,Portal} from "@ant-design/react-native";
+import { Toast, Portal } from "@ant-design/react-native";
 
 function _base64ToArrayBuffer(base64) {
   var binary_string = base64;
@@ -27,8 +27,8 @@ class Print {
         const blue = JSON.parse(res);
         this.macAddress = blue?.macAddress;
         this.init();
-      }else{
-        Toast.fail('请绑定打印机。')
+      } else {
+        Toast.fail("请绑定打印机。");
       }
     });
   }
@@ -36,7 +36,7 @@ class Print {
     BleManager.start({ showAlert: false }).then(() => {
       // Success code
       console.log("Module initialized");
-      Toast.info('打印机初始化完毕。')
+      Toast.info("打印机初始化完毕。");
       this.initOver = true;
     });
   }
@@ -52,7 +52,7 @@ class Print {
       });
   }
   connect() {
-      this.key = Toast.loading('正在打印中...',0);
+    this.key = Toast.loading("正在打印中...", 0);
     return new Promise((resolve, reject) => {
       BleManager.connect(this.macAddress)
         .then(() => {
@@ -83,9 +83,8 @@ class Print {
               )
                 .then(() => {
                   resolve("ok");
-                  Toast.success("指令发送完毕")
-                  Portal.remove(this.key)
-                  
+                  Toast.success("指令发送完毕");
+                  Portal.remove(this.key);
                 })
                 .catch((error) => {
                   reject(error);
@@ -96,9 +95,9 @@ class Print {
         .catch((error) => {
           console.log(error);
           reject(error);
-          Toast.success("打印失败")
-          Portal.remove(this.key)
-        })
+          Toast.success("打印失败");
+          Portal.remove(this.key);
+        });
     });
   }
   getPrint({
@@ -110,6 +109,7 @@ class Print {
     shipping = "######",
     payment = "######",
     client_phone = "######",
+    flag = "",
   }) {
     this.data = _base64ToArrayBuffer(
       // 50 70
@@ -123,6 +123,7 @@ class Print {
           "SET-TOF 0\r\n" +
           "LEFT\r\n" +
           "TEXT 8 7 0 8 世纪通物流\r\n" +
+          this.renderFlag(flag) +
           "CENTER\r\n" +
           "BARCODE 128 1 1 86 0 43 " +
           packageNum +
@@ -170,6 +171,51 @@ class Print {
           "PRINT\r\n"
       )
     );
+  }
+  /**
+   * 渲染合包集包标记
+   */
+  renderFlag(text) {
+    if (!text) {
+      return "";
+    }
+    return (
+      "SETBOLD 2\r\n" +
+      "SETMAG 2 2\r\n" +
+      "TEXT 8 7 0 63 " +
+      text +
+      "\r\n" +
+      "SETBOLD 0\r\n" +
+      "SETMAG 0 0\r\n"
+    );
+  }
+  /**
+   * 初始化打印机
+   * 1mm=8point
+   * @param {number} width 打印机纸张的宽度
+   * @param {number} height 打印机纸张的高度
+   */
+  printInitArgs(width = 400, height = 520) {
+    return "! 0 200 200 400 1\r\n" + "PAGE-WIDTH 520\r\n" + "GAP-SENSE 255\r\n";
+  }
+  /**
+   * 打印机控制指令结束符号
+   */
+  printEnd() {
+    return "FORM\r\n" + "PRINT\r\n";
+  }
+  /**
+   * 设置对齐方式（left/center/right）
+   * @param {emnu} direction 左对齐右对齐居中等
+   */
+  printAlign(direction) {
+    return direction.toUpperCase() + "\r\n";
+  }
+  /**
+   * 打印文字
+   */
+  printText() {
+    return "TEXT 8 7 0 340 客服电话:" + client_phone + "\r\n";
   }
 }
 

@@ -87,6 +87,7 @@ export default ({ navigation, route }) => {
             });
             handlePrint({
               packageNum: codeNum,
+              flag: res.codeType
             });
           });
         },
@@ -204,6 +205,7 @@ export default ({ navigation, route }) => {
               shipping: data.shippingID,
               payment: data.payment,
               client_phone: data.client_phone,
+              flag: res.codeType,
             });
           });
         },
@@ -226,7 +228,7 @@ export default ({ navigation, route }) => {
           <View style={{ flex: 1 }}>
             <Text style={{ fontSize: 14, color: "#888" }}>
               {title}
-              <Text style={{ fontWeight: 'bold' }}>{value}</Text>
+              <Text style={{ fontWeight: "bold" }}>{value}</Text>
             </Text>
           </View>
         </View>
