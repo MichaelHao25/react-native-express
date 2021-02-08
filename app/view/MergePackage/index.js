@@ -228,7 +228,29 @@ export default ({ navigation, route }) => {
       },
     ]);
   };
-
+  const renderRow = ({ title, value }) => {
+    return (
+      <>
+        <View
+          style={{
+            flexDirection: "column",
+            paddingHorizontal: 15,
+            paddingVertical: 9,
+            backgroundColor: "#f5f5f9",
+            borderBottomColor: "#ddd",
+            borderBottomWidth: 1 / PixelRatio.get(),
+          }}
+        >
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 14, color: "#888" }}>
+              {title}
+              <Text style={{ fontWeight: 'bold' }}>{value}</Text>
+            </Text>
+          </View>
+        </View>
+      </>
+    );
+  };
   const renderHeader = () => {
     return (
       <View>
@@ -242,47 +264,26 @@ export default ({ navigation, route }) => {
             onSubmitEditing={handleSubmitEditing}
           />
         </View>
-        <WhiteSpace />
-        <View
-          style={{
-            flexDirection: "row",
-            paddingHorizontal: 15,
-            paddingVertical: 9,
-            backgroundColor: "#f5f5f9",
-            borderBottomColor: "#ddd",
-            borderBottomWidth: 1 / PixelRatio.get(),
-          }}
-        >
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 14, color: "#888" }}>
-              基础信息:包裹个数({state.count}),重量({state.weight}kg),价格(
-              {state.price}元),
-            </Text>
-          </View>
-        </View>
-        {[0, 1].map((value) => {
-          return (
-            <View
-              key={value}
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                paddingHorizontal: 15,
-                paddingVertical: 9,
-                alignItems: "center",
-                backgroundColor: "#f5f5f9",
-                borderBottomColor: "#ddd",
-                borderBottomWidth: 1 / PixelRatio.get(),
-              }}
-            >
-              <Text style={{ fontSize: 12, color: "#333" }}>
-                条码: {state.input_sn_list[value]}
-              </Text>
-              {/* <Button size="small">清除</Button> */}
-            </View>
-          );
+
+        {renderRow({
+          title: "合  包  号:  ",
+          value: state.input_sn_list[0],
         })}
 
+        {renderRow({
+          title: "包裹个数:  ",
+          value: state.count,
+        })}
+
+        {renderRow({
+          title: "重          量:  ",
+          value: state.weight + "kg",
+        })}
+
+        {renderRow({
+          title: "价          格:  ",
+          value: state.price + "元",
+        })}
         <WhiteSpace />
         <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
           <Button type="primary" onPress={handleCreateQrcode}>
