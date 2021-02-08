@@ -110,7 +110,11 @@ export default ({ navigation, route }) => {
             id: state.carId,
             codeNum: [...state.input_sn_list].join(","),
           }).then((res) => {
-            Modal.alert("提示", "出库成功!");
+            if(res.success===false){
+                Modal.alert("提示", res.msg);
+            }else{
+                Modal.alert("提示", "出库成功!");
+            }
             setState((state) => {
               return {
                 ...state,
