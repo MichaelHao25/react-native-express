@@ -18,6 +18,7 @@ import { useRef } from "react";
 import Print from "../../util/print";
 import { useState } from "react";
 import usePdaScan from "react-native-pda-scan";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 export default ({ navigation, route }) => {
   const ref = useRef();
@@ -29,6 +30,7 @@ export default ({ navigation, route }) => {
     price: 0,
     weight: 0,
   });
+  const [expansion, setExpansion] = useState([]);
   /**
    * 初始化链接蓝牙
    */
@@ -87,7 +89,7 @@ export default ({ navigation, route }) => {
             });
             handlePrint({
               packageNum: codeNum,
-              flag: res.codeType
+              flag: res.codeType,
             });
           });
         },
@@ -304,27 +306,44 @@ export default ({ navigation, route }) => {
           paddingVertical: 15,
         }}
       >
-        <View style={{ flexDirection: "column" }}>
+        <TouchableOpacity
+          style={{ flexDirection: "column" }}
+          activeOpacity={0.9}
+          onPress={() => {
+            setExpansion((res) => {
+              if (res.includes(item.codeNum)) {
+                return [...res.filter((a) => a !== item.codeNum)];
+              } else {
+                res.push(item.codeNum);
+                return [...res];
+              }
+            });
+          }}
+        >
           <Text style={{ fontSize: 20, color: "#333" }}>
             运单号:{item.codeNum}
           </Text>
-          {/* <WhiteSpace />
-          <Text style={{ fontSize: 20, color: "#333" }}>
-            目的站:{item.toChannelID}
-          </Text>
-          <WhiteSpace />
-          <Text style={{ fontSize: 20, color: "#333" }}>
-            运输方式:{item.shippingID}
-          </Text>
-          <WhiteSpace />
-          <Text style={{ fontSize: 20, color: "#333" }}>
-            承运商:{item.supplierID}
-          </Text>
-          <WhiteSpace />
-          <Text style={{ fontSize: 20, color: "#333" }}>
-            收件人:{item.consignee.consignee}
-          </Text> */}
-        </View>
+          {expansion.includes(item.codeNum) ? (
+            <>
+              <WhiteSpace />
+              <Text style={{ fontSize: 20, color: "#333" }}>
+                目的站:{item.toChannelID}
+              </Text>
+              <WhiteSpace />
+              <Text style={{ fontSize: 20, color: "#333" }}>
+                运输方式:{item.shippingID}
+              </Text>
+              <WhiteSpace />
+              <Text style={{ fontSize: 20, color: "#333" }}>
+                承运商:{item.supplierID}
+              </Text>
+              <WhiteSpace />
+              <Text style={{ fontSize: 20, color: "#333" }}>
+                收件人:{item.consignee.consignee}
+              </Text>
+            </>
+          ) : null}
+        </TouchableOpacity>
       </View>
     );
   };
@@ -339,6 +358,10 @@ export default ({ navigation, route }) => {
           }}
           renderItem={renderItem}
           displayDate
+          paginationWaitingView={() => <></>}
+          paginationFetchingView={() => <></>}
+          paginationWaitingView={() => <></>}
+          
           keyExtractor={({ codeNum }) => `key--${codeNum}`}
         />
       </View>
