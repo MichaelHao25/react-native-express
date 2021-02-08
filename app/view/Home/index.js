@@ -107,6 +107,14 @@ export default ({ navigation }) => {
         navigation.navigate("scan");
         break;
       }
+      case 7: {
+        navigation.navigate("list", {
+          title: "已揽件列表",
+          status: 1,
+        });
+        break;
+      }
+
       default:
         break;
     }
@@ -186,7 +194,10 @@ export default ({ navigation }) => {
         <List.Item
           arrow="horizontal"
           onPress={() => {
-            navigation.navigate("list", { title: "待揽件列表", status: 0 });
+            navigation.navigate("list", {
+              title: "待揽件列表",
+              status: 0,
+            });
           }}
           extra={state.wait_accept}
         >
@@ -201,11 +212,15 @@ export default ({ navigation }) => {
         <List.Item
           arrow="horizontal"
           onPress={() => {
-            navigation.navigate("list", { title: "今日已揽件列表", status: 1 });
+            navigation.navigate("list", {
+              title: "今日已揽件列表",
+              status: 1,
+              today: 1,
+            });
           }}
           extra={state.end_accept}
         >
-          <Text>已揽件数量</Text>
+          <Text>今日已揽件列表</Text>
           {/* <Badge dot></Badge> */}
         </List.Item>
         {/* <List.Item

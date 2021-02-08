@@ -32,6 +32,7 @@ export default ({ navigation, route }) => {
       page,
       limit: 5,
       status: route.params.status,
+      today: route?.params?.today,
     })
       .then((res) => {
         console.log(res);
