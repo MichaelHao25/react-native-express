@@ -17,13 +17,11 @@ import theme from "../../theme";
 import { useRef } from "react";
 import Print from "../../util/print";
 import { useState } from "react";
-import Sound from "react-native-sound";
 import usePdaScan from "react-native-pda-scan";
 
 export default ({ navigation, route }) => {
   const ref = useRef();
   const blue = useRef();
-  const sound = useRef();
   const [state, setState] = useState({
     input_sn: "",
     input_sn_list: [],
@@ -41,21 +39,7 @@ export default ({ navigation, route }) => {
       blue.current.disconnect();
     };
   }, []);
-  /**
-   * 播放声音
-   */
-  useEffect(() => {
-    Sound.setCategory("Playback");
-    sound.current = new Sound("error_error.mp3", Sound.MAIN_BUNDLE, (error) => {
-      if (error) {
-        console.log("failed to load the sound", error);
-        return;
-      }
-    });
-    return () => {
-      sound.current.release();
-    };
-  }, []);
+
   usePdaScan({
     onEvent(e) {
       console.log(e);
@@ -130,7 +114,6 @@ export default ({ navigation, route }) => {
     }).then((res) => {
       if (res.success === false) {
         Toast.fail(res.msg);
-        sound.current.play();
       }
       // count: "64"
       // data: (8)
@@ -183,7 +166,6 @@ export default ({ navigation, route }) => {
             pcodeNum: state.input_sn_list[0],
           }).then((res) => {
             if (res.success === false) {
-              sound.current.play();
               Modal.alert("提示", res.msg);
               setState((state) => {
                 return {
@@ -324,7 +306,7 @@ export default ({ navigation, route }) => {
           <Text style={{ fontSize: 20, color: "#333" }}>
             运单号:{item.codeNum}
           </Text>
-          <WhiteSpace />
+          {/* <WhiteSpace />
           <Text style={{ fontSize: 20, color: "#333" }}>
             目的站:{item.toChannelID}
           </Text>
@@ -339,7 +321,7 @@ export default ({ navigation, route }) => {
           <WhiteSpace />
           <Text style={{ fontSize: 20, color: "#333" }}>
             收件人:{item.consignee.consignee}
-          </Text>
+          </Text> */}
         </View>
       </View>
     );

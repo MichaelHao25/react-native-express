@@ -22,7 +22,6 @@ import {
 import theme from "../../theme";
 import { useRef } from "react";
 import Print from "../../util/print";
-import Sound from "react-native-sound";
 import { useState } from "react";
 import usePdaScan from "react-native-pda-scan";
 
@@ -31,7 +30,7 @@ export default ({ navigation, route }) => {
 
   const ref = useRef();
   const blue = useRef();
-  const sound = useRef();
+
   const [state, setState] = useState({
     input_sn: "",
     count: 0,
@@ -42,20 +41,6 @@ export default ({ navigation, route }) => {
     blue.current = new Print();
     return () => {
       blue.current.disconnect();
-    };
-  }, []);
-  useEffect(() => {
-    Sound.setCategory("Playback");
-    // See notes below about preloading sounds within initialization code below.
-    sound.current = new Sound("error_error.mp3", Sound.MAIN_BUNDLE, (error) => {
-      if (error) {
-        console.log("failed to load the sound", error);
-        return;
-      }
-  
-    });
-    return () => {
-      sound.current.release();
     };
   }, []);
   usePdaScan({
@@ -107,7 +92,7 @@ export default ({ navigation, route }) => {
       codeNum: text,
     }).then((res) => {
       if (res.success === false) {
-        sound.current.play();
+    
         Modal.alert("提示", res.msg);
         setState((state) => {
        

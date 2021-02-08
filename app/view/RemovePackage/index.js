@@ -21,31 +21,19 @@ import {
 import theme from "../../theme";
 import { useRef } from "react";
 import Print from "../../util/print";
-import Sound from "react-native-sound";
 import { useState } from "react";
 import usePdaScan from "react-native-pda-scan";
 
 export default ({ navigation, route }) => {
   const ref = useRef();
-  const sound = useRef();
+
   const [state, setState] = useState({
     input_sn: "",
     count: 0,
     price: 0,
     weight: 0,
   });
-  useEffect(() => {
-    Sound.setCategory("Playback");
-    sound.current = new Sound("error_error.mp3", Sound.MAIN_BUNDLE, (error) => {
-      if (error) {
-        console.log("failed to load the sound", error);
-        return;
-      }
-    });
-    return () => {
-      sound.current.release();
-    };
-  }, []);
+
   usePdaScan({
     onEvent(e) {
       handleChangeText(e);
@@ -79,7 +67,7 @@ export default ({ navigation, route }) => {
             codeNum: state.input_sn,
           }).then((res) => {
             if (res.success === false) {
-              sound.current.play();
+            
               Modal.alert("提示", res.msg);
             } else {
               Modal.alert("提示", "减包成功!");
