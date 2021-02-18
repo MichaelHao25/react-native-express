@@ -3,6 +3,7 @@ import BleManager from "react-native-ble-manager";
 import { encode64gb2312 } from "./base64gb2312";
 import Storage from "@react-native-community/async-storage";
 import { Toast, Portal } from "@ant-design/react-native";
+import {ToastAndroid} from "react-native"
 
 function _base64ToArrayBuffer(base64) {
   var binary_string = base64;
@@ -36,7 +37,7 @@ class Print {
     BleManager.start({ showAlert: false }).then(() => {
       // Success code
       console.log("Module initialized");
-      Toast.info("打印机初始化完毕。");
+      ToastAndroid.show('打印机连接成功',ToastAndroid.SHORT,ToastAndroid.BOTTOM)
       this.initOver = true;
     });
   }
