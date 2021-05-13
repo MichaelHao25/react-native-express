@@ -108,11 +108,13 @@ export default ({ navigation, route }) => {
       expected_time,
       consignee: { name, mobile },
       to,
+      supplier,
       shipping,
       payment,
       client_phone,
     } = item;
     blue.current.getPrint({
+      supplier,
       packageNum,
       expected_time,
       to,
