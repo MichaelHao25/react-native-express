@@ -1,34 +1,14 @@
-import React from "react";
-import {StyleSheet, Text, View, PixelRatio, Image} from "react-native";
-import {
-    List,
-    ListView,
-    Button,
-    WhiteSpace,
-    Picker,
-    WingBlank,
-    Toast,
-    Modal,
-    InputItem,
-} from "@ant-design/react-native";
-import {useEffect} from "react";
-import {
-    pack_createcode,
-    pack_createpack,
-    pack_addpack,
-    pack_subpack,
-    pack_scan,
-} from "../../util/api";
-import theme from "../../theme";
-import {useRef} from "react";
+import React, {useEffect, useRef, useState} from "react";
+import {PixelRatio, Text, View} from "react-native";
+import {Button, InputItem, ListView, Modal, WhiteSpace,} from "@ant-design/react-native";
+import {pack_scan,} from "../../util/api";
 import Print from "../../util/print";
-import {useState} from "react";
 import usePdaScan from "react-native-pda-scan";
 
 
 export default ({navigation, route}) => {
 
-    const ref = useRef();
+
     const blue = useRef();
 
     const [state, setState] = useState({
@@ -57,38 +37,32 @@ export default ({navigation, route}) => {
         },
         trigger: "always",
     });
-    const handlePrint = (item) => {
-        blue.current.getPrint(item);
-        blue.current
-            .connect()
-            .then((res) => {
-                console.log(res);
-                handleRemovePackage({
-                    nativeEvent: {
-                        text: e,
-                    },
+    const handlePrint = async (item) => {
+        const num = item.num;
+        for (let i = 1; i <= parseInt(num); i++) {
+            try {
+
+
+                blue.current.getPrint({
+                    ...item,
+                    pages: `${i}/${num}`
                 });
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+                await blue.current
+                    .connect()
+                    .then((res) => {
+                        console.log(res);
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+
+
+            } catch (e) {
+                console.log(e)
+            }
+        }
     };
-    // const handleSubmitEditing = ({nativeEvent: {text}}) => {
-    //     if (text === "") {
-    //         return;
-    //     }
-    //     state.input_sn_list.add(text);
-    //
-    //     setState((state) => {
-    //         return {
-    //             ...state,
-    //             input_sn: "",
-    //             input_sn_list: state.input_sn_list,
-    //         };
-    //     });
-    //     ref.current.ulv.updateRows([...state.input_sn_list], 0);
-    // };
-    // pack_subpack
+
     const handleChangeText = (text) => {
         setState((state) => {
             return {
@@ -99,7 +73,6 @@ export default ({navigation, route}) => {
     };
     const handleRemovePackage = ({nativeEvent: {text}}) => {
         if (state.text === "") {
-
             return;
         }
 
@@ -126,6 +99,9 @@ export default ({navigation, route}) => {
                     };
                 });
                 const data = res.data;
+                console.log(data)
+                // {"client_phone": "0577-26531009", "codeNum": "SJT1620962651", "consignee": {"consignee": "爆小姐", "mobile": "137****0681"}, "createTime": "2021-05-14 11:24:11", "fromChannelID": null, "num": "1", "payment": "到付", "shippingID": "快件", "status": "已入库", "supplierID": "速安达", "toChannelID": "上海青浦"}
+
                 handlePrint({
                     supplier: data.supplier,
                     packageNum: data.codeNum,
@@ -136,44 +112,10 @@ export default ({navigation, route}) => {
                     shipping: data.shippingID,
                     payment: data.payment,
                     client_phone: data.client_phone,
+                    trueAddr: data.trueAddr,
                 });
             }
         });
-    };
-    const renderItem = (item) => {
-        return (
-            <View
-                style={{
-                    borderBottomColor: "#ddd",
-                    borderBottomWidth: 1 / PixelRatio.get(),
-                    paddingHorizontal: 15,
-                    flexDirection: "column",
-                    paddingVertical: 15,
-                }}
-            >
-                <View style={{flexDirection: "column"}}>
-                    <Text style={{fontSize: 20, color: "#333"}}>
-                        运单号:{item.codeNum}
-                    </Text>
-                    <WhiteSpace/>
-                    <Text style={{fontSize: 20, color: "#333"}}>
-                        目的站:{item.toChannelID}
-                    </Text>
-                    <WhiteSpace/>
-                    <Text style={{fontSize: 20, color: "#333"}}>
-                        运输方式:{item.shippingID}
-                    </Text>
-                    <WhiteSpace/>
-                    <Text style={{fontSize: 20, color: "#333"}}>
-                        承运商:{item.supplierID}
-                    </Text>
-                    <WhiteSpace/>
-                    <Text style={{fontSize: 20, color: "#333"}}>
-                        收件人:{item.consignee.consignee}
-                    </Text>
-                </View>
-            </View>
-        );
     };
     const renderHeader = () => {
         return (
@@ -214,23 +156,7 @@ export default ({navigation, route}) => {
                     </Button>
                 </View>
                 <WhiteSpace/>
-                {/* <View
-          style={{
-            flexDirection: "row",
-            paddingHorizontal: 15,
-            paddingVertical: 9,
-            backgroundColor: "#f5f5f9",
-            borderBottomColor: "#ddd",
-            borderBottomWidth: 1 / PixelRatio.get(),
-          }}
-        >
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 14, color: "#888" }}>
-              基础信息:包裹个数({state.count}),重量({state.weight}kg),价格(
-              {state.price}元),
-            </Text>
-          </View>
-        </View> */}
+
                 <View
                     style={{
                         flexDirection: "row",
@@ -250,14 +176,10 @@ export default ({navigation, route}) => {
         <View style={{backgroundColor: "#fff", flex: 1}}>
             <View style={{flex: 1}}>
                 <ListView
-                    ref={ref}
                     header={renderHeader}
                     onFetch={(page = 1, startFetch, abortFetch) => {
                         abortFetch();
                     }}
-                    renderItem={renderItem}
-                    displayDate
-                    keyExtractor={({codeNum}) => `key--${codeNum}`}
                 />
             </View>
         </View>

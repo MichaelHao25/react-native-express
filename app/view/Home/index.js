@@ -1,20 +1,11 @@
 import React, {useEffect, useReducer, useState} from "react";
-import {StyleSheet, Text, View, Image, ScrollView} from "react-native";
+import {Image, ScrollView, Text, View} from "react-native";
 import AsyncStorage from "@react-native-community/async-storage";
 import {useFocusEffect} from "@react-navigation/native";
-import {
-    Button,
-    List,
-    InputItem,
-    WingBlank,
-    Grid,
-    Badge,
-    Modal,
-} from "@ant-design/react-native";
+import {Badge, Grid, List,} from "@ant-design/react-native";
 import {order_count} from "../../util/api";
-import Sound from "react-native-sound";
-import Tts from "react-native-tts";
 import theme from "../../theme";
+import JPush from "jpush-react-native";
 
 export default ({navigation}) => {
     const [state, dispatch] = useReducer(
@@ -97,6 +88,22 @@ export default ({navigation}) => {
             });
             setList(tempList);
         })
+        JPush.addNotificationListener(msg => {
+            console.log(msg)
+            order_count().then(
+                ({data: {end_accept, month_amount, today_amount, wait_accept}}) => {
+                    dispatch({
+                        type: "ORDER_COUNT",
+                        payload: {
+                            end_accept,
+                            month_amount,
+                            today_amount,
+                            wait_accept,
+                        },
+                    });
+                }
+            );
+        })
     }, [])
     useFocusEffect
     (
@@ -124,7 +131,7 @@ export default ({navigation}) => {
             dispatch({
                 type: "ORDER_COUNT",
                 payload: {
-                    admin: res,
+                    userName: res,
                 },
             });
         });
@@ -207,7 +214,7 @@ export default ({navigation}) => {
                                             width: theme.icon_size_md,
                                             height: theme.icon_size_md,
                                         }}
-                                    ></Image>
+                                    />
                                     <View style={{marginTop: theme.h_spacing_sm}}>
                                         <Text style={{fontSize: theme.font_size_icontext}}>
                                             {item.text}

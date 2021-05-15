@@ -1,8 +1,8 @@
-import React, {useEffect} from "react";
+import React from "react";
 import BleManager from "react-native-ble-manager";
 import {encode64gb2312} from "./base64gb2312";
 import Storage from "@react-native-community/async-storage";
-import {Toast, Portal} from "@ant-design/react-native";
+import {Portal, Toast} from "@ant-design/react-native";
 import {ToastAndroid} from "react-native"
 
 function _base64ToArrayBuffer(base64) {
@@ -36,10 +36,10 @@ class Print {
     }
 
     init() {
-        BleManager.start({showAlert: false}).then(() => {
+        BleManager.start({showAlert: false}).then((res) => {
             // Success code
-            console.log("Module initialized");
-            ToastAndroid.show('打印机连接成功', ToastAndroid.SHORT, ToastAndroid.BOTTOM)
+            console.log("Module initialized", res);
+            ToastAndroid.show('打印初始化成功', ToastAndroid.SHORT, ToastAndroid.BOTTOM)
             this.initOver = true;
         });
     }
@@ -57,7 +57,11 @@ class Print {
     }
 
     connect() {
-        this.key = Toast.loading("正在打印中...", 0);
+        this.key = Toast.loading("正在连接中...", 0);
+        this.timer = setTimeout(() => {
+            Portal.remove(this.key);
+            Toast.fail("指令发送超时请检查打印机！");
+        }, 1000 * 10)
         return new Promise((resolve, reject) => {
             BleManager.connect(this.macAddress)
                 .then(() => {
@@ -93,7 +97,9 @@ class Print {
                                 })
                                 .catch((error) => {
                                     reject(error);
-                                });
+                                }).finally(() => {
+                                clearTimeout(this.timer)
+                            });
                         }
                     );
                 })
@@ -115,8 +121,10 @@ class Print {
                  shipping = "######",
                  payment = "######",
                  client_phone = "######",
-                 flag = "####",
-                 supplier = ""
+                 flag = "",
+                 supplier = "",
+                 trueAddr = false,
+                 pages = '1/1',
              }) {
         this.data = _base64ToArrayBuffer(
             // 50 70
@@ -131,6 +139,7 @@ class Print {
                 "LEFT\r\n" +
                 "TEXT 8 7 0 8 " + supplier + "\r\n" +
                 this.renderFlag(flag) +
+                this.renderSymbol(trueAddr) +
                 "CENTER\r\n" +
                 "BARCODE 128 1 1 86 0 43 " +
                 packageNum +
@@ -139,32 +148,32 @@ class Print {
                 packageNum +
                 "\r\n" +
                 "LEFT\r\n" +
-                "TEXT 7 0 8 170 1/1 " +
+                "TEXT 7 0 8 170 " + pages + " " +
                 expected_time +
                 "\r\n" +
                 "LINE 0 195 560 195 2\r\n" +
                 "TEXT 8 7 8 205 " +
-                name +
+                name + "  " + payment +
                 " " +
                 // mobile +
                 "\r\n" +
-                "RIGHT\r\n" +
+                "LEFT\r\n" +
                 "SETBOLD 2\r\n" +
                 "SETMAG 2 2\r\n" +
-                "TEXT 8 7 0 205 " +
+                "TEXT 8 7 0 280 " +
                 to +
                 " - " +
                 shipping +
                 "\r\n" +
                 "SETMAG 0 0\r\n" +
                 "SETBOLD 0\r\n" +
-                "LEFT\r\n" +
-                "TEXT 8 7 8 285 " +
-                payment +
+                // "LEFT\r\n" +
+                // "TEXT 8 7 8 285 " +
+                // payment +
                 "\r\n" +
                 "RIGHT\r\n" +
                 "SETBOLD 2\r\n" +
-                "TEXT 1 6 0 285 " +
+                "TEXT 1 6 0 205 " +
                 packageNum.slice(-5) +
                 "\r\n" +
                 "SETBOLD 0\r\n" +
@@ -178,6 +187,22 @@ class Print {
                 "PRINT\r\n"
             )
         );
+    }
+
+    renderSymbol(status = true) {
+        if (status === false) {
+            return '';
+        }
+        return (
+            "SETBOLD 1\r\n" +
+            "SETMAG 1 1\r\n" +
+            "TEXT 8 7 110 50 " +
+            "*" +
+            "\r\n" +
+            "SETBOLD 0\r\n" +
+            "SETMAG 0 0\r\n"
+        )
+            ;
     }
 
     /**

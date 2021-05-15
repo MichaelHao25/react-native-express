@@ -1,22 +1,8 @@
-import React from "react";
-import {StyleSheet, Text, View, PixelRatio, Image} from "react-native";
-import {
-    List,
-    ListView,
-    Button,
-    WhiteSpace,
-    Picker,
-    WingBlank,
-    Toast,
-    Modal,
-    InputItem,
-} from "@ant-design/react-native";
-import {useEffect} from "react";
-import {pack_createcode, pack_createpack, pack_addpack} from "../../util/api";
-import theme from "../../theme";
-import {useRef} from "react";
+import React, {useEffect, useRef, useState} from "react";
+import {PixelRatio, Text, View} from "react-native";
+import {Button, InputItem, ListView, Modal, Toast, WhiteSpace,} from "@ant-design/react-native";
+import {pack_addpack, pack_createcode, pack_createpack} from "../../util/api";
 import Print from "../../util/print";
-import {useState} from "react";
 import usePdaScan from "react-native-pda-scan";
 import {TouchableOpacity} from "react-native-gesture-handler";
 
@@ -57,16 +43,30 @@ export default ({navigation, route}) => {
         trigger: "always",
     });
 
-    const handlePrint = (item) => {
-        blue.current.getPrint(item);
-        blue.current
-            .connect()
-            .then((res) => {
-                console.log(res);
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+    const handlePrint = async (item) => {
+        const num = item.num;
+        for (let i = 1; i <= parseInt(num); i++) {
+            try {
+
+
+                blue.current.getPrint({
+                    ...item,
+                    pages: `${i}/${num}`
+                });
+                await blue.current
+                    .connect()
+                    .then((res) => {
+                        console.log(res);
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+
+
+            } catch (e) {
+                console.log(e)
+            }
+        }
     };
     const handleCreateQrcode = () => {
         Modal.alert("警告", "确定创建一个运单?", [
@@ -209,6 +209,9 @@ export default ({navigation, route}) => {
                             payment: data.payment,
                             client_phone: data.client_phone,
                             flag: res.codeType,
+                            trueAddr: res.trueAddr,
+                            num: res.num,
+
                         });
                     });
                 },
