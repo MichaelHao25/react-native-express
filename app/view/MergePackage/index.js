@@ -44,11 +44,9 @@ export default ({navigation, route}) => {
     });
 
     const handlePrint = async (item) => {
-        const num = item.num;
+        const num = item.num || 1;
         for (let i = 1; i <= parseInt(num); i++) {
             try {
-
-
                 blue.current.getPrint({
                     ...item,
                     pages: `${i}/${num}`

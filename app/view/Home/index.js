@@ -77,6 +77,7 @@ export default ({navigation}) => {
             type: 'orders'
         },
     ])
+    const [oerder, setOrder] = useState(false);
     useEffect(() => {
         AsyncStorage.getItem('auth').then(res => {
             const auth = JSON.parse(res)
@@ -86,6 +87,7 @@ export default ({navigation}) => {
                 }
                 return auth.includes(item.type)
             });
+            setOrder(auth.includes('orders'));
             setList(tempList);
         })
         JPush.addNotificationListener(msg => {
@@ -227,38 +229,43 @@ export default ({navigation}) => {
                         hasLine={true}
                     />
                 </List.Item>
-                <List.Item
-                    arrow="horizontal"
-                    onPress={() => {
-                        navigation.navigate("list", {
-                            title: "待揽件列表",
-                            status: 0,
-                        });
-                    }}
-                    extra={state.wait_accept}
-                >
-                    {parseInt(state.wait_accept) === 0 ? (
-                        <Text>待揽件数量</Text>
-                    ) : (
-                        <Badge dot>
-                            <Text>待揽件数量</Text>
-                        </Badge>
-                    )}
-                </List.Item>
-                <List.Item
-                    arrow="horizontal"
-                    onPress={() => {
-                        navigation.navigate("list", {
-                            title: "今日已揽件列表",
-                            status: 1,
-                            today: 1,
-                        });
-                    }}
-                    extra={state.end_accept}
-                >
-                    <Text>今日已揽件列表</Text>
-                    {/* <Badge dot></Badge> */}
-                </List.Item>
+                {
+                    oerder ? <>
+                            <List.Item
+                                arrow="horizontal"
+                                onPress={() => {
+                                    navigation.navigate("list", {
+                                        title: "待揽件",
+                                        status: 0,
+                                    });
+                                }}
+                                extra={state.wait_accept}
+                            >
+                                {parseInt(state.wait_accept) === 0 ? (
+                                    <Text>待揽件</Text>
+                                ) : (
+                                    <Badge dot>
+                                        <Text>待揽件</Text>
+                                    </Badge>
+                                )}
+                            </List.Item>
+                            <List.Item
+                                arrow="horizontal"
+                                onPress={() => {
+                                    navigation.navigate("list", {
+                                        title: "今日已揽件",
+                                        status: 1,
+                                        today: 1,
+                                    });
+                                }}
+                                extra={state.end_accept}
+                            >
+                                <Text>今日已揽件列表</Text>
+                                {/* <Badge dot></Badge> */}
+                            </List.Item>
+                        </>
+                        : null
+                }
                 {/* <List.Item
           arrow="horizontal"
           onPress={() => {

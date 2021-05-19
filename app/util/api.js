@@ -70,20 +70,22 @@ export const pack_createpack = (body) => {
  * 拆包
  * 包裹拆开
  */
-export const pack_deletepack = () => {
+export const pack_deletepack = (body) => {
     return Request.fetch({
         url: "/pack/deletepack",
         method: "post",
+        body
     });
 };
 
 /**
  * 查询包裹信息
  */
-export const pack_scan = () => {
+export const pack_scan = (body) => {
     return Request.fetch({
         url: "/pack/scan",
         method: "post",
+        body
     });
 };
 

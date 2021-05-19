@@ -104,6 +104,7 @@ export default ({navigation, route}) => {
             payment,
             client_phone,
             trueAddr,
+            pickup: {addr: pickup_addr = ''} = {},
             num = '1'
         } = item;
         for (let i = 1; i <= parseInt(num); i++) {
@@ -120,7 +121,8 @@ export default ({navigation, route}) => {
                     payment,
                     client_phone,
                     trueAddr,
-                    pages: `${i}/${num}`
+                    pages: `${i}/${num}`,
+                    pickup_addr,
                 });
                 await blue.current
                     .connect()
@@ -194,6 +196,7 @@ export default ({navigation, route}) => {
         );
     };
     const renderItem = (item) => {
+        console.log('item', item)
         return (
             <View
                 style={{
@@ -218,18 +221,14 @@ export default ({navigation, route}) => {
                 {/*寄：王老板（1888888888）*/}
                 {/*收：王小姐（188****8888）*/}
                 <View style={{flexDirection: "column"}}>
-                    <View style={{flexDirection: 'row', justifyContent: "space-between", flexWrap: 'wrap'}}>
-                        <Text style={{fontSize: 20, color: "#333"}}>预约时间：{item.expected_time}</Text>
-                        <Text style={{fontSize: 20, color: "#333"}}>{item.statusName}</Text>
-
-                    </View>
+                    <Text style={{fontSize: 20, color: "#333"}}>最晚取件时间：{item.expected_time} {item.statusName}</Text>
                     <WhiteSpace/>
-                    <Text style={{fontSize: 20, color: "#333"}}>揽件地址：{item.pickup.address}</Text>
+                    <Text style={{fontSize: 20, color: "#333"}}>{item.pickup.address}</Text>
                     <WhiteSpace/>
                     <Text style={{fontSize: 20, color: "#333"}}>{item.payment} {item.weight}</Text>
 
                     <WhiteSpace/>
-                    <Text style={{fontSize: 20, color: "#333"}}>南油 - 深圳 - 快件</Text>
+                    <Text style={{fontSize: 20, color: "#333"}}>{item.channel}</Text>
                     <WhiteSpace/>
                     <Line/>
                     {/*<View style={{*/}

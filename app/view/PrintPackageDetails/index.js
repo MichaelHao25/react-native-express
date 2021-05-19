@@ -39,6 +39,7 @@ export default ({navigation, route}) => {
     });
     const handlePrint = async (item) => {
         const num = item.num;
+        console.log('num', num)
         for (let i = 1; i <= parseInt(num); i++) {
             try {
 
@@ -72,6 +73,7 @@ export default ({navigation, route}) => {
         });
     };
     const handleRemovePackage = ({nativeEvent: {text}}) => {
+        console.log('text', text)
         if (state.text === "") {
             return;
         }
@@ -99,7 +101,7 @@ export default ({navigation, route}) => {
                     };
                 });
                 const data = res.data;
-                console.log(data)
+                console.log('data', data)
                 // {"client_phone": "0577-26531009", "codeNum": "SJT1620962651", "consignee": {"consignee": "爆小姐", "mobile": "137****0681"}, "createTime": "2021-05-14 11:24:11", "fromChannelID": null, "num": "1", "payment": "到付", "shippingID": "快件", "status": "已入库", "supplierID": "速安达", "toChannelID": "上海青浦"}
 
                 handlePrint({
@@ -113,6 +115,7 @@ export default ({navigation, route}) => {
                     payment: data.payment,
                     client_phone: data.client_phone,
                     trueAddr: data.trueAddr,
+                    num: data.num,
                 });
             }
         });

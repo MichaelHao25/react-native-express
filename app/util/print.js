@@ -125,6 +125,7 @@ class Print {
                  supplier = "",
                  trueAddr = false,
                  pages = '1/1',
+                 pickup_addr = ''
              }) {
         this.data = _base64ToArrayBuffer(
             // 50 70
@@ -152,11 +153,16 @@ class Print {
                 expected_time +
                 "\r\n" +
                 "LINE 0 195 560 195 2\r\n" +
+                "SETBOLD 2\r\n" +
+                // "SETMAG 1.5 1.5\r\n" +
                 "TEXT 8 7 8 205 " +
                 name + "  " + payment +
                 " " +
                 // mobile +
                 "\r\n" +
+                // "SETMAG 0 0\r\n" +
+                "SETBOLD 0\r\n" +
+                this.renderAddress(pickup_addr) +
                 "LEFT\r\n" +
                 "SETBOLD 2\r\n" +
                 "SETMAG 2 2\r\n" +
@@ -187,6 +193,22 @@ class Print {
                 "PRINT\r\n"
             )
         );
+    }
+
+    renderAddress(text = '') {
+        console.log('renderAddress', text)
+        if (!text) {
+            return "";
+        }
+
+        return (
+            "CENTER\r\n" +
+            "TEXT 8 7 8 238 " +
+            text +
+            "\r\n" +
+            "LEFT\r\n"
+        )
+            ;
     }
 
     renderSymbol(status = true) {

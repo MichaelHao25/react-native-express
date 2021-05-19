@@ -40,7 +40,7 @@ export default ({navigation, route}) => {
                 text: "确定",
                 onPress: () => {
                     pack_deletepack({
-                        codeNum: state.input_sn,
+                        pcodeNum: state.input_sn,
                     }).then((res) => {
                         if (res.success === false) {
                             Modal.alert("提示", res.msg);
