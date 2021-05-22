@@ -1,18 +1,19 @@
 import "react-native-gesture-handler";
-import React, {useEffect} from "react";
+import React, {useEffect, useMemo, useReducer} from "react";
 import {StatusBar} from "expo-status-bar";
 import {NavigationContainer} from "@react-navigation/native";
 import {createStackNavigator} from "@react-navigation/stack";
 import {Provider} from "@ant-design/react-native";
 import * as SplashScreen from "expo-splash-screen";
 import AsyncStorage from "@react-native-community/async-storage";
-
+import ModifyPassword from "./app/view/ModifyPassword";
 import Login from "./app/view/Login";
 import Home from "./app/view/Home";
 import List from "./app/view/List";
 import CreateExpress from "./app/view/CreateExpress";
 import Search from "./app/view/Search";
 import Set from "./app/view/Set";
+import ScalesConfig from "./app/view/ScalesConfig";
 import PrintConfig from "./app/view/PrintConfig";
 import MergePackage from "./app/view/MergePackage";
 import RemovePackage from "./app/view/RemovePackage";
@@ -22,13 +23,8 @@ import PrintPackageDetails from "./app/view/PrintPackageDetails";
 import Logout from "./app/view/Logout";
 
 import {navigationRef} from './app/util/RootNavigation';
-
-
-import {useReducer} from "react";
-import {useMemo} from "react";
 import {user_login} from "./app/util/api";
 import AuthContext from "./app/util/AuthContext";
-import {View, Text} from "react-native";
 import JPush from "jpush-react-native";
 
 const Stack = createStackNavigator();
@@ -125,14 +121,24 @@ const App = () => {
                     <Stack.Navigator>
                         {/* initialRouteName={"login"} */}
                         {state.token === null ? (
-                            <Stack.Screen
-                                name="login"
-                                options={{
-                                    title: "登录",
-                                    animationTypeForReplace: state.isSignout ? "pop" : "push",
-                                }}
-                                component={Login}
-                            />
+                            <>
+                                <Stack.Screen
+                                    name="login"
+                                    options={{
+                                        title: "登录",
+                                        animationTypeForReplace: state.isSignout ? "pop" : "push",
+                                    }}
+                                    component={Login}
+                                />
+                                <Stack.Screen
+                                    name="modifyPassword"
+                                    options={{
+                                        title: "修改密码",
+                                    }}
+                                    component={ModifyPassword}
+                                />
+                            </>
+
                         ) : (
                             <>
                                 <Stack.Screen
@@ -186,6 +192,12 @@ const App = () => {
                                     options={{title: "打印机连接设置"}}
                                     component={PrintConfig}
                                 />
+                                <Stack.Screen
+                                    name="scalesConfig"
+                                    options={{title: "秤连接设置"}}
+                                    component={ScalesConfig}
+                                />
+
                                 <Stack.Screen
                                     name="mergePackage"
                                     options={{title: "合包"}}

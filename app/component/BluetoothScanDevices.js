@@ -1,6 +1,5 @@
 import React, {Component} from "react";
-import {Button, Flex, List, Modal, WhiteSpace, WingBlank,} from "@ant-design/react-native";
-import Storage from "@react-native-community/async-storage";
+import {Button, Flex, List, WhiteSpace, WingBlank,} from "@ant-design/react-native";
 
 import {AppState, NativeEventEmitter, NativeModules, PermissionsAndroid, Platform, View,} from "react-native";
 import BleManager from "react-native-ble-manager";
@@ -133,6 +132,7 @@ export default class App extends Component {
         if (!this.state.scanning) {
             //this.setState({peripherals: new Map()});
             BleManager.scan([], 3, true).then((results) => {
+                console.log(results)
                 console.log("Scanning...");
                 this.setState({scanning: true});
             });
@@ -163,21 +163,15 @@ export default class App extends Component {
      * @param value
      */
     handleSelectDevice = (value) => {
-        Storage.setItem("printDevice", JSON.stringify(value)).then(() => {
-            Modal.alert("提示", "绑定成功!", [
-                {
-                    text: "确定",
-                    onPress: () => {
-                        this.props.navigation.goBack();
-                    },
-                },
-            ]);
-        });
+        const {handleBindMacAddress} = this.props
+        handleBindMacAddress && handleBindMacAddress(value)
     };
 
     render() {
         const list = Array.from(this.state.peripherals.values());
-
+        const {
+            title = ""
+        } = this.props
         return (
             <View style={{flex: 1}}>
                 <WhiteSpace/>
@@ -197,7 +191,7 @@ export default class App extends Component {
                         </Flex.Item>
                     </Flex>
                 </WingBlank>
-                <List renderHeader={"请选择需要绑定的打印机"}>
+                <List renderHeader={title}>
                     {list.map((value) => {
                         return (
                             <List.Item
