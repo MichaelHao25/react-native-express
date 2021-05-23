@@ -24,9 +24,11 @@ export default ({navigation, route}) => {
             today: route?.params?.today,
         })
             .then((res) => {
+                console.log('获取到数据')
                 console.log(res);
                 const {data} = res;
                 startFetch(data, 5);
+                console.log('渲染完毕')
             })
             .catch(() => {
                 abortFetch();
@@ -196,7 +198,6 @@ export default ({navigation, route}) => {
         );
     };
     const renderItem = (item) => {
-        console.log('item', item)
         return (
             <View
                 style={{
@@ -226,52 +227,18 @@ export default ({navigation, route}) => {
                     <Text style={{fontSize: 20, color: "#333"}}>{item.pickup.address}</Text>
                     <WhiteSpace/>
                     <Text style={{fontSize: 20, color: "#333"}}>{item.payment} {item.weight}</Text>
-
                     <WhiteSpace/>
                     <Text style={{fontSize: 20, color: "#333"}}>{item.channel}</Text>
                     <WhiteSpace/>
                     <Line/>
-                    {/*<View style={{*/}
-                    {/*    borderTopColor: '#000',*/}
-                    {/*    borderRadius: 0.5,*/}
-                    {/*    height: 1,*/}
-                    {/*    borderWidth: 1 / PixelRatio.get(),*/}
-                    {/*    borderStyle: 'dashed'*/}
-                    {/*}}></View>*/}
                     <WhiteSpace/>
                     <Text style={{fontSize: 20, color: "#333"}}>寄:{item.pickup.name}({item.pickup.mobile})</Text>
-
                     <WhiteSpace/>
                     <Text style={{
                         fontSize: 20,
                         color: "#333"
                     }}>收:{item.consignee.name}({item.consignee.mobile})</Text>
 
-                    {/*<Text style={{fontSize: 20, color: "#333"}}>*/}
-                    {/*    {item.expected_time}*/}
-                    {/*</Text>*/}
-                    {/*<WhiteSpace/>*/}
-                    {/*<Text style={{fontSize: 20, color: "#333"}}>*/}
-                    {/*    {item.channel}({item.num}件)*/}
-                    {/*</Text>*/}
-                    {/*<WhiteSpace/>*/}
-                    {/*<Text style={{fontSize: 20, color: "#333"}}>*/}
-                    {/*    {item.pickup.address}*/}
-                    {/*</Text>*/}
-                    {/*<WhiteSpace/>*/}
-                    {/*<Text style={{fontSize: 20, color: "#333"}}>*/}
-                    {/*    寄:{item.pickup.name}({item.pickup.mobile})*/}
-                    {/*</Text>*/}
-                    {/*<WhiteSpace/>*/}
-                    {/*<Text style={{fontSize: 20, color: "#333"}}>*/}
-                    {/*    收:{item.consignee.name}({item.consignee.mobile})*/}
-                    {/*</Text>*/}
-                    {/*<WhiteSpace/>*/}
-                    {/*<Text style={{fontSize: 20, color: "#333"}}>*/}
-                    {/*    预估重量:{item.weight}kg*/}
-                    {/*</Text>*/}
-                    {/*<WhiteSpace/>*/}
-                    {/*<Text style={{fontSize: 20, color: "#333"}}>{item.payment}</Text>*/}
                 </View>
                 <WhiteSpace/>
                 <View style={{flexDirection: "row", justifyContent: "flex-end"}}>
@@ -311,9 +278,6 @@ export default ({navigation, route}) => {
                             </Button>
                         </WingBlank>
                     ) : null}
-                    {/* <WingBlank size="sm">
-            <Button type="warning">放弃</Button>
-          </WingBlank> */}
                 </View>
             </View>
         );
@@ -329,6 +293,7 @@ export default ({navigation, route}) => {
                     displayDate
                     keyExtractor={({orderID}) => `key--${orderID}`}
                 />
+                <View style={{height: 50}}></View>
             </View>
         </View>
     );

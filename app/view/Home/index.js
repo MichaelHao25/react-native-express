@@ -34,6 +34,10 @@ export default ({navigation}) => {
             wait_accept: "0",
         }
     );
+    /**
+     * type对应接口的权限字段
+     * text是显示的字段
+     */
     const [list, setList] = useState([
         {
             icon: require("../../image/merge.png"),
@@ -73,8 +77,35 @@ export default ({navigation}) => {
         },
         {
             icon: require("../../image/none.png"),
+            text: `真实地址`,
+            type: 'realaddr'
+
+        },
+        {
+            icon: require("../../image/none.png"),
             text: `已揽件`,
             type: 'orders'
+        },
+        /**
+         * 入库三个入口
+         * 打码入库 - storeInByPrint
+         * 扫码入库 - storeInByScan
+         * 称重入库 - storeInByWeigh
+         */
+        {
+            icon: require("../../image/none.png"),
+            text: `打码入库`,
+            type: 'storeInByPrint'
+        },
+        {
+            icon: require("../../image/none.png"),
+            text: `扫码入库`,
+            type: 'storeInByScan'
+        },
+        {
+            icon: require("../../image/none.png"),
+            text: `称重入库`,
+            type: 'storeInByWeigh'
         },
     ])
     const [oerder, setOrder] = useState(false);
@@ -167,7 +198,21 @@ export default ({navigation}) => {
                 break;
             }
             case 'scan': {
-                navigation.navigate("scan");
+                navigation.navigate("scan", {
+                    /**
+                     * 不显示真实地址
+                     */
+                    showAddress: false,
+                });
+                break;
+            }
+            case 'realaddr': {
+                navigation.navigate("scan", {
+                    /**
+                     * 显示真实地址
+                     */
+                    showAddress: true,
+                });
                 break;
             }
             case 'orders': {

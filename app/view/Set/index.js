@@ -25,6 +25,15 @@ export default ({navigation}) => {
                     秤设置
                 </List.Item>
                 <List.Item
+                    arrow={"horizontal"}
+                    onPress={() => {
+                        navigation.navigate("modifyPassword");
+                    }}
+                >
+                    修改密码
+                </List.Item>
+
+                <List.Item
                     onPress={() => {
                         Modal.alert("警告", "是否退出登录?", [
                             {

@@ -2,6 +2,28 @@ import Request from "./fetch";
 import AsyncStorage from "@react-native-community/async-storage";
 
 /**
+ * 修改密码
+ */
+export const order_resetpwd = (body) => {
+    return Request.fetch({
+        url: "/order/resetpwd",
+        method: "post",
+        body
+    });
+};
+
+/**
+ * 扫描下面的真实地址查询
+ */
+export const pack_realaddr = () => {
+    return Request.fetch({
+        url: "/pack/realaddr",
+        method: "post",
+    });
+};
+
+
+/**
  * 车辆信息查询
  */
 export const common_car = () => {

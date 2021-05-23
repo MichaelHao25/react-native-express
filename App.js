@@ -130,13 +130,6 @@ const App = () => {
                                     }}
                                     component={Login}
                                 />
-                                <Stack.Screen
-                                    name="modifyPassword"
-                                    options={{
-                                        title: "修改密码",
-                                    }}
-                                    component={ModifyPassword}
-                                />
                             </>
 
                         ) : (
@@ -147,6 +140,13 @@ const App = () => {
                                     component={Home}
                                 />
 
+                                <Stack.Screen
+                                    name="modifyPassword"
+                                    options={{
+                                        title: "修改密码",
+                                    }}
+                                    component={ModifyPassword}
+                                />
                                 <Stack.Screen
                                     name="scan"
                                     options={{title: "扫描"}}

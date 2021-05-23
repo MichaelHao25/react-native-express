@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import {PixelRatio, Text, View} from "react-native";
 import {Button, InputItem, ListView, Modal, WhiteSpace,} from "@ant-design/react-native";
-import {pack_scan,} from "../../util/api";
+import {pack_realaddr, pack_scan} from "../../util/api";
 import Print from "../../util/print";
 import usePdaScan from "react-native-pda-scan";
 
@@ -19,6 +19,7 @@ export default ({navigation, route}) => {
     });
     useEffect(() => {
         blue.current = new Print();
+
         return () => {
             blue.current.disconnect();
         };
@@ -72,53 +73,64 @@ export default ({navigation, route}) => {
             };
         });
     };
-    const handleRemovePackage = ({nativeEvent: {text}}) => {
+    const handleRemovePackage = async ({nativeEvent: {text}}) => {
         console.log('text', text)
         if (state.text === "") {
             return;
         }
-
-        pack_scan({
-            codeNum: text,
-        }).then((res) => {
-            if (res.success === false) {
-
-                Modal.alert("提示", res.msg);
-                setState((state) => {
-
-                    return {
-                        ...state,
-                        input_sn: "",
-                    };
-                });
+        let res;
+        try {
+            /**
+             * 根据是否显示真实地址来请求不同的接口
+             */
+            if (route.params.showAddress === true) {
+                res = await pack_realaddr({
+                    codeNum: text,
+                })
             } else {
-                // const { count, data, pcodeNum, price, weight } = res;
-                setState((state) => {
-
-                    return {
-                        ...state,
-                        input_sn: "",
-                    };
-                });
-                const data = res.data;
-                console.log('data', data)
-                // {"client_phone": "0577-26531009", "codeNum": "SJT1620962651", "consignee": {"consignee": "爆小姐", "mobile": "137****0681"}, "createTime": "2021-05-14 11:24:11", "fromChannelID": null, "num": "1", "payment": "到付", "shippingID": "快件", "status": "已入库", "supplierID": "速安达", "toChannelID": "上海青浦"}
-
-                handlePrint({
-                    supplier: data.supplier,
-                    packageNum: data.codeNum,
-                    expected_time: data.createTime,
-                    name: data.consignee.consignee,
-                    mobile: data.consignee.mobile,
-                    to: data.toChannelID,
-                    shipping: data.shippingID,
-                    payment: data.payment,
-                    client_phone: data.client_phone,
-                    trueAddr: data.trueAddr,
-                    num: data.num,
-                });
+                res = await pack_scan({
+                    codeNum: text,
+                })
             }
-        });
+        } catch (e) {
+            Modal.alert("提示", '请求失败，请检查接口或者网络！');
+        }
+        if (res.success === false) {
+
+            Modal.alert("提示", res.msg);
+            setState((state) => {
+                return {
+                    ...state,
+                    input_sn: "",
+                };
+            });
+        } else {
+            // const { count, data, pcodeNum, price, weight } = res;
+            setState((state) => {
+
+                return {
+                    ...state,
+                    input_sn: "",
+                };
+            });
+            const data = res.data;
+            console.log('data', data)
+            // {"client_phone": "0577-26531009", "codeNum": "SJT1620962651", "consignee": {"consignee": "爆小姐", "mobile": "137****0681"}, "createTime": "2021-05-14 11:24:11", "fromChannelID": null, "num": "1", "payment": "到付", "shippingID": "快件", "status": "已入库", "supplierID": "速安达", "toChannelID": "上海青浦"}
+
+            handlePrint({
+                supplier: data.supplier,
+                packageNum: data.codeNum,
+                expected_time: data.createTime,
+                name: data.consignee.consignee,
+                mobile: data.consignee.mobile,
+                to: data.toChannelID,
+                shipping: data.shippingID,
+                payment: data.payment,
+                client_phone: data.client_phone,
+                trueAddr: data.trueAddr,
+                num: data.num,
+            });
+        }
     };
     const renderHeader = () => {
         return (

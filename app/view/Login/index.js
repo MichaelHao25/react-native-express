@@ -1,9 +1,6 @@
 import React, {useState} from "react";
-import {StyleSheet, Text, View} from "react-native";
-import {Button, List, InputItem, WingBlank} from "@ant-design/react-native";
-import AsyncStorage from "@react-native-community/async-storage";
+import {Button, InputItem, List} from "@ant-design/react-native";
 import AuthContext from "../../util/AuthContext";
-import {useEffect} from "react";
 
 export default ({navigation}) => {
     const [userInfo, setUserInfo] = useState({
@@ -16,6 +13,9 @@ export default ({navigation}) => {
     const handleLogin = () => {
         signIn(userInfo);
     };
+    const handleMidfyPassword = () => {
+        navigation.navigate('modifyPassword')
+    }
     return (
         <>
             <List renderHeader={"用户登录"}>
@@ -45,6 +45,11 @@ export default ({navigation}) => {
                         登录
                     </Button>
                 </List.Item>
+                {/*<List.Item>*/}
+                {/*    <Button type="ghost" onPress={handleMidfyPassword}>*/}
+                {/*        修改密码*/}
+                {/*    </Button>*/}
+                {/*</List.Item>*/}
             </List>
         </>
     );
