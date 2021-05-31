@@ -122,7 +122,6 @@ export default ({navigation}) => {
             setList(tempList);
         })
         JPush.addNotificationListener(msg => {
-            console.log(msg)
             order_count().then(
                 ({data: {end_accept, month_amount, today_amount, wait_accept}}) => {
                     dispatch({
@@ -219,6 +218,33 @@ export default ({navigation}) => {
                 navigation.navigate("list", {
                     title: "已揽件列表",
                     status: 1,
+                });
+                break;
+            }
+            /**
+             * 入库三个入口
+             * 打码入库 - storeInByPrint
+             * 扫码入库 - storeInByScan
+             * 称重入库 - storeInByWeigh
+             */
+            case 'storeInByPrint': {
+                navigation.navigate("warehouse", {
+                    title: "打码入库",
+                    type: 'storeInByPrint'
+                });
+                break;
+            }
+            case 'storeInByScan': {
+                navigation.navigate("warehouse", {
+                    title: "扫码入库",
+                    type: 'storeInByScan'
+                });
+                break;
+            }
+            case 'storeInByWeigh': {
+                navigation.navigate("warehouse", {
+                    title: "称重入库",
+                    type: 'storeInByWeigh'
                 });
                 break;
             }

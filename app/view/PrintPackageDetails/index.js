@@ -43,8 +43,6 @@ export default ({navigation, route}) => {
         console.log('num', num)
         for (let i = 1; i <= parseInt(num); i++) {
             try {
-
-
                 blue.current.getPrint({
                     ...item,
                     pages: `${i}/${num}`

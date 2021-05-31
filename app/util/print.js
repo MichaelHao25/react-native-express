@@ -39,7 +39,7 @@ class Print {
         BleManager.start({showAlert: false}).then((res) => {
             // Success code
             console.log("Module initialized", res);
-            ToastAndroid.show('打印初始化成功', ToastAndroid.SHORT, ToastAndroid.BOTTOM)
+            ToastAndroid.show('蓝牙初始化成功', ToastAndroid.SHORT, ToastAndroid.BOTTOM)
             this.initOver = true;
         });
     }
@@ -171,7 +171,7 @@ class Print {
                 " - " +
                 shipping +
                 "\r\n" +
-                "SETMAG 0 0\r\n" +
+                "SETMAG 2 2\r\n" +
                 "SETBOLD 0\r\n" +
                 // "LEFT\r\n" +
                 // "TEXT 8 7 8 285 " +
@@ -179,9 +179,10 @@ class Print {
                 "\r\n" +
                 "RIGHT\r\n" +
                 "SETBOLD 2\r\n" +
-                "TEXT 1 6 0 205 " +
+                "TEXT 8 7 0 205 " +
                 packageNum.slice(-5) +
                 "\r\n" +
+                "SETMAG 0 0\r\n" +
                 "SETBOLD 0\r\n" +
                 "LEFT\r\n" +
                 "LINE 0 325 560 325 4\r\n" +

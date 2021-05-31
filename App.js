@@ -21,9 +21,11 @@ import UnpackPackage from "./app/view/UnpackPackage";
 import OutStock from "./app/view/OutStock";
 import PrintPackageDetails from "./app/view/PrintPackageDetails";
 import Logout from "./app/view/Logout";
+import Warehouse from "./app/view/Warehouse";
+import ScalesTest from "./app/view/ScalesTest";
 
 import {navigationRef} from './app/util/RootNavigation';
-import {user_login} from "./app/util/api";
+import {order_logout, user_login} from "./app/util/api";
 import AuthContext from "./app/util/AuthContext";
 import JPush from "jpush-react-native";
 
@@ -67,6 +69,7 @@ const App = () => {
                 case "SIGN_OUT":
                     // 登出
                     AsyncStorage.removeItem("token");
+                    AsyncStorage.removeItem("WarehouseList");
                     return {
                         ...prevState,
                         token: null,
@@ -99,6 +102,7 @@ const App = () => {
             });
         },
         signOut() {
+            order_logout()
             // 登出
             dispatch({
                 type: "SIGN_OUT",
@@ -139,6 +143,12 @@ const App = () => {
                                     options={{title: "首页"}}
                                     component={Home}
                                 />
+                                <Stack.Screen
+                                    name="scalesTest"
+                                    options={{title: "蓝牙秤初始化"}}
+                                    component={ScalesTest}
+                                />
+
 
                                 <Stack.Screen
                                     name="modifyPassword"
@@ -209,6 +219,12 @@ const App = () => {
                                     options={{title: "登出"}}
                                     component={Logout}
                                 />
+                                <Stack.Screen
+                                    name="warehouse"
+                                    options={{title: "入库"}}
+                                    component={Warehouse}
+                                />
+
                             </>
                         )}
                     </Stack.Navigator>

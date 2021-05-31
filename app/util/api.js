@@ -1,6 +1,35 @@
 import Request from "./fetch";
 import AsyncStorage from "@react-native-community/async-storage";
 
+
+/**
+ * 入库
+ */
+export const order_storein = (body) => {
+    return Request.fetch({
+        url: "/order/storein",
+        method: "post",
+        body,
+    });
+};
+/**
+ * 获取包装袋列表
+ */
+export const common_bag = () => {
+    return Request.fetch({
+        url: "/common/bag",
+        method: "post",
+    });
+};
+/**
+ * 退出登录
+ */
+export const order_logout = () => {
+    return Request.fetch({
+        url: "/order/logout",
+        method: "post",
+    });
+};
 /**
  * 修改密码
  */
@@ -49,6 +78,18 @@ export const order_storeout = (body) => {
 export const pack_createcode = (body) => {
     return Request.fetch({
         url: "/pack/createcode",
+        method: "post",
+        body,
+    });
+};
+
+/**
+ * 查包
+ * 查包，查询包的信息进行打印
+ */
+export const pack_pack = (body) => {
+    return Request.fetch({
+        url: "/pack/pack",
         method: "post",
         body,
     });

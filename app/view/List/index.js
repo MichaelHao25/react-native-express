@@ -1,38 +1,106 @@
-import React, {useEffect, useRef} from "react";
-import {PixelRatio, Text, View} from "react-native";
-import {Button, ListView, Modal, Toast, WhiteSpace, WingBlank,} from "@ant-design/react-native";
+import React, {useEffect, useRef, useState} from "react";
+import {FlatList, PixelRatio, Text, View} from "react-native";
+import {Button, Modal, Popover, Toast, WhiteSpace, WingBlank} from "@ant-design/react-native";
 import {order_accept_list, order_claim, order_pickup} from "../../util/api";
 import Print from "../../util/print";
-import Line from './Line'
 
+/**
+ * 过滤的状态枚举
+ * @type {string[]}
+ */
+const enumStatus = ['全部', '认领', '未认领'];
 export default ({navigation, route}) => {
-    const ref = useRef();
     const blue = useRef();
-
+    const [list, setList] = useState([]);
+    const [end, setEnd] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
+    const [params, setParams] = useState(() => {
+        return {
+            page: 1,
+            limit: 5,
+            status: route.params.status,
+            today: route?.params?.today,
+            claim: 0,
+            keyword: ''
+        }
+    });
+    const [extend, setExtend] = useState('');
     useEffect(() => {
         navigation.setOptions({title: route.params.title});
         blue.current = new Print();
+        onFetch()
         return () => {
             blue.current.disconnect();
         };
     }, []);
-    const onFetch = (page = 1, startFetch, abortFetch) => {
-        order_accept_list({
-            page,
-            limit: 5,
-            status: route.params.status,
-            today: route?.params?.today,
-        })
-            .then((res) => {
-                console.log('获取到数据')
-                console.log(res);
-                const {data} = res;
-                startFetch(data, 5);
-                console.log('渲染完毕')
+    const reloadList = (body = {}) => {
+        const paramsValid = Object.keys(body).length !== 0;
+        console.log('paramsValid', paramsValid)
+        setRefreshing(true);
+        setEnd(false);
+        if (paramsValid) {
+            onFetch({
+                ...body,
+                page: 1,
             })
-            .catch(() => {
-                abortFetch();
-            });
+        } else {
+            console.log('reloadList', params)
+            onFetch({
+                ...params,
+                page: 1,
+            })
+        }
+    }
+    const loadMore = () => {
+        console.log('loadMore')
+        if (loading === false) {
+            onFetch();
+        }
+    }
+    /**
+     * 如果有参数的话就按照参数来传没有的话反之
+     * @param body
+     */
+    const onFetch = (body = {}) => {
+        setLoading(true);
+        /**
+         * 是否有参数传过来/true有，false没有
+         */
+        const paramsValid = Object.keys(body).length !== 0
+        if (paramsValid === false) {
+            if (end) {
+                return;
+            }
+        }
+        order_accept_list(paramsValid ? body : params)
+            .then((res) => {
+
+                const {data} = res;
+                if (data.length < params.limit) {
+                    setEnd(true)
+                }
+                if (paramsValid) {
+                    setRefreshing(false);
+                }
+                setList(list => paramsValid ? [...data] : [...list, ...data])
+                setLoading(false)
+                if (paramsValid) {
+                    setParams(params => {
+                        return {
+                            ...body,
+                            page: paramsValid ? 2 : params.page + 1,
+                        }
+                    })
+                } else {
+                    setParams(params => {
+                        return {
+                            ...params,
+                            page: paramsValid ? 2 : params.page + 1,
+                        }
+                    })
+                }
+            })
     };
     //   取件
     const handle_order_pickup = ({orderID, item}) => {
@@ -50,15 +118,20 @@ export default ({navigation, route}) => {
                 onPress: () => {
                     order_pickup({orderID}).then((res) => {
                         console.log(res);
-                        let dataSource = [...ref.current.ulv.getRows()];
-                        dataSource = dataSource.filter((value) => {
-                            if (value.orderID === orderID) {
-                                value.status = 1;
-                                return false;
-                            }
-                            return true;
-                        });
-                        ref.current.ulv.updateRows(dataSource, 0);
+                        const tempList = list.filter(value => {
+                            return value.orderID !== orderID;
+
+                        })
+                        setList([...tempList])
+                        // let dataSource = [...ref.current.ulv.getRows()];
+                        // dataSource = dataSource.filter((value) => {
+                        //     if (value.orderID === orderID) {
+                        //         value.status = 1;
+                        //         return false;
+                        //     }
+                        //     return true;
+                        // });
+                        // ref.current.ulv.updateRows(dataSource, 0);
                         Toast.success("成功!", 2, () => {
                         }, false);
                         handlePrint({item});
@@ -79,15 +152,22 @@ export default ({navigation, route}) => {
                 onPress: () => {
                     order_claim({orderID}).then((res) => {
                         console.log(res);
-                        const dataSource = [...ref.current.ulv.getRows()];
-                        dataSource.find((value) => {
+                        // const dataSource = [...ref.current.ulv.getRows()];
+                        // dataSource.find((value) => {
+                        //     if (value.orderID === orderID) {
+                        //         value.adminID = 2;
+                        //         return true;
+                        //     }
+                        //     return false;
+                        // });
+                        // ref.current.ulv.updateRows(dataSource, 0);
+                        list.some(value => {
                             if (value.orderID === orderID) {
                                 value.adminID = 2;
                                 return true;
                             }
-                            return false;
-                        });
-                        ref.current.ulv.updateRows(dataSource, 0);
+                        })
+                        setList([...list])
                         Toast.success("成功!", 2, () => {
                         }, false);
                     });
@@ -141,63 +221,84 @@ export default ({navigation, route}) => {
             }
         }
     }
+    const handleSearch = () => {
+        Modal.prompt(
+            '搜索',
+            '请输入要搜索的内容',
+            keyword => {
+                reloadList({
+                    ...params,
+                    keyword,
+                })
+            },
+            'default',
+            params.keyword,
+            ['请输入要搜索的内容']
+        )
+        ;
+    }
 
     const renderHeader = () => {
         return (
-            <View>
-                {/* <View style={{ width: "50%" }}>
-          <Picker
-            data={[
-              {
-                value: "all",
-                label: "筛选地区",
-              },
-              {
-                value: "shanghai",
-                label: "上海",
-              },
-              {
-                value: "hebei",
-                label: "河北",
-              },
-            ]}
-            cols={1}
-            value={"all"}
-            onChange={(e) => {
-              console.log(e);
-            }}
-          >
-            <List.Item arrow="horizontal" onPress={this.onPress}></List.Item>
-          </Picker>
-        </View> */}
-
-                <View
-                    style={{
-                        flexDirection: "row",
-                        paddingHorizontal: 15,
-                        paddingVertical: 9,
-                        backgroundColor: "#f5f5f9",
-                    }}
-                >
-                    <View style={{flex: 1}}>
-                        <Text style={{fontSize: 14, color: "#888"}}>取件信息</Text>
+            <View
+                style={{
+                    paddingHorizontal: 15,
+                    backgroundColor: "#f5f5f9",
+                }}>
+                {/*<View*/}
+                {/*    style={{flexDirection: "row", paddingVertical: 9,}}*/}
+                {/*>*/}
+                {/*    <View style={{flex: 1}}>*/}
+                {/*        <Text style={{fontSize: 14, color: "#888"}}>取件信息</Text>*/}
+                {/*    </View>*/}
+                {/*    <View style={{width: 70}}>*/}
+                {/*        <Text*/}
+                {/*            style={{*/}
+                {/*                fontSize: 14,*/}
+                {/*                color: "#888",*/}
+                {/*                textAlign: "center",*/}
+                {/*            }}*/}
+                {/*        >*/}
+                {/*            操作*/}
+                {/*        </Text>*/}
+                {/*    </View>*/}
+                {/*</View>*/}
+                <View style={{flexDirection: "row", paddingVertical: 9, justifyContent: 'space-between'}}>
+                    <View>
+                        <Text style={{fontSize: 14, color: "#888"}} onPress={handleSearch}>搜索:{params.keyword}</Text>
                     </View>
-                    <View style={{width: 70}}>
-                        <Text
-                            style={{
-                                fontSize: 14,
-                                color: "#888",
-                                textAlign: "center",
-                            }}
+                    <View>
+                        <Popover
+                            overlay={
+                                enumStatus.map((value, index) => {
+                                    return <Popover.Item key={index} value={index}
+                                                         style={{backgroundColor: params.claim === index ? '#efeff4' : '#fff'}}>
+                                        <Text>{value}</Text>
+                                    </Popover.Item>
+                                })}
+                            onSelect={v =>
+                                reloadList({
+                                    ...params,
+                                    claim: v,
+                                })
+                            }
                         >
-                            操作
-                        </Text>
+                            <Text
+                                style={{
+                                    fontSize: 14,
+                                    color: "#888",
+                                    textAlign: "center",
+                                }}
+                            >
+                                筛选：{enumStatus[params.claim]}
+                            </Text>
+                        </Popover>
                     </View>
                 </View>
             </View>
         );
     };
-    const renderItem = (item) => {
+    const renderItem = ({item}) => {
         return (
             <View
                 style={{
@@ -222,78 +323,120 @@ export default ({navigation, route}) => {
                 {/*寄：王老板（1888888888）*/}
                 {/*收：王小姐（188****8888）*/}
                 <View style={{flexDirection: "column"}}>
-                    <Text style={{fontSize: 20, color: "#333"}}>最晚取件时间：{item.expected_time} {item.statusName}</Text>
-                    <WhiteSpace/>
-                    <Text style={{fontSize: 20, color: "#333"}}>{item.pickup.address}</Text>
-                    <WhiteSpace/>
-                    <Text style={{fontSize: 20, color: "#333"}}>{item.payment} {item.weight}</Text>
-                    <WhiteSpace/>
-                    <Text style={{fontSize: 20, color: "#333"}}>{item.channel}</Text>
-                    <WhiteSpace/>
-                    <Line/>
-                    <WhiteSpace/>
-                    <Text style={{fontSize: 20, color: "#333"}}>寄:{item.pickup.name}({item.pickup.mobile})</Text>
-                    <WhiteSpace/>
                     <Text style={{
                         fontSize: 20,
                         color: "#333"
-                    }}>收:{item.consignee.name}({item.consignee.mobile})</Text>
-
+                    }}>最晚取件时间：{item.expected_time.replace(/^.*? /, '')} {item.statusName}</Text>
+                    <WhiteSpace/>
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                        <View style={{width: '80%'}}><Text
+                            style={{fontSize: 20, color: "#333"}}>{item.pickup.address}</Text></View>
+                        <Button type={"primary"} size={"small"}
+                                onPress={() => setExtend(id => {
+                                    if (id === item.orderID) {
+                                        return ''
+                                    } else {
+                                        return item.orderID;
+                                    }
+                                })}>
+                            {extend === item.orderID ? '收缩' : '展开'}
+                        </Button>
+                    </View>
+                    {extend === item.orderID ? <>
+                        <WhiteSpace/>
+                        <Text style={{fontSize: 20, color: "#333"}}>{item.payment} {item.weight}</Text>
+                        <WhiteSpace/>
+                        <Text style={{fontSize: 20, color: "#333"}}>{item.channel}</Text>
+                        <WhiteSpace/>
+                        <Text style={{fontSize: 20, color: "#333"}}>寄:{item.pickup.name}({item.pickup.mobile})</Text>
+                        <WhiteSpace/>
+                        <Text style={{
+                            fontSize: 20,
+                            color: "#333"
+                        }}>收:{item.consignee.name}({item.consignee.mobile})</Text>
+                    </> : null
+                    }
                 </View>
                 <WhiteSpace/>
-                <View style={{flexDirection: "row", justifyContent: "flex-end"}}>
-                    {item.adminID == 0 ? (
-                        <WingBlank size="sm">
-                            <Button
-                                type="primary"
-                                onPress={() => {
-                                    handle_order_claim({orderID: item.orderID});
-                                }}
-                            >
-                                领取
-                            </Button>
-                        </WingBlank>
-                    ) : null}
-                    {item.status == 0 ? (
-                        <WingBlank size="sm">
-                            <Button
-                                type="primary"
-                                onPress={() => {
-                                    handle_order_pickup({orderID: item.orderID, item});
-                                }}
-                            >
-                                取件
-                            </Button>
-                        </WingBlank>
-                    ) : null}
-                    {item.status == 1 ? (
-                        <WingBlank size="sm">
-                            <Button
-                                type="primary"
-                                onPress={() => {
-                                    handlePrint({item});
-                                }}
-                            >
-                                打印
-                            </Button>
-                        </WingBlank>
-                    ) : null}
-                </View>
+                {
+                    extend === item.orderID ?
+                        <View style={{flexDirection: "row", justifyContent: "flex-end"}}>
+                            {item.adminID === 0 ? (
+                                <WingBlank size="sm">
+                                    <Button
+                                        type="primary"
+                                        onPress={() => {
+                                            handle_order_claim({orderID: item.orderID});
+                                        }}
+                                    >
+                                        领取
+                                    </Button>
+                                </WingBlank>
+                            ) : null}
+                            {item.status === 0 ? (
+                                <WingBlank size="sm">
+                                    <Button
+                                        type="primary"
+                                        onPress={() => {
+                                            handle_order_pickup({orderID: item.orderID, item});
+                                        }}
+                                    >
+                                        取件
+                                    </Button>
+                                </WingBlank>
+                            ) : null}
+                            {item.status === 1 ? (
+                                <WingBlank size="sm">
+                                    <Button
+                                        type="primary"
+                                        onPress={() => {
+                                            handlePrint({item});
+                                        }}
+                                    >
+                                        打印
+                                    </Button>
+                                </WingBlank>
+                            ) : null}
+                        </View>
+                        : null
+                }
             </View>
         );
     };
     return (
         <View style={{backgroundColor: "#fff", flex: 1}}>
             <View style={{flex: 1, backgroundColor: 'gray'}}>
-                <ListView
-                    ref={ref}
-                    header={renderHeader}
-                    onFetch={onFetch}
+                {/*<ListView*/}
+                {/*    ref={ref}*/}
+                {/*    header={renderHeader}*/}
+                {/*    onFetch={onFetch}*/}
+                {/*    renderItem={renderItem}*/}
+                {/*    displayDate*/}
+                {/*    keyExtractor={({orderID}) => `key--${orderID}`}*/}
+                {/*/>*/}
+
+
+                {renderHeader()}
+                <FlatList
+                    refreshing={refreshing}
+                    onRefresh={reloadList}
+                    // ListHeaderComponent={renderHeader}
+                    data={list}
+                    // renderItem={() => {
+                    //     return <View><Text>3333</Text></View>
+                    // }}
                     renderItem={renderItem}
-                    displayDate
                     keyExtractor={({orderID}) => `key--${orderID}`}
+                    onEndReachedThreshold={.2}
+                    onEndReached={loadMore}
+                    ListFooterComponent={() => {
+                        return <View><Text style={{textAlign: 'center'}}>{end ? '加载完毕' : "正在疯狂加载中..."}</Text></View>
+                    }}
+                    ListEmptyComponent={() => {
+                        return <View style={{flex: 1}}><Text
+                            style={{textAlign: 'center'}}>{loading ? '' : '暂无数据'}</Text></View>
+                    }}
                 />
-                <View style={{height: 50}}></View>
             </View>
         </View>
     );
