@@ -1,8 +1,7 @@
 import React from "react";
 import Storage from "@react-native-community/async-storage";
-import {Toast} from "@ant-design/react-native";
 import BleManager from "react-native-ble-manager";
-import {NativeEventEmitter, NativeModules, Platform, ToastAndroid} from "react-native";
+import {NativeEventEmitter, NativeModules, Platform} from "react-native";
 import {bytesToString, stringToBytes} from "convert-string";
 
 const BleManagerModule = NativeModules.BleManager;
@@ -79,7 +78,7 @@ class Scales {
                 this._notification = blue._notification;
                 return this.peripheralId
             } else {
-                Toast.fail("请绑定打印机。");
+                // Toast.fail("请绑定秤。");
             }
         } catch (e) {
             console.log(e)
@@ -168,7 +167,7 @@ class Scales {
         try {
             await BleManager.start({showAlert: false})
             console.log("Module initialized");
-            ToastAndroid.show('蓝牙初始化成功', ToastAndroid.BOTTOM)
+            // ToastAndroid.show('蓝牙初始化成功', ToastAndroid.BOTTOM)
             return 'Module initialized'
         } catch (e) {
             console.log(e)

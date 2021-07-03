@@ -15,7 +15,6 @@ export default ({navigation, route}) => {
     const scales = useRef();
     const [state, setState] = useState({
         input_sn: "",
-        input_sn_list: [],
         count: 0,
         weight: 0,
     });
@@ -24,12 +23,18 @@ export default ({navigation, route}) => {
     const [weight, setWeight] = useState('');
     useEffect(() => {
         AsyncStorage.getItem('WarehouseList').then(WarehouseList => {
-            setList(JSON.parse(WarehouseList));
+            console.log('WarehouseList', WarehouseList)
+            if (WarehouseList !== null) {
+                setList(JSON.parse(WarehouseList));
+            }
         })
-        return () => {
-            AsyncStorage.setItm('WarehouseList', JSON.stringify(WarehouseList));
-        }
+
     }, []);
+    useEffect(() => {
+        return () => {
+            AsyncStorage.setItem('WarehouseList', JSON.stringify(list));
+        }
+    }, [list])
     /**
      * 初始化链接蓝牙
      */
@@ -37,6 +42,9 @@ export default ({navigation, route}) => {
         navigation.setOptions({title: route.params.title});
         if (route.params.type === 'storeInByPrint') {
             blue.current = new Print();
+            blue.current.boot().then(() => {
+                return blue.current.getPeripheralId();
+            })
         }
 
         if (route.params.type === 'storeInByWeigh') {
@@ -302,6 +310,10 @@ export default ({navigation, route}) => {
                 {renderRow({
                     title: '重        量:  ',
                     value: `${state.weight}kg`
+                })}
+                {renderRow({
+                    title: '订  单  数:  ',
+                    value: `${list.length}`
                 })}
                 <WhiteSpace/>
                 <View style={{flexDirection: "row", justifyContent: "space-around"}}>

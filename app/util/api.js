@@ -3,6 +3,70 @@ import AsyncStorage from "@react-native-community/async-storage";
 
 
 /**
+ * 获取包装袋的价格
+ */
+export const common_bagprice = () => {
+    return Request.fetch({
+        url: "/common/bagprice",
+        method: "post",
+    });
+};
+
+/**
+ * 出库运输方式元数据
+ */
+export const common_allshipping = () => {
+    return Request.fetch({
+        url: "/common/allshipping",
+        method: "post",
+    });
+};
+
+
+/**
+ * 异常提交
+ */
+// {
+//  codeNum:'WLTDP062813120863',
+//  type:1
+// }
+export const pack_deal = (body) => {
+    return Request.fetch({
+        url: "/pack/deal",
+        method: "post",
+        body
+    });
+};
+/**
+ * 异常选项元数据
+ */
+export const common_dealoption = () => {
+    return Request.fetch({
+        url: "/common/dealoption",
+        method: "post",
+    });
+};
+/**
+ * 装车
+ */
+export const order_loading = (body) => {
+    return Request.fetch({
+        url: "/order/loading",
+        method: "post",
+        body,
+    });
+};
+/**
+ * 入库
+ */
+export const order_scan_list = (body) => {
+    return Request.fetch({
+        url: "/order/scan_list",
+        method: "post",
+        body,
+    });
+};
+/**
  * 入库
  */
 export const order_storein = (body) => {

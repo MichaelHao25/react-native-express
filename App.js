@@ -10,12 +10,14 @@ import ModifyPassword from "./app/view/ModifyPassword";
 import Login from "./app/view/Login";
 import Home from "./app/view/Home";
 import List from "./app/view/List";
+import TodayList from "./app/view/TodayList";
 import CreateExpress from "./app/view/CreateExpress";
 import Search from "./app/view/Search";
 import Set from "./app/view/Set";
 import ScalesConfig from "./app/view/ScalesConfig";
 import PrintConfig from "./app/view/PrintConfig";
-import MergePackage from "./app/view/MergePackage";
+import Package from "./app/view/Package";
+import Gather from "./app/view/Gather";
 import RemovePackage from "./app/view/RemovePackage";
 import UnpackPackage from "./app/view/UnpackPackage";
 import OutStock from "./app/view/OutStock";
@@ -23,6 +25,9 @@ import PrintPackageDetails from "./app/view/PrintPackageDetails";
 import Logout from "./app/view/Logout";
 import Warehouse from "./app/view/Warehouse";
 import ScalesTest from "./app/view/ScalesTest";
+import PrintTest from "./app/view/PrintTest";
+import Search2 from "./app/view/Search2";
+import Deal from "./app/view/Deal";
 
 import {navigationRef} from './app/util/RootNavigation';
 import {order_logout, user_login} from "./app/util/api";
@@ -179,9 +184,21 @@ const App = () => {
                                 />
                                 <Stack.Screen
                                     name="list"
-                                    options={{title: "列表"}}
+                                    options={{title: "待揽件"}}
                                     component={List}
                                 />
+                                <Stack.Screen
+                                    name="todayList"
+                                    options={{title: "揽件列表"}}
+                                    component={TodayList}
+                                />
+
+                                <Stack.Screen
+                                    name="search2"
+                                    options={{title: "搜索"}}
+                                    component={Search2}
+                                />
+
                                 <Stack.Screen
                                     name="createExpress"
                                     options={{title: "创建运单"}}
@@ -207,11 +224,27 @@ const App = () => {
                                     options={{title: "秤连接设置"}}
                                     component={ScalesConfig}
                                 />
+                                <Stack.Screen
+                                    name="printTest"
+                                    options={{title: "打印机初始化"}}
+                                    component={PrintTest}
+                                />
 
                                 <Stack.Screen
-                                    name="mergePackage"
+                                    name="deal"
+                                    options={{title: "异常件处理"}}
+                                    component={Deal}
+                                />
+
+                                <Stack.Screen
+                                    name="package"
                                     options={{title: "合包"}}
-                                    component={MergePackage}
+                                    component={Package}
+                                />
+                                <Stack.Screen
+                                    name="gather"
+                                    options={{title: "拼包"}}
+                                    component={Gather}
                                 />
 
                                 <Stack.Screen

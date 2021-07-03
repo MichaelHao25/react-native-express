@@ -5,7 +5,6 @@ import {useFocusEffect} from "@react-navigation/native";
 import {Badge, Grid, List,} from "@ant-design/react-native";
 import {order_count} from "../../util/api";
 import theme from "../../theme";
-import JPush from "jpush-react-native";
 
 export default ({navigation}) => {
     const [state, dispatch] = useReducer(
@@ -46,7 +45,7 @@ export default ({navigation}) => {
         },
         {
             icon: require("../../image/merge.png"),
-            text: `集包`,
+            text: `拼包`,
             type: 'gather'
         },
         {
@@ -81,11 +80,11 @@ export default ({navigation}) => {
             type: 'realaddr'
 
         },
-        {
-            icon: require("../../image/none.png"),
-            text: `已揽件`,
-            type: 'orders'
-        },
+        // {
+        //     icon: require("../../image/none.png"),
+        //     text: `已揽件`,
+        //     type: 'orders'
+        // },
         /**
          * 入库三个入口
          * 打码入库 - storeInByPrint
@@ -107,6 +106,17 @@ export default ({navigation}) => {
             text: `称重入库`,
             type: 'storeInByWeigh'
         },
+        {
+            icon: require("../../image/none.png"),
+            text: `查询`,
+            type: 'searchScan'
+        },
+
+        {
+            icon: require("../../image/none.png"),
+            text: `异常件处理`,
+            type: 'deal'
+        },
     ])
     const [oerder, setOrder] = useState(false);
     useEffect(() => {
@@ -121,21 +131,21 @@ export default ({navigation}) => {
             setOrder(auth.includes('orders'));
             setList(tempList);
         })
-        JPush.addNotificationListener(msg => {
-            order_count().then(
-                ({data: {end_accept, month_amount, today_amount, wait_accept}}) => {
-                    dispatch({
-                        type: "ORDER_COUNT",
-                        payload: {
-                            end_accept,
-                            month_amount,
-                            today_amount,
-                            wait_accept,
-                        },
-                    });
-                }
-            );
-        })
+        // JPush.addNotificationListener(msg => {
+        //     order_count().then(
+        //         ({data: {end_accept, month_amount, today_amount, wait_accept}}) => {
+        //             dispatch({
+        //                 type: "ORDER_COUNT",
+        //                 payload: {
+        //                     end_accept,
+        //                     month_amount,
+        //                     today_amount,
+        //                     wait_accept,
+        //                 },
+        //             });
+        //         }
+        //     );
+        // })
     }, [])
     useFocusEffect
     (
@@ -173,13 +183,13 @@ export default ({navigation}) => {
         const type = el.type;
         switch (type) {
             case 'package': {
-                navigation.navigate("mergePackage", {
+                navigation.navigate("package", {
                     type: 0,
                 });
                 break;
             }
             case 'gather': {
-                navigation.navigate("mergePackage", {
+                navigation.navigate("gather", {
                     type: 1,
                 });
                 break;
@@ -248,6 +258,14 @@ export default ({navigation}) => {
                 });
                 break;
             }
+            case 'searchScan': {
+                navigation.navigate("search2");
+                break;
+            }
+            case 'deal': {
+                navigation.navigate("deal");
+                break;
+            }
             default: {
                 navigation.navigate("set");
                 break;
@@ -306,11 +324,10 @@ export default ({navigation}) => {
                                 arrow="horizontal"
                                 onPress={() => {
                                     navigation.navigate("list", {
-                                        title: "待揽件",
                                         status: 0,
                                     });
                                 }}
-                                extra={state.wait_accept}
+                                // extra={state.wait_accept}
                             >
                                 {parseInt(state.wait_accept) === 0 ? (
                                     <Text>待揽件</Text>
@@ -323,15 +340,14 @@ export default ({navigation}) => {
                             <List.Item
                                 arrow="horizontal"
                                 onPress={() => {
-                                    navigation.navigate("list", {
-                                        title: "今日已揽件",
+                                    navigation.navigate("todayList", {
                                         status: 1,
                                         today: 1,
                                     });
                                 }}
-                                extra={state.end_accept}
+                                // extra={state.end_accept}
                             >
-                                <Text>今日已揽件列表</Text>
+                                <Text>揽件列表</Text>
                                 {/* <Badge dot></Badge> */}
                             </List.Item>
                         </>

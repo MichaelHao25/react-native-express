@@ -1,13 +1,15 @@
 import React, {useEffect, useRef, useState} from "react";
-import {Image, PixelRatio, Text, View} from "react-native";
-import {Button, Checkbox, InputItem, ListView, Modal, Popover, Toast, WhiteSpace} from "@ant-design/react-native";
-import {common_bag, pack_addpack, pack_createcode, pack_createpack, pack_pack} from "../../util/api";
+import {PixelRatio, Text, View} from "react-native";
+import {Button, Checkbox, InputItem, List, ListView, Modal, Picker, Toast, WhiteSpace} from "@ant-design/react-native";
+import {common_bagprice, pack_addpack, pack_createcode, pack_createpack} from "../../util/api";
 import Print from "../../util/print";
 import Scales from "../../util/scales";
 
 import usePdaScan from "react-native-pda-scan";
 import {TouchableOpacity} from "react-native-gesture-handler";
 
+/*是否打印*/
+let printStatus = false;
 export default ({navigation, route}) => {
     const ref = useRef();
     const blue = useRef();
@@ -18,14 +20,15 @@ export default ({navigation, route}) => {
         count: 0,
         price: 0,
         weight: 0,
-        getWeight: false,
+        getWeight: true,
     });
     const [expansion, setExpansion] = useState([]);
-    const [common_bag_list, setCommon_bag_list] = useState({
-        0: '无'
-    });
+
+    const [dropList, setDropList] = useState([]);
     const [common_bag_select, setCommon_bag_select] = useState(0);
     const [weight, setWeight] = useState('');
+
+
     /**
      * 防止合包成功，但是打印机故障的时候存储上一次的pcode
      */
@@ -34,45 +37,66 @@ export default ({navigation, route}) => {
      * 初始化链接蓝牙
      */
     useEffect(() => {
-        navigation.setOptions({title: route.params.type === 0 ? "合包" : "集包"});
+        // navigation.setOptions({title: route.params.type === 0 ? "合包" : "拼包"});
+        /*打印机初始化---start*/
         blue.current = new Print();
-        scales.current = new Scales({
-            handleBindNotificationEvent({
-                                            data
-                                        }) {
-                const res = data.match(/\d.*?kg/);
-                if (res) {
-                    const [weight = '0.00 kg'] = res;
-                    setWeight([...weight])
-                } else {
-                    setWeight([...'0.00 kg'])
-                }
-                // const [weight = '0.00 kg'] = 'data'.match(/\d.*?$/)
-            }
-        });
-        scales.current.boot().then(() => {
-            return scales.current.getPeripheralId();
-        }).then(() => {
-            return scales.current.connect();
+        blue.current.boot().then(() => {
+            return blue.current.getPeripheralId();
+        }).then(res => {
+            console.log('res', res)
         })
-            .then(() => {
-                return scales.current.retrieveServices()
+        /*打印机初始化---end*/
+        /*体重秤初始化---start*/
+        // 如果是集包的话就不初始化体重秤
+        if (route.params.type === 0) {
+            scales.current = new Scales({
+                handleBindNotificationEvent({
+                                                data
+                                            }) {
+                    const res = data.match(/\d.*?kg/);
+                    if (res) {
+                        const [weight = '0.00 kg'] = res;
+                        setWeight([...weight])
+                    } else {
+                        setWeight([...'0.00 kg'])
+                    }
+                    // const [weight = '0.00 kg'] = 'data'.match(/\d.*?$/)
+                }
+            });
+            scales.current.boot().then(() => {
+                return scales.current.getPeripheralId();
+            }).then(() => {
+                return scales.current.connect();
             })
-            .then(res => {
-                scales.current.handleBindNotificationEvent()
-                return scales.current.startNotification()
-            })
+                .then(() => {
+                    return scales.current.retrieveServices()
+                })
+                .then(res => {
+                    scales.current.handleBindNotificationEvent()
+                    return scales.current.startNotification()
+                })
+        }
+        /*体重秤初始化---end*/
         return () => {
-            scales.current.handleUnbindNotificationEvent()
-            scales.current.stopNotification()
+            // 如果是集包的话就不卸载体重秤
+            if (route.params.type === 0) {
+                scales.current.handleUnbindNotificationEvent()
+                scales.current.stopNotification()
+            }
             blue.current.disconnect();
         };
     }, []);
     useEffect(() => {
-        common_bag().then(res => {
+        common_bagprice().then(res => {
             const {data = []} = res;
-            setCommon_bag_list(res => {
-                return {...res, ...data}
+
+            setDropList(() => {
+                return data.map(item => {
+                    return {
+                        label: item,
+                        value: item
+                    }
+                });
             })
         })
     }, [])
@@ -98,9 +122,13 @@ export default ({navigation, route}) => {
         }
     }, [weight])
     const handleGetWeight = () => {
-        scales.current.connect().then(() => {
-            scales.current.write();
-        })
+        if (scales.current) {
+            scales.current.connect().then(() => {
+                scales.current.write();
+            })
+        } else {
+            setWeight([...'0.00 kg']);
+        }
     }
     const handlePrint = async (item) => {
         const num = item.num || 1;
@@ -126,7 +154,7 @@ export default ({navigation, route}) => {
         }
     };
     const handleCreateQrcode = () => {
-        Modal.alert("警告", "确定创建一个运单?", [
+        Modal.alert("警告", "确定生成条码?", [
             {
                 text: "取消",
                 style: "cancel",
@@ -218,9 +246,11 @@ export default ({navigation, route}) => {
             Modal.alert("提示", "没有找到sn,合包失败!");
             return;
         }
-        handleGetWeight();
-        // if(state.getWeight===false){
-        //
+        if (state.getWeight === true) {
+            handleGetWeight();
+        } else {
+            handleMerge();
+        }
         // }else if(common_bag_select===1) {
         //
         // }else{
@@ -229,31 +259,35 @@ export default ({navigation, route}) => {
         // common_bag_list
 
     }
-    const handleMerge = (getWeight) => {
+    const handleMerge = (getWeight = '') => {
         console.log('handleMerge')
         // getWeigth
-        let packageName = '';
+
         let packageWeight = '';
         let content = ''
         const res = {
             pcodeNum: state.input_sn_list[0],
         };
-        if (common_bag_select !== 0) {
-            packageName = common_bag_list[common_bag_select]
-        }
+
         if (state.getWeight === true) {
             packageWeight = getWeight.join('');
             res.weight = packageWeight.replace(/[ kg]/g, '')
+        } else if (common_bag_select === 0) {
+            Modal.alert('警告', '请选择价格！');
+            return;
         }
-        if (packageName) {
-            content += `${packageName},  `;
-            res.bag = common_bag_select;
-        }
-        if (packageWeight) {
+        if (state.getWeight === false) {
+            content += `${common_bag_select}元  `;
+
+            res.price = common_bag_select;
+        } else {
+
+            console.log('getWeight', getWeight.join(''))
             content += `${getWeight.join('')}`;
         }
 
 
+        console.log('content', content)
         Modal.alert("警告", content, [
             {
                 text: "取消",
@@ -278,10 +312,10 @@ export default ({navigation, route}) => {
                             return;
                         }
                         console.log(res);
-                        Modal.alert(
-                            "提示",
-                            route.params.type == 0 ? "合包成功!" : "集包成功!"
-                        );
+                        // Modal.alert(
+                        //     "提示",
+                        //     "合包成功!"
+                        // );
                         setState((state) => {
                             return {
                                 ...state,
@@ -293,20 +327,22 @@ export default ({navigation, route}) => {
                         });
                         ref.current.ulv.updateRows([], 0);
                         const data = res.data;
-                        handlePrint({
-                            supplier: data.supplier,
-                            packageNum: data.codeNum,
-                            expected_time: data.createTime,
-                            name: data.consignee.consignee,
-                            mobile: data.consignee.mobile,
-                            to: data.toChannelID,
-                            shipping: data.shippingID,
-                            payment: data.payment,
-                            client_phone: data.client_phone,
-                            flag: res.codeType,
-                            trueAddr: res.trueAddr,
-                            num: res.num,
-                        });
+                        if (printStatus) {
+                            handlePrint({
+                                supplier: data.supplier,
+                                packageNum: data.codeNum,
+                                expected_time: data.createTime,
+                                name: data.consignee.consignee,
+                                mobile: data.consignee.mobile,
+                                to: data.toChannelID,
+                                shipping: data.shippingID,
+                                payment: data.payment,
+                                client_phone: data.client_phone,
+                                flag: res.codeType,
+                                trueAddr: res.trueAddr,
+                                num: res.num,
+                            });
+                        }
                     });
                 },
             },
@@ -347,36 +383,8 @@ export default ({navigation, route}) => {
             </>
         );
     };
-    const getBagName = () => {
-        const res = Object.entries(common_bag_list).find(([key, value]) => parseInt(key) === common_bag_select)
-        const [, name = ''] = res;
-        return name
-    }
-    /**
-     * 打印条码，如果合包成功，但是条码没有出现的情况的一个兜底
-     */
-    const printBarCode = () => {
-        pack_pack({
-            pcodeNum: prevPCode,
-            // type:route.params.type === 0
-        }).then(res => {
-            const data = res.data;
-            handlePrint({
-                supplier: data.supplier,
-                packageNum: data.codeNum,
-                expected_time: data.createTime,
-                name: data?.consignee.consignee,
-                mobile: data?.consignee.mobile,
-                to: data.toChannelID,
-                shipping: data.shippingID,
-                payment: data.payment,
-                client_phone: data.client_phone,
-                flag: res.codeType,
-                trueAddr: res.trueAddr,
-                num: res.num,
-            });
-        })
-    }
+
+
     const renderHeader = () => {
         return (
             <View>
@@ -403,7 +411,8 @@ export default ({navigation, route}) => {
                         return <Text>{`重        量:  ${state.weight}kg`}</Text>
                     },
                     value() {
-                        return <Checkbox defaultChecked={state.getWeight} onChange={({target}) => {
+
+                        return <Checkbox checked={state.getWeight} onChange={({target}) => {
                             const {checked} = target
                             setState(state => {
                                 return {
@@ -411,53 +420,122 @@ export default ({navigation, route}) => {
                                     getWeight: checked,
                                 }
                             })
+                            setCommon_bag_select(0)
+
                         }
                         }>称重</Checkbox>
                     }
                 })}
 
-                {renderRow({
-                    title() {
-                        // overlay
+                <Picker
+                    data={dropList}
+                    cols={1}
+                    value={common_bag_select.toString()}
+                    format={() => {
+                        return dropList.find(({value}) => parseInt(value) === common_bag_select)?.label
+                    }}
+                    onChange={([e]) => {
+                        setCommon_bag_select(parseInt(e));
 
-                        return <Popover
-                            overlay={Object.entries(common_bag_list).map(([key, value]) => {
-                                return <Popover.Item key={key} value={key}
-                                                     style={{backgroundColor: common_bag_select === parseInt(key) ? '#efeff4' : '#fff'}}>
-                                    <Text>{value}</Text>
-                                </Popover.Item>
-                            })}
-                            onSelect={v => {
-                                setCommon_bag_select(parseInt(v))
-                            }}
-                        >
-                            <View
-                                style={{flexDirection: 'row', alignItems: 'center'}}>
-                                <Text>{`包  装  袋：${getBagName()}`}</Text>
-                                <Image
-                                    style={{width: 16, height: 16, marginLeft: 5}}
-                                    resizeMode={"contain"}
-                                    source={require('../../image/dropDown.png')}
-                                />
-                            </View>
-                        </Popover>
-                    },
-                    value() {
-                        return null
-                    },
-                })}
+                        setState(state => {
+                            return {
+                                ...state,
+                                getWeight: false,
+                            }
+                        })
+                    }}
+                >
+                    <List.Item arrow="horizontal">价 格：</List.Item>
+                </Picker>
+
+                {/*{renderRow({*/}
+                {/*    title() {*/}
+                {/*        // overlay*/}
+
+                {/*        return <Popover*/}
+                {/*            overlay={Object.entries(common_bag_list).map(([key, value]) => {*/}
+                {/*                return <Popover.Item key={key} value={key}*/}
+                {/*                                     style={{backgroundColor: common_bag_select === parseInt(key) ? '#efeff4' : '#fff'}}>*/}
+                {/*                    <Text>{value.name}</Text>*/}
+                {/*                </Popover.Item>*/}
+                {/*            })}*/}
+                {/*            onSelect={v => {*/}
+                {/*                setCommon_bag_select(parseInt(v))*/}
+                {/*                console.log('Object.entries(common_bag_list)[v][1].price', Object.entries(common_bag_list)[v][1].price)*/}
+                {/*                const list = Object.entries(common_bag_list)[v][1].price || [];*/}
+                {/*                const [value = ''] = list;*/}
+                {/*                setPriceList(Object.entries(common_bag_list)[v][1].price || []);*/}
+                {/*                setPrice(value);*/}
+                {/*                setState(state => {*/}
+                {/*                    return {*/}
+                {/*                        ...state,*/}
+                {/*                        getWeight: false,*/}
+                {/*                    }*/}
+                {/*                })*/}
+                {/*            }}*/}
+                {/*        >*/}
+                {/*            <View*/}
+                {/*                style={{flexDirection: 'row', alignItems: 'center'}}>*/}
+                {/*                <Text>{`包  装  袋：${getBagName()}`}</Text>*/}
+                {/*                <Image*/}
+                {/*                    style={{width: 16, height: 16, marginLeft: 5}}*/}
+                {/*                    resizeMode={"contain"}*/}
+                {/*                    source={require('../../image/dropDown.png')}*/}
+                {/*                />*/}
+                {/*            </View>*/}
+                {/*        </Popover>*/}
+                {/*    },*/}
+                {/*    value() {*/}
+                {/*        return null*/}
+                {/*    },*/}
+                {/*})}*/}
+                {/*{priceList.length !== 0 ? renderRow({*/}
+                {/*    title() {*/}
+                {/*        // overlay*/}
+                {/*        return <Popover*/}
+                {/*            overlay={priceList.map((value, index) => {*/}
+                {/*                return <Popover.Item key={index} value={value}*/}
+                {/*                                     style={{backgroundColor: value === price ? '#efeff4' : '#fff'}}>*/}
+                {/*                    <Text>{value}</Text>*/}
+                {/*                </Popover.Item>*/}
+                {/*            })}*/}
+                {/*            onSelect={v => {*/}
+                {/*                setPrice(v)*/}
+                {/*            }}*/}
+                {/*        >*/}
+                {/*            <View*/}
+                {/*                style={{flexDirection: 'row', alignItems: 'center'}}>*/}
+                {/*                <Text>{`价        格：${price}`}</Text>*/}
+                {/*                <Image*/}
+                {/*                    style={{width: 16, height: 16, marginLeft: 5}}*/}
+                {/*                    resizeMode={"contain"}*/}
+                {/*                    source={require('../../image/dropDown.png')}*/}
+                {/*                />*/}
+                {/*            </View>*/}
+                {/*        </Popover>*/}
+                {/*    },*/}
+                {/*    value() {*/}
+                {/*        return null*/}
+                {/*    },*/}
+                {/*}) : <></>}*/}
 
                 <WhiteSpace/>
                 <View style={{flexDirection: "row", justifyContent: "space-around"}}>
                     <Button type="primary" onPress={handleCreateQrcode}>
                         生成
                     </Button>
-                    <Button type="primary" onPress={printBarCode}>
+                    <Button type="warning" onPress={() => {
+                        printStatus = false;
+                        handleMergeAfter()
+                    }}>
+                        合包
+                    </Button>
+                    <Button type="primary" onPress={() => {
+                        printStatus = true;
+                        handleMergeAfter()
+                    }}>
                         {/*onPress={handleCreateQrcode}*/}
                         打印
-                    </Button>
-                    <Button type="warning" onPress={handleMergeAfter}>
-                        {route.params.type === 0 ? "合包" : "集包"}
                     </Button>
                 </View>
                 <WhiteSpace/>
@@ -502,7 +580,7 @@ export default ({navigation, route}) => {
                     }}
                 >
                     <Text style={{fontSize: 20, color: "#333"}}>
-                        运单号:{item.codeNum}
+                        运单号:{`${`${item.codeNum}-`.slice(-6, -1)},收件人:${item.consignee.consignee}`}
                     </Text>
                     {expansion.includes(item.codeNum) ? (
                         <>

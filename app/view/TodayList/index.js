@@ -10,13 +10,13 @@ import moment from "moment";
  * 过滤的状态枚举
  * @type {string[]}
  */
-const enumStatus = ['全部', '认领', '未认领'];
+const enumStatus = ['全部', '未入库', '已入库'];
 export default ({navigation, route}) => {
     const blue = useRef();
     const [list, setList] = useState([]);
     const [end, setEnd] = useState(false);
+    const [count, setCount] = useState(0);
     const [loading, setLoading] = useState(false);
-
     const [refreshing, setRefreshing] = useState(false);
     const [params, setParams] = useState(() => {
         return {
@@ -94,6 +94,7 @@ export default ({navigation, route}) => {
                 if (paramsValid) {
                     setRefreshing(false);
                 }
+                setCount(res.count)
                 setList(list => paramsValid ? [...data] : [...list, ...data])
                 setLoading(false)
                 if (paramsValid) {
@@ -305,8 +306,11 @@ export default ({navigation, route}) => {
                         <Button onPress={() => reloadList()}>筛选</Button>
                     </View>
                 </View>
-
-
+                <View style={{flexDirection: "row", paddingBottom: 9, justifyContent: 'space-between'}}>
+                    <View style={{flexDirection: "column", justifyContent: 'space-between'}}>
+                        <Text style={{fontSize: 14, color: "#888"}}>总数量:{count}</Text>
+                    </View>
+                </View>
                 {
                     showTime.value !== '' ?
                         <DateTimePicker
@@ -329,7 +333,6 @@ export default ({navigation, route}) => {
                         />
                         : null
                 }
-
             </View>
         );
     };
@@ -361,7 +364,7 @@ export default ({navigation, route}) => {
                     <Text style={{
                         fontSize: 20,
                         color: "#333"
-                    }}>最晚取件时间：{item.expected_time.replace(/^.*? /, '')} {item.statusName}</Text>
+                    }}>订单：{item.packageNum}</Text>
                     <WhiteSpace/>
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
                         <View style={{width: '80%'}}><Text

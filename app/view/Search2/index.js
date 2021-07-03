@@ -1,50 +1,59 @@
 import React, {useEffect, useRef, useState} from "react";
 import {FlatList, PixelRatio, Text, View} from "react-native";
-import {Button, Modal, Popover, Toast, WhiteSpace, WingBlank} from "@ant-design/react-native";
-import {order_accept_list, order_claim, order_pickup} from "../../util/api";
+import {Button, InputItem, Modal, Toast, WhiteSpace, WingBlank} from "@ant-design/react-native";
+import {order_claim, order_pickup, order_scan_list} from "../../util/api";
 import Print from "../../util/print";
-import DateTimePicker from '@react-native-community/datetimepicker';
-import moment from "moment";
+import usePdaScan from "react-native-pda-scan";
 
 /**
- * 过滤的状态枚举
- * @type {string[]}
+ * 搜索展示列表
+ * @param navigation
+ * @param route
+ * @returns {JSX.Element}
  */
-const enumStatus = ['全部', '认领', '未认领'];
 export default ({navigation, route}) => {
     const blue = useRef();
     const [list, setList] = useState([]);
-    const [end, setEnd] = useState(false);
+    const [end, setEnd] = useState(true);
     const [loading, setLoading] = useState(false);
-
     const [refreshing, setRefreshing] = useState(false);
     const [params, setParams] = useState(() => {
         return {
             page: 1,
             limit: 5,
-            status: route.params.status,
-            today: route?.params?.today,
-            claim: 0,
-            keyword: '',
-            st: moment().format('YYYY-MM-DD'),
-            et: moment().format('YYYY-MM-DD')
+            keyword: ''
         }
     });
-    const [showTime, setShowTime] = useState({
-        value: '',
-        type: ''
-    });
     const [extend, setExtend] = useState('');
+    usePdaScan({
+        onEvent(e) {
+            console.log(e);
+            handleSubmitEditing({
+                nativeEvent: {
+                    text: e,
+                },
+            });
+
+        },
+        onError(e) {
+            console.log(e);
+        },
+        trigger: "always",
+    });
     useEffect(() => {
         blue.current = new Print();
         blue.current.boot().then(() => {
             return blue.current.getPeripheralId();
         })
-        onFetch()
         return () => {
             blue.current.disconnect();
         };
     }, []);
+    // useEffect(() => {
+    //     if (params.keyword !== '') {
+    //         onFetch()
+    //     }
+    // }, [params])
     const reloadList = (body = {}) => {
         const paramsValid = Object.keys(body).length !== 0;
         console.log('paramsValid', paramsValid)
@@ -84,12 +93,14 @@ export default ({navigation, route}) => {
                 return;
             }
         }
-        order_accept_list(paramsValid ? body : params)
+        order_scan_list(paramsValid ? body : params)
             .then((res) => {
-                console.log(JSON.stringify(res))
+
                 const {data} = res;
                 if (data.length < params.limit) {
                     setEnd(true)
+                } else {
+                    setEnd(false);
                 }
                 if (paramsValid) {
                     setRefreshing(false);
@@ -128,6 +139,7 @@ export default ({navigation, route}) => {
                 text: "确定",
                 onPress: () => {
                     order_pickup({orderID}).then((res) => {
+                        console.log(res);
                         const tempList = list.filter(value => {
                             return value.orderID !== orderID;
 
@@ -188,6 +200,7 @@ export default ({navigation, route}) => {
     const handlePrint = async ({item}) => {
         const {
             packageNum,
+            expected_time,
             consignee: {name, mobile},
             to,
             supplier,
@@ -198,7 +211,6 @@ export default ({navigation, route}) => {
             pickup: {addr: pickup_addr = ''} = {},
             num = '1'
         } = item;
-        const expected_time = moment().format('YYYY-MM-DD HH:mm');
         for (let i = 1; i <= parseInt(num); i++) {
             try {
 
@@ -231,106 +243,75 @@ export default ({navigation, route}) => {
             }
         }
     }
-    const handleSearch = () => {
-        Modal.prompt(
-            '搜索',
-            '请输入要搜索的内容',
-            keyword => {
-                reloadList({
-                    ...params,
-                    keyword,
-                })
-            },
-            'default',
-            params.keyword,
-            ['请输入要搜索的内容']
-        )
-        ;
-    }
-    const handleSelectDate = ({value, type}) => {
-        setShowTime({
-            value: moment(value).format(),
-            type,
+
+    const handleChangeText = (text) => {
+        setParams((state) => {
+            return {
+                ...state,
+                keyword: text,
+            };
         });
+    };
+    const handleSubmitEditing = ({nativeEvent: {text: keyword}}) => {
+        setParams(state => ({...state, keyword}))
+    }
+    const handleSearch = () => {
+
     }
     const renderHeader = () => {
         return (
-            <View
-                style={{
-                    paddingHorizontal: 15,
-                    backgroundColor: "#f5f5f9",
-                }}>
-                <View style={{flexDirection: "row", paddingVertical: 9, justifyContent: 'space-between'}}>
-                    <View>
-                        <Text style={{fontSize: 14, color: "#888"}} onPress={handleSearch}>搜索:{params.keyword}</Text>
-                    </View>
-                    <View>
-                        <Popover
-                            overlay={
-                                enumStatus.map((value, index) => {
-                                    return <Popover.Item key={index} value={index}
-                                                         style={{backgroundColor: params.claim === index ? '#efeff4' : '#fff'}}>
-                                        <Text>{value}</Text>
-                                    </Popover.Item>
-                                })}
-                            onSelect={v =>
-                                reloadList({
-                                    ...params,
-                                    claim: v,
-                                })
-                            }
-                        >
-                            <Text
-                                style={{
-                                    fontSize: 14,
-                                    color: "#888",
-                                    textAlign: "center",
-                                }}
-                            >
-                                状态：{enumStatus[params.claim]}
-                            </Text>
-                        </Popover>
-                    </View>
+            <>
+                <View>
+                    <InputItem
+                        autoCapitalize="none"
+                        type="text"
+                        placeholder="等待扫描中.."
+                        value={params.keyword}
+                        onChangeText={handleChangeText}
+                        onSubmitEditing={handleSubmitEditing}
+                    />
                 </View>
-                <View style={{flexDirection: "row", paddingVertical: 9, justifyContent: 'space-between'}}>
-                    <View style={{flexDirection: "column", justifyContent: 'space-between'}}>
-                        <Text style={{fontSize: 14, color: "#888"}} onPress={() => {
-                            handleSelectDate({value: params.st, type: 'st'})
-                        }}>开始时间:{params.st}</Text>
-                        <Text style={{fontSize: 14, color: "#888"}} onPress={() => {
-                            handleSelectDate({value: params.et, type: 'et'})
-                        }}>结束时间:{params.et}</Text>
-                    </View>
-                    <View>
-                        <Button onPress={() => reloadList()}>筛选</Button>
-                    </View>
+                <View
+                    style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        paddingHorizontal: 15,
+                        paddingVertical: 9,
+                        alignItems: "center",
+                        backgroundColor: "#f5f5f9",
+                        borderBottomColor: "#ddd",
+                        borderBottomWidth: 1 / PixelRatio.get(),
+                    }}
+                >
+                    <Text style={{fontSize: 12, color: "#333"}}>
+                        条码:
+                        {/*{state.input_sn}*/}
+                    </Text>
+                    {/* <Button size="small">清除</Button> */}
                 </View>
 
+                <WhiteSpace/>
+                <View style={{flexDirection: "row", justifyContent: "space-around"}}>
+                    {/*<Button type="warning" onPress={handleRemovePackage}>*/}
+                    <Button type="warning" onPress={() => reloadList()}>
+                        搜索
+                    </Button>
+                </View>
+                <WhiteSpace/>
 
-                {
-                    showTime.value !== '' ?
-                        <DateTimePicker
-                            value={new Date(showTime.value)}
-                            mode={'date'}
-                            is24Hour={true}
-                            display="default"
-                            onChange={({nativeEvent: {timestamp}}) => {
-                                setParams(params => {
-                                    return {
-                                        ...params,
-                                        [showTime.type]: moment(timestamp).format('YYYY-MM-DD'),
-                                    }
-                                })
-                                setShowTime({
-                                    value: '',
-                                    type: ''
-                                })
-                            }}
-                        />
-                        : null
-                }
-
-            </View>
+                <View
+                    style={{
+                        flexDirection: "row",
+                        paddingHorizontal: 15,
+                        paddingVertical: 9,
+                        backgroundColor: "#f5f5f9",
+                    }}
+                >
+                    <View style={{flex: 1}}>
+                        <Text style={{fontSize: 14, color: "#888"}}>包裹信息</Text>
+                    </View>
+                </View>
+            </>
         );
     };
     const renderItem = ({item}) => {
@@ -366,81 +347,81 @@ export default ({navigation, route}) => {
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
                         <View style={{width: '80%'}}><Text
                             style={{fontSize: 20, color: "#333"}}>{item.pickup.address}</Text></View>
-                        <Button type={"primary"} size={"small"}
-                                onPress={() => setExtend(id => {
-                                    if (id === item.orderID) {
-                                        return ''
-                                    } else {
-                                        return item.orderID;
-                                    }
-                                })}>
-                            {extend === item.orderID ? '收缩' : '展开'}
-                        </Button>
+                        {/*<Button type={"primary"} size={"small"}*/}
+                        {/*        onPress={() => setExtend(id => {*/}
+                        {/*            if (id === item.orderID) {*/}
+                        {/*                return ''*/}
+                        {/*            } else {*/}
+                        {/*                return item.orderID;*/}
+                        {/*            }*/}
+                        {/*        })}>*/}
+                        {/*    {extend === item.orderID ? '收缩' : '展开'}*/}
+                        {/*</Button>*/}
                     </View>
-                    {extend === item.orderID ? <>
-                        <WhiteSpace/>
-                        <Text style={{fontSize: 20, color: "#333"}}>{item.payment} {item.weight}</Text>
-                        <WhiteSpace/>
-                        <Text style={{fontSize: 20, color: "#333"}}>{item.channel}</Text>
-                        <WhiteSpace/>
-                        <Text style={{fontSize: 20, color: "#333"}}>寄:{item.pickup.name}({item.pickup.mobile})</Text>
-                        <WhiteSpace/>
-                        <Text style={{
-                            fontSize: 20,
-                            color: "#333"
-                        }}>收:{item.consignee.name}({item.consignee.mobile})</Text>
-                    </> : null
-                    }
+                    {/*{extend === item.orderID ? <>*/}
+                    <WhiteSpace/>
+                    <Text style={{fontSize: 20, color: "#333"}}>{item.payment} {item.weight}</Text>
+                    <WhiteSpace/>
+                    <Text style={{fontSize: 20, color: "#333"}}>{item.channel}</Text>
+                    <WhiteSpace/>
+                    <Text style={{fontSize: 20, color: "#333"}}>寄:{item.pickup.name}({item.pickup.mobile})</Text>
+                    <WhiteSpace/>
+                    <Text style={{
+                        fontSize: 20,
+                        color: "#333"
+                    }}>收:{item.consignee.name}({item.consignee.mobile})</Text>
+                    {/*</> : null*/}
+                    {/*}*/}
                 </View>
                 <WhiteSpace/>
-                {
-                    extend === item.orderID ?
-                        <View style={{flexDirection: "row", justifyContent: "flex-end"}}>
-                            {item.adminID === 0 ? (
-                                <WingBlank size="sm">
-                                    <Button
-                                        type="primary"
-                                        onPress={() => {
-                                            handle_order_claim({orderID: item.orderID});
-                                        }}
-                                    >
-                                        领取
-                                    </Button>
-                                </WingBlank>
-                            ) : null}
-                            {item.status === 0 ? (
-                                <WingBlank size="sm">
-                                    <Button
-                                        type="primary"
-                                        onPress={() => {
-                                            handle_order_pickup({orderID: item.orderID, item});
-                                        }}
-                                    >
-                                        取件
-                                    </Button>
-                                </WingBlank>
-                            ) : null}
-                            {item.status === 1 ? (
-                                <WingBlank size="sm">
-                                    <Button
-                                        type="primary"
-                                        onPress={() => {
-                                            handlePrint({item});
-                                        }}
-                                    >
-                                        打印
-                                    </Button>
-                                </WingBlank>
-                            ) : null}
-                        </View>
-                        : null
-                }
+                {/*{*/}
+                {/*    extend === item.orderID ?*/}
+                <View style={{flexDirection: "row", justifyContent: "flex-end"}}>
+                    {/*{item.adminID === 0 ? (*/}
+                    {/*    <WingBlank size="sm">*/}
+                    {/*        <Button*/}
+                    {/*            type="primary"*/}
+                    {/*            onPress={() => {*/}
+                    {/*                handle_order_claim({orderID: item.orderID});*/}
+                    {/*            }}*/}
+                    {/*        >*/}
+                    {/*            领取*/}
+                    {/*        </Button>*/}
+                    {/*    </WingBlank>*/}
+                    {/*) : null}*/}
+                    {/*{item.status === 0 ? (*/}
+                    {/*    <WingBlank size="sm">*/}
+                    {/*        <Button*/}
+                    {/*            type="primary"*/}
+                    {/*            onPress={() => {*/}
+                    {/*                handle_order_pickup({orderID: item.orderID, item});*/}
+                    {/*            }}*/}
+                    {/*        >*/}
+                    {/*            取件*/}
+                    {/*        </Button>*/}
+                    {/*    </WingBlank>*/}
+                    {/*) : null}*/}
+                    {item.status === 1 ? (
+                        <WingBlank size="sm">
+                            <Button
+                                type="primary"
+                                onPress={() => {
+                                    handlePrint({item});
+                                }}
+                            >
+                                打印
+                            </Button>
+                        </WingBlank>
+                    ) : null}
+                </View>
+                {/*        : null*/}
+                {/*}*/}
             </View>
         );
     };
     return (
         <View style={{backgroundColor: "#fff", flex: 1}}>
-            <View style={{flex: 1, backgroundColor: 'gray'}}>
+            <View style={{flex: 1,}}>
                 {/*<ListView*/}
                 {/*    ref={ref}*/}
                 {/*    header={renderHeader}*/}
@@ -453,6 +434,7 @@ export default ({navigation, route}) => {
 
                 {renderHeader()}
                 <FlatList
+                    style={{backgroundColor: 'gray'}}
                     refreshing={refreshing}
                     onRefresh={reloadList}
                     // ListHeaderComponent={renderHeader}
@@ -475,5 +457,4 @@ export default ({navigation, route}) => {
             </View>
         </View>
     );
-}
-;
+};

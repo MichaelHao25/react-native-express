@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-community/async-storage";
 import Sound from "react-native-sound";
-import {Toast, Portal} from "@ant-design/react-native";
+import {Portal, Toast} from "@ant-design/react-native";
 import Tts from "react-native-tts";
 import React from "react";
 import * as RootNavigation from './RootNavigation.js';
@@ -91,14 +91,21 @@ class Request {
                         throw res;
                     } else {
                         // {"code": 200, "count": 0, "data": [], "pcodeNum": "SJTPACK1612616050", "price": 0, "success": true, "weight": 0}
-                        if (res.success === false) {
-                            handleSound.play();
-                        }
-                        if (res.success === true) {
-                            if (res.sound) {
-                                Tts.speak(res.sound);
+                        // false时，sound没有传值，发默认的error；sound有值时，发sound
+                        // if (res.success === false) {
+                        if (res.sound) {
+                            Tts.speak(res.sound);
+                        } else {
+                            if (res.success === false) {
+                                handleSound.play();
                             }
                         }
+                        // }
+                        // if (res.success === true) {
+                        //     if (res.sound) {
+                        //         Tts.speak(res.sound);
+                        //     }
+                        // }
                         // console.log(`res.result true`)
                         return res;
                     }

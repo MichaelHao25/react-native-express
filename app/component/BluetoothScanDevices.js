@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import {Button, Flex, List, WhiteSpace, WingBlank,} from "@ant-design/react-native";
 
-import {AppState, NativeEventEmitter, NativeModules, PermissionsAndroid, Platform, View,} from "react-native";
+import {AppState, NativeEventEmitter, NativeModules, PermissionsAndroid, Platform, ScrollView} from "react-native";
 import BleManager from "react-native-ble-manager";
 
 // // Import/require in the beginning of the file
@@ -173,7 +173,7 @@ export default class App extends Component {
             title = ""
         } = this.props
         return (
-            <View style={{flex: 1}}>
+            <ScrollView style={{flex: 1}}>
                 <WhiteSpace/>
                 <WingBlank>
                     <Flex justify="end">
@@ -206,7 +206,7 @@ export default class App extends Component {
                         );
                     })}
                 </List>
-            </View>
+            </ScrollView>
         );
     }
 }

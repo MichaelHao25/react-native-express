@@ -3,16 +3,25 @@ import {Button, InputItem, List} from "@ant-design/react-native";
 import AuthContext from "../../util/AuthContext";
 
 export default ({navigation}) => {
-    const [userInfo, setUserInfo] = useState({
-        // username: "admin",
-        // password: "123456",
-        username: "",
-        password: "",
+    const [userInfo, setUserInfo] = useState(() => {
+        if (process.env.NODE_ENV) {
+            return {
+                username: "88888",
+                password: "111111",
+            }
+        } else {
+            return {
+                username: "",
+                password: "",
+            }
+        }
+
     });
     const {signIn} = React.useContext(AuthContext);
     const handleLogin = () => {
         signIn(userInfo);
     };
+    console.log(JSON.stringify(process))
     const handleMidfyPassword = () => {
         navigation.navigate('modifyPassword')
     }

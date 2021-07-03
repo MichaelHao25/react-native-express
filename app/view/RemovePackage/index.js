@@ -52,7 +52,7 @@ export default ({navigation, route}) => {
 
                             Modal.alert("提示", res.msg);
                         } else {
-                            Modal.alert("提示", "减包成功!");
+                            // Modal.alert("提示", "减包成功!");
                             const {count, data, pcodeNum, price, weight} = res;
                             setState((state) => {
                                 ref.current.ulv.updateRows(data, 0);
