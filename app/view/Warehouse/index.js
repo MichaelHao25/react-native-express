@@ -22,10 +22,31 @@ export default ({navigation, route}) => {
     const [expansion, setExpansion] = useState([]);
     const [weight, setWeight] = useState('');
     useEffect(() => {
-        AsyncStorage.getItem('WarehouseList').then(WarehouseList => {
-            console.log('WarehouseList', WarehouseList)
-            if (WarehouseList !== null) {
-                setList(JSON.parse(WarehouseList));
+        AsyncStorage.getItem('WarehouseListDate').then((WarehouseListDate) => {
+            if (!WarehouseListDate) {
+                WarehouseListDate = '0'
+            }
+            console.log('WarehouseListDate', WarehouseListDate)
+            console.log('new Date().getDate()', new Date().getDate())
+            if (new Date().getDate() !== parseInt(WarehouseListDate)) {
+
+                if (WarehouseListDate === "0") {
+                    AsyncStorage.getItem('WarehouseList').then(WarehouseList => {
+                        if (WarehouseList !== null) {
+                            setList(JSON.parse(WarehouseList));
+                        }
+                    })
+                    AsyncStorage.setItem('WarehouseListDate', new Date().getDate().toString());
+                } else {
+                    setList([]);
+                    AsyncStorage.setItem('WarehouseList', JSON.stringify([]));
+                }
+            } else {
+                AsyncStorage.getItem('WarehouseList').then(WarehouseList => {
+                    if (WarehouseList !== null) {
+                        setList(JSON.parse(WarehouseList));
+                    }
+                })
             }
         })
 
@@ -219,7 +240,10 @@ export default ({navigation, route}) => {
                         }
                     })
                     setList(list => {
-                        list.unshift(data);
+                        const isRepeat = list.some(item => item.codeNum === data.codeNum)
+                        if (!isRepeat) {
+                            list.unshift(data);
+                        }
                         return [...list]
                     })
                     if (route.params.type === 'storeInByPrint') {

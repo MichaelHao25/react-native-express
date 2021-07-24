@@ -427,6 +427,11 @@ export default ({navigation, route}) => {
                     }
                 })}
 
+                {renderRow({
+                    title: "价        格:  ",
+                    value: state.price + '元',
+                })}
+
                 <Picker
                     data={dropList}
                     cols={1}

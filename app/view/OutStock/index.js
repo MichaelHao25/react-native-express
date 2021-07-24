@@ -157,6 +157,7 @@ export default ({navigation, route}) => {
                     order_storeout({
                         car: state.carId,
                         codeNum: tempList.join(","),
+                        shippingID: state.shippingID
                     }).then((res) => {
                         if (res.success === false) {
                             Modal.alert("提示", res.msg);

@@ -4,7 +4,7 @@ import AuthContext from "../../util/AuthContext";
 
 export default ({navigation}) => {
     const [userInfo, setUserInfo] = useState(() => {
-        if (process.env.NODE_ENV) {
+        if ('development' === process.env.NODE_ENV) {
             return {
                 username: "88888",
                 password: "111111",

@@ -404,7 +404,7 @@ export default ({navigation, route}) => {
                                             handle_order_claim({orderID: item.orderID});
                                         }}
                                     >
-                                        领取
+                                        接单
                                     </Button>
                                 </WingBlank>
                             ) : null}
@@ -412,6 +412,7 @@ export default ({navigation, route}) => {
                                 <WingBlank size="sm">
                                     <Button
                                         type="primary"
+                                        size={'small'}
                                         onPress={() => {
                                             handle_order_pickup({orderID: item.orderID, item});
                                         }}
