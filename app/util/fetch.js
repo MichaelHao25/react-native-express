@@ -16,21 +16,11 @@ const handleSound = new Sound("error_error.mp3", Sound.MAIN_BUNDLE, (error) => {
 class Request {
     static url = "http://api.junchain.cn";
     static loadingTimer = 0;
-    static loadingKey = '';
-    static requestList = new Set()
+    static loadingKey;
     static getToken = () => {
         return AsyncStorage.getItem("token");
     };
     static fetch = ({method = "get", url, body = {}, headers = {}}) => {
-        console.log('Request.requestList.has(url)', Request.requestList.has(url))
-        if (Request.requestList.has(url)) {
-            throw 'repeat request';
-        } else {
-            Request.requestList.add(url);
-        }
-        if (Request.loadingKey !== '') {
-            Portal.remove(Request.loadingKey);
-        }
         Request.loadingKey = Toast.loading("正在加载中...", 0);
         // Request.loadingTimer = setTimeout(() => {
         // }, 200);
@@ -69,9 +59,7 @@ class Request {
                     // clearTimeout(Request.loadingTimer);
                     if (Request.loadingKey) {
                         Portal.remove(Request.loadingKey);
-                        Request.loadingKey = ''
                     }
-                    Request.requestList.delete(url);
 
                     if (res.status === 200) {
                         // console.log('res status 200')
