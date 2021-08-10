@@ -21,9 +21,9 @@ class Request {
         return AsyncStorage.getItem("token");
     };
     static fetch = ({method = "get", url, body = {}, headers = {}}) => {
-        Request.loadingKey = Toast.loading("正在加载中...", 0);
-        // Request.loadingTimer = setTimeout(() => {
-        // }, 200);
+        Request.loadingTimer = setTimeout(() => {
+            Request.loadingKey = Toast.loading("正在加载中...");
+        }, 200);
         return Request.getToken().then((token) => {
             console.log("token", token);
             if (token) {
@@ -56,7 +56,7 @@ class Request {
 
             return fetch(`${Request.url}${url}${arg}`, request)
                 .then((res) => {
-                    // clearTimeout(Request.loadingTimer);
+                    clearTimeout(Request.loadingTimer);
                     if (Request.loadingKey) {
                         Portal.remove(Request.loadingKey);
                     }
