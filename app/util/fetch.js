@@ -13,6 +13,8 @@ const handleSound = new Sound("error_error.mp3", Sound.MAIN_BUNDLE, (error) => {
     }
 });
 
+let requestList = [];
+
 class Request {
     static url = "http://api.junchain.cn";
     static loadingTimer = 0;
@@ -21,6 +23,11 @@ class Request {
         return AsyncStorage.getItem("token");
     };
     static fetch = ({method = "get", url, body = {}, headers = {}}) => {
+        if (requestList.includes(`${method}_${url}`)) {
+            return Promise.reject();
+        } else {
+            requestList.push(`${method}_${url}`)
+        }
         Request.loadingTimer = setTimeout(() => {
             Request.loadingKey = Toast.loading("正在加载中...");
         }, 200);
@@ -56,6 +63,7 @@ class Request {
 
             return fetch(`${Request.url}${url}${arg}`, request)
                 .then((res) => {
+                    requestList = requestList.filter(a => a !== `${method}_${url}`)
                     clearTimeout(Request.loadingTimer);
                     if (Request.loadingKey) {
                         Portal.remove(Request.loadingKey);
