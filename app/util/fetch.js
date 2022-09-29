@@ -19,11 +19,14 @@ class Request {
     static url = "http://api.junchain.cn";
     static loadingTimer = 0;
     static loadingKey;
+    static timeoutTimer = 0;
     static getToken = () => {
         return AsyncStorage.getItem("token");
     };
     static fetch = ({method = "get", url, body = {}, headers = {}}) => {
+        console.log(requestList);
         if (requestList.includes(`${method}_${url}`)) {
+            console.log('repeat')
             return Promise.reject();
         } else {
             requestList.push(`${method}_${url}`)
@@ -31,6 +34,14 @@ class Request {
         Request.loadingTimer = setTimeout(() => {
             Request.loadingKey = Toast.loading("正在加载中...");
         }, 200);
+        /*添加超时的标记，如果超时的话就不执行回掉函数了*/
+        let timeoutFlag = false;
+        // 超时的策略 3s
+        Request.timeoutTimer = setTimeout(() => {
+            requestList = requestList.filter(a => a !== `${method}_${url}`)
+            timeoutFlag=true;
+        }, 1000 * 3)
+
         return Request.getToken().then((token) => {
             console.log("token", token);
             if (token) {
@@ -61,10 +72,21 @@ class Request {
                 request.body = JSON.stringify(body);
             }
 
-            return fetch(`${Request.url}${url}${arg}`, request)
+            return fetch(`${Request.url}${url}${arg}`, request).then(res=>{
+                if(timeoutFlag){
+                    throw new Error('timeout');
+                }else{
+                    return res;
+                }
+            })
                 .then((res) => {
+                    // 超时的策略 3s
                     requestList = requestList.filter(a => a !== `${method}_${url}`)
+                    clearTimeout(Request.timeoutTimer);
+
+
                     clearTimeout(Request.loadingTimer);
+
                     if (Request.loadingKey) {
                         Portal.remove(Request.loadingKey);
                     }
