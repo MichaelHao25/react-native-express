@@ -80,7 +80,7 @@ export default ({ navigation, route }) => {
           });
         }
       });
-    }, [])
+    }, [state])
   );
   const handleChangeText = (text) => {
     setState((state) => {

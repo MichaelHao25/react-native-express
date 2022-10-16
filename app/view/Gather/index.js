@@ -64,7 +64,7 @@ export default ({ navigation, route }) => {
           });
         }
       });
-    }, [])
+    }, [state])
   );
   /**
    * 打印开始

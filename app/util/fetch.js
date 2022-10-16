@@ -36,10 +36,11 @@ class Request {
     /*添加超时的标记，如果超时的话就不执行回掉函数了*/
     let timeoutFlag = false;
     // 超时的策略 3s
-    Request.timeoutTimer = setTimeout(() => {
-      requestList = requestList.filter((a) => a !== `${method}_${url}`);
-      timeoutFlag = true;
-    }, 1000 * 3);
+    // 根本无用
+    // Request.timeoutTimer = setTimeout(() => {
+    //   requestList = requestList.filter((a) => a !== `${method}_${url}`);
+    //   timeoutFlag = true;
+    // }, 1000 * 3);
 
     return Request.getToken().then((token) => {
       console.log('token', token);
@@ -73,8 +74,6 @@ class Request {
 
       return fetch(`${Request.url}${url}${arg}`, request)
         .then((res) => {
-          console.log(`${Request.url}${url}${arg}`);
-          console.log(request);
           if (timeoutFlag) {
             console.log('timeout');
           }
@@ -90,7 +89,6 @@ class Request {
           if (Request.loadingKey) {
             Portal.remove(Request.loadingKey);
           }
-
           if (res.status === 200) {
             // console.log('res status 200')
             return res.json();
@@ -107,10 +105,10 @@ class Request {
         })
         .then((res) => {
           // console.log(`get res json ${JSON.stringify(res)}`)
-          console.log(`${Request.url}${url}${arg}`);
-          console.log(body);
+          console.log('url', `${Request.url}${url}${arg}`);
+          console.log('request', request);
+          console.log('response', res);
           // dir会在正式版的模式下报错
-          console.log(res);
           if (res.msg === '无效的token') {
             RootNavigation.navigate('logout');
             // signOut()

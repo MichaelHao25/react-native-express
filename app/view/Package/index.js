@@ -125,7 +125,6 @@ export default ({ navigation, route }) => {
       AsyncStorage.getItem('QRcode').then((QRcode) => {
         if (QRcode) {
           AsyncStorage.removeItem('QRcode');
-          debugger;
           handleSubmitEditing({
             nativeEvent: {
               text: QRcode,
@@ -133,7 +132,7 @@ export default ({ navigation, route }) => {
           });
         }
       });
-    }, [])
+    }, [state])
   );
   useEffect(() => {
     console.log('useEffect-weight');
@@ -213,7 +212,6 @@ export default ({ navigation, route }) => {
     if (!input_sn_list.includes(text)) {
       input_sn_list.push(text);
     }
-    debugger;
     pack_addpack({
       codeNum: [...input_sn_list].join(','),
       type: route.params.type + 1,
@@ -226,7 +224,7 @@ export default ({ navigation, route }) => {
       // pcodeNum: "PK1611758823"
       // price: 111.01
 
-      const { count, data, pcodeNum, price, weight } = res;
+      const { count = 0, data, pcodeNum = '', price = 0, weight = 0 } = res;
       /**
        * 加包的时候获取主包号兜底打印
        */

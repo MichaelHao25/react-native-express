@@ -23,7 +23,7 @@ export default ({ navigation, route }) => {
           handleChangeText(QRcode);
         }
       });
-    }, [])
+    }, [state])
   );
   // pack_subpack
   const handleChangeText = (text) => {

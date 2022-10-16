@@ -45,7 +45,7 @@ export default ({ navigation, route }) => {
           });
         }
       });
-    }, [])
+    }, [params])
   );
   useEffect(() => {
     blue.current = new Print();

@@ -35,7 +35,7 @@ export default ({ navigation, route }) => {
           });
         }
       });
-    }, [])
+    }, [params])
   );
   useEffect(() => {
     common_dealoption().then((res) => {

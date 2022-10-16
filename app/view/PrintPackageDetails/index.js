@@ -41,7 +41,7 @@ export default ({ navigation, route }) => {
           });
         }
       });
-    }, [])
+    }, [state, resList])
   );
   const handlePrint = async (item) => {
     const num = item.num;
@@ -75,10 +75,10 @@ export default ({ navigation, route }) => {
   };
   // print = false 的时候不打印
   const handleRemovePackage = async ({
-    nativeEvent: { text, print = true },
+    nativeEvent: { text = '', print = true },
   }) => {
     console.log('text', text);
-    if (state.text === '') {
+    if (state.text === '' || text === '') {
       return;
     }
     let res;
@@ -110,7 +110,7 @@ export default ({ navigation, route }) => {
         input_sn: text,
       };
     });
-    if (res.success === false) {
+    if (res?.success !== true) {
       Modal.alert('提示', res.msg);
       // setState((state) => {
       //     return {

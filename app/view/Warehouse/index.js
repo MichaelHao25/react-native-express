@@ -125,7 +125,7 @@ export default ({ navigation, route }) => {
           });
         }
       });
-    }, [])
+    }, [state])
   );
   useEffect(() => {
     console.log('useEffect-weight');
