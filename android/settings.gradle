@@ -11,4 +11,6 @@ project(':jpush-react-native').projectDir = new File(rootProject.projectDir, '..
 include ':jcore-react-native'
 project(':jcore-react-native').projectDir = new File(rootProject.projectDir, '../node_modules/jcore-react-native/android')
 
+
+
 include ':app'
