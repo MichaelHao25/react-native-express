@@ -1,21 +1,21 @@
-import { Badge, Grid, List } from '@ant-design/react-native';
-import AsyncStorage from '@react-native-community/async-storage';
-import { useFocusEffect } from '@react-navigation/native';
-import React, { useEffect, useReducer, useState } from 'react';
-import { Image, ScrollView, Text, View } from 'react-native';
-import theme from '../../theme';
-import { order_count } from '../../util/api';
-
+import { Badge, Grid, List } from "@ant-design/react-native";
+import AsyncStorage from "@react-native-community/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
+import React, { useEffect, useReducer, useState } from "react";
+import { Image, ScrollView, Text, View } from "react-native";
+import Tts from "react-native-tts";
+import theme from "../../theme";
+import { order_count } from "../../util/api";
 export default ({ navigation }) => {
   const [state, dispatch] = useReducer(
     (prevStete, action) => {
       switch (action.type) {
-        case 'ORDER_COUNT':
+        case "ORDER_COUNT":
           return {
             ...prevStete,
             ...action.payload,
           };
-        case 'USER_NAME':
+        case "USER_NAME":
           return {
             ...prevStete,
             ...action.payload,
@@ -26,11 +26,11 @@ export default ({ navigation }) => {
       }
     },
     {
-      userName: 'admin',
-      end_accept: '0',
-      month_amount: '0',
-      today_amount: '0',
-      wait_accept: '0',
+      userName: "admin",
+      end_accept: "0",
+      month_amount: "0",
+      today_amount: "0",
+      wait_accept: "0",
     }
   );
   /**
@@ -39,44 +39,44 @@ export default ({ navigation }) => {
    */
   const [list, setList] = useState([
     {
-      icon: require('../../image/merge.png'),
+      icon: require("../../image/merge.png"),
       text: `合包`,
-      type: 'package',
+      type: "package",
     },
     {
-      icon: require('../../image/merge.png'),
+      icon: require("../../image/merge.png"),
       text: `拼包`,
-      type: 'gather',
+      type: "gather",
     },
     {
-      icon: require('../../image/merge.png'),
+      icon: require("../../image/merge.png"),
       text: `减包`,
-      type: 'subpackage',
+      type: "subpackage",
     },
     {
-      icon: require('../../image/merge.png'),
+      icon: require("../../image/merge.png"),
       text: `拆包`,
-      type: 'deletepackage',
+      type: "deletepackage",
     },
     {
-      icon: require('../../image/merge.png'),
+      icon: require("../../image/merge.png"),
       text: `出库`,
-      type: 'storeout',
+      type: "storeout",
     },
     {
-      icon: require('../../image/set.png'),
+      icon: require("../../image/set.png"),
       text: `设置`,
-      type: 'normal',
+      type: "normal",
     },
     {
-      icon: require('../../image/none.png'),
+      icon: require("../../image/none.png"),
       text: `扫描`,
-      type: 'scan',
+      type: "scan",
     },
     {
-      icon: require('../../image/none.png'),
+      icon: require("../../image/none.png"),
       text: `真实地址`,
-      type: 'realaddr',
+      type: "realaddr",
     },
 
     // {
@@ -91,43 +91,44 @@ export default ({ navigation }) => {
      * 称重入库 - storeInByWeigh
      */
     {
-      icon: require('../../image/none.png'),
+      icon: require("../../image/none.png"),
       text: `打码入库`,
-      type: 'storeInByPrint',
+      type: "storeInByPrint",
     },
     {
-      icon: require('../../image/none.png'),
+      icon: require("../../image/none.png"),
       text: `扫码入库`,
-      type: 'storeInByScan',
+      type: "storeInByScan",
     },
     {
-      icon: require('../../image/none.png'),
+      icon: require("../../image/none.png"),
       text: `称重入库`,
-      type: 'storeInByWeigh',
+      type: "storeInByWeigh",
     },
     {
-      icon: require('../../image/none.png'),
+      icon: require("../../image/none.png"),
       text: `查询`,
-      type: 'searchScan',
+      type: "searchScan",
     },
 
     {
-      icon: require('../../image/none.png'),
+      icon: require("../../image/none.png"),
       text: `异常件处理`,
-      type: 'deal',
+      type: "deal",
     },
   ]);
   const [oerder, setOrder] = useState(false);
   useEffect(() => {
-    AsyncStorage.getItem('auth').then((res) => {
+    Tts.speak("辛苦了");
+    AsyncStorage.getItem("auth").then((res) => {
       const auth = JSON.parse(res);
       const tempList = list.filter((item) => {
-        if (item.type === 'normal') {
+        if (item.type === "normal") {
           return true;
         }
         return auth.includes(item.type);
       });
-      setOrder(auth.includes('orders'));
+      setOrder(auth.includes("orders"));
       setList(tempList);
     });
     // JPush.addNotificationListener(msg => {
@@ -151,7 +152,7 @@ export default ({ navigation }) => {
       order_count().then(
         ({ data: { end_accept, month_amount, today_amount, wait_accept } }) => {
           dispatch({
-            type: 'ORDER_COUNT',
+            type: "ORDER_COUNT",
             payload: {
               end_accept,
               month_amount,
@@ -165,11 +166,11 @@ export default ({ navigation }) => {
   );
   useEffect(() => {
     // Tts.speak("王老板,晚上好!!!!success!");
-    AsyncStorage.getItem('username').then((res) => {
+    AsyncStorage.getItem("username").then((res) => {
       //   setTimeout(() => {
       //   }, 1000);
       dispatch({
-        type: 'ORDER_COUNT',
+        type: "ORDER_COUNT",
         payload: {
           userName: res,
         },
@@ -180,32 +181,32 @@ export default ({ navigation }) => {
     console.log(el, index);
     const type = el.type;
     switch (type) {
-      case 'package': {
-        navigation.navigate('package', {
+      case "package": {
+        navigation.navigate("package", {
           type: 0,
         });
         break;
       }
-      case 'gather': {
-        navigation.navigate('gather', {
+      case "gather": {
+        navigation.navigate("gather", {
           type: 1,
         });
         break;
       }
-      case 'subpackage': {
-        navigation.navigate('removePackage');
+      case "subpackage": {
+        navigation.navigate("removePackage");
         break;
       }
-      case 'deletepackage': {
-        navigation.navigate('unpackPackage');
+      case "deletepackage": {
+        navigation.navigate("unpackPackage");
         break;
       }
-      case 'storeout': {
-        navigation.navigate('outStock');
+      case "storeout": {
+        navigation.navigate("outStock");
         break;
       }
-      case 'scan': {
-        navigation.navigate('scan', {
+      case "scan": {
+        navigation.navigate("scan", {
           /**
            * 不显示真实地址
            */
@@ -213,8 +214,8 @@ export default ({ navigation }) => {
         });
         break;
       }
-      case 'realaddr': {
-        navigation.navigate('scan', {
+      case "realaddr": {
+        navigation.navigate("scan", {
           /**
            * 显示真实地址
            */
@@ -222,9 +223,9 @@ export default ({ navigation }) => {
         });
         break;
       }
-      case 'orders': {
-        navigation.navigate('list', {
-          title: '已揽件列表',
+      case "orders": {
+        navigation.navigate("list", {
+          title: "已揽件列表",
           status: 1,
         });
         break;
@@ -235,46 +236,46 @@ export default ({ navigation }) => {
        * 扫码入库 - storeInByScan
        * 称重入库 - storeInByWeigh
        */
-      case 'storeInByPrint': {
-        navigation.navigate('warehouse', {
-          title: '打码入库',
-          type: 'storeInByPrint',
+      case "storeInByPrint": {
+        navigation.navigate("warehouse", {
+          title: "打码入库",
+          type: "storeInByPrint",
         });
         break;
       }
-      case 'storeInByScan': {
-        navigation.navigate('warehouse', {
-          title: '扫码入库',
-          type: 'storeInByScan',
+      case "storeInByScan": {
+        navigation.navigate("warehouse", {
+          title: "扫码入库",
+          type: "storeInByScan",
         });
         break;
       }
-      case 'storeInByWeigh': {
-        navigation.navigate('warehouse', {
-          title: '称重入库',
-          type: 'storeInByWeigh',
+      case "storeInByWeigh": {
+        navigation.navigate("warehouse", {
+          title: "称重入库",
+          type: "storeInByWeigh",
         });
         break;
       }
-      case 'searchScan': {
-        navigation.navigate('search2');
+      case "searchScan": {
+        navigation.navigate("search2");
         break;
       }
-      case 'deal': {
-        navigation.navigate('deal');
+      case "deal": {
+        navigation.navigate("deal");
         break;
       }
       default: {
-        navigation.navigate('set');
+        navigation.navigate("set");
         break;
       }
     }
   };
-  console.log('list', list);
+  console.log("list", list);
   return (
     <ScrollView>
-      <List renderHeader={'用户信息'}>
-        <List.Item arrow='empty'>{state.userName}</List.Item>
+      <List renderHeader={"用户信息"}>
+        <List.Item arrow="empty">{state.userName}</List.Item>
         <List.Item>
           <Grid
             // package             合包
@@ -290,13 +291,13 @@ export default ({ navigation }) => {
                 <View
                   style={{
                     flex: 1,
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    alignItems: "center",
+                    justifyContent: "center",
                   }}
                 >
                   <Image
                     source={
-                      typeof item.icon === 'number'
+                      typeof item.icon === "number"
                         ? item.icon
                         : { src: item.icon }
                     }
@@ -328,9 +329,9 @@ export default ({ navigation }) => {
         {oerder ? (
           <>
             <List.Item
-              arrow='horizontal'
+              arrow="horizontal"
               onPress={() => {
-                navigation.navigate('list', {
+                navigation.navigate("list", {
                   status: 0,
                 });
               }}
@@ -345,9 +346,9 @@ export default ({ navigation }) => {
               )}
             </List.Item>
             <List.Item
-              arrow='horizontal'
+              arrow="horizontal"
               onPress={() => {
-                navigation.navigate('todayList', {
+                navigation.navigate("todayList", {
                   status: 1,
                   today: 1,
                 });
