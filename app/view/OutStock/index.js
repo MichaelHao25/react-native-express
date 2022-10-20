@@ -5,27 +5,27 @@ import {
   Modal,
   Picker,
   WhiteSpace,
-} from '@ant-design/react-native';
-import AsyncStorage from '@react-native-community/async-storage';
-import { useFocusEffect } from '@react-navigation/native';
-import React, { useEffect, useRef, useState } from 'react';
-import { FlatList, PixelRatio, Text, View } from 'react-native';
-import ScanButton from '../../component/ScanButton';
+} from "@ant-design/react-native";
+import AsyncStorage from "@react-native-community/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
+import React, { useEffect, useRef, useState } from "react";
+import { FlatList, PixelRatio, Text, View } from "react-native";
+import ScanButton from "../../component/ScanButton";
 import {
   common_allshipping,
   common_car,
   order_loading,
   order_storeout,
-} from '../../util/api';
+} from "../../util/api";
 
 export default ({ navigation, route }) => {
   const ref = useRef();
 
   const [state, setState] = useState({
-    input_sn: '',
+    input_sn: "",
     input_sn_list: new Set(),
     carList: [],
-    carId: '',
+    carId: "",
     count: 0,
     shippingID: undefined,
   });
@@ -48,10 +48,10 @@ export default ({ navigation, route }) => {
       });
     });
     common_allshipping().then((res) => {
-      console.log('res', res);
+      console.log("res", res);
       const { data = [] } = res;
       const allshipping = data.map((item) => {
-        const { id = '', name = '' } = item;
+        const { id = "", name = "" } = item;
         return {
           label: name,
           value: id,
@@ -70,9 +70,9 @@ export default ({ navigation, route }) => {
   }, []);
   useFocusEffect(
     React.useCallback(() => {
-      AsyncStorage.getItem('QRcode').then((QRcode) => {
+      AsyncStorage.getItem("QRcode").then((QRcode) => {
         if (QRcode) {
-          AsyncStorage.removeItem('QRcode');
+          AsyncStorage.removeItem("QRcode");
           handleSubmitEditing({
             nativeEvent: {
               text: QRcode,
@@ -91,11 +91,11 @@ export default ({ navigation, route }) => {
     });
   };
   const handleSubmitEditing = ({ nativeEvent: { text } }) => {
-    if (text === '') {
+    if (text === "") {
       return;
     }
     if (!state.carId) {
-      Modal.alert('提示', '请选择一辆车!');
+      Modal.alert("提示", "请选择一辆车!");
       return;
     }
 
@@ -107,13 +107,13 @@ export default ({ navigation, route }) => {
       console.log(res);
       const { data = [] } = res;
       if (res.success === false) {
-        Modal.alert('提示', res.msg);
+        Modal.alert("提示", res.msg);
       }
       if (data.length !== 0) {
         setState((state) => {
           return {
             ...state,
-            input_sn: '',
+            input_sn: "",
             input_sn_list: new Set(data),
           };
         });
@@ -147,20 +147,20 @@ export default ({ navigation, route }) => {
   };
   const handleOutStock = () => {
     if (state.input_sn_list.size === 0) {
-      Modal.alert('提示', '没有找到sn,出库失败!');
+      Modal.alert("提示", "没有找到sn,出库失败!");
       return;
     }
     if (!state.carId) {
-      Modal.alert('提示', '请选择一辆车!');
+      Modal.alert("提示", "请选择一辆车!");
       return;
     }
-    Modal.alert('警告', '确认出库?', [
+    Modal.alert("警告", "确认出库?", [
       {
-        text: '取消',
-        style: 'cancel',
+        text: "取消",
+        style: "cancel",
       },
       {
-        text: '确定',
+        text: "确定",
         onPress: () => {
           console.log(state.input_sn_list);
           const tempList = [];
@@ -169,11 +169,11 @@ export default ({ navigation, route }) => {
           }
           order_storeout({
             car: state.carId,
-            codeNum: tempList.join(','),
+            codeNum: tempList.join(","),
             shippingID: state.shippingID,
           }).then((res) => {
             if (res.success === false) {
-              Modal.alert('提示', res.msg);
+              Modal.alert("提示", res.msg);
             } else {
               // Modal.alert("提示", "出库成功!");
             }
@@ -181,7 +181,7 @@ export default ({ navigation, route }) => {
               return {
                 ...state,
                 input_sn_list: new Set(),
-                carId: '',
+                carId: "",
               };
             });
             // ref.current.ulv.updateRows([], 0);
@@ -200,20 +200,20 @@ export default ({ navigation, route }) => {
           value={state.carId}
           format={(e) => {
             console.log(e);
-            console.log('state.carId', state.carId);
+            console.log("state.carId", state.carId);
             return state.carList.find(({ value }) => value === state.carId)
               ?.label;
           }}
           onChange={(e) => {
-            console.log('state.carList', state.carList);
-            console.log('Picker', e);
+            console.log("state.carList", state.carList);
+            console.log("Picker", e);
             setState((state) => ({
               ...state,
               carId: e[0],
             }));
           }}
         >
-          <List.Item arrow='horizontal'>请选择车牌号</List.Item>
+          <List.Item arrow="horizontal">请选择车牌号</List.Item>
         </Picker>
 
         <Picker
@@ -231,52 +231,52 @@ export default ({ navigation, route }) => {
             }));
           }}
         >
-          <List.Item arrow='horizontal'>请选择运输方式</List.Item>
+          <List.Item arrow="horizontal">请选择运输方式</List.Item>
         </Picker>
         <View>
           <InputItem
-            autoCapitalize='none'
-            type='text'
-            placeholder='等待扫描中..'
+            autoCapitalize="none"
+            type="text"
+            placeholder="等待扫描中.."
             value={state.input_sn}
             onChangeText={handleChangeText}
             onSubmitEditing={handleSubmitEditing}
           />
         </View>
         <WhiteSpace />
-        <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+        <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
           <ScanButton />
-          <Button type='warning' onPress={handleOutStock}>
+          <Button type="warning" onPress={handleOutStock}>
             出库
           </Button>
         </View>
         <WhiteSpace />
         <View
           style={{
-            flexDirection: 'row',
+            flexDirection: "row",
             paddingHorizontal: 15,
             paddingVertical: 9,
-            backgroundColor: '#f5f5f9',
-            borderBottomColor: '#ddd',
+            backgroundColor: "#f5f5f9",
+            borderBottomColor: "#ddd",
             borderBottomWidth: 1 / PixelRatio.get(),
           }}
         >
           <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 14, color: '#888' }}>
+            <Text style={{ fontSize: 14, color: "#888" }}>
               基础信息:包裹个数({state.input_sn_list.size})
             </Text>
           </View>
         </View>
         <View
           style={{
-            flexDirection: 'row',
+            flexDirection: "row",
             paddingHorizontal: 15,
             paddingVertical: 9,
-            backgroundColor: '#f5f5f9',
+            backgroundColor: "#f5f5f9",
           }}
         >
           <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 14, color: '#888' }}>包裹信息</Text>
+            <Text style={{ fontSize: 14, color: "#888" }}>包裹信息</Text>
           </View>
         </View>
       </View>
@@ -286,29 +286,32 @@ export default ({ navigation, route }) => {
     return (
       <View
         style={{
-          borderBottomColor: '#ddd',
+          borderBottomColor: "#ddd",
           borderBottomWidth: 1 / PixelRatio.get(),
           paddingHorizontal: 15,
-          flexDirection: 'column',
+          flexDirection: "column",
           paddingVertical: 15,
         }}
       >
-        <View style={{ flexDirection: 'column' }}>
-          <Text style={{ fontSize: 20, color: '#333' }}>包号:{item.sn}</Text>
+        <View style={{ flexDirection: "column" }}>
+          <Text style={{ fontSize: 20, color: "#333" }}>包号:{item.sn}</Text>
         </View>
-        <View style={{ flexDirection: 'column' }}>
-          <Text style={{ fontSize: 20, color: '#333' }}>
+        <View style={{ flexDirection: "column" }}>
+          <Text style={{ fontSize: 20, color: "#333" }}>
             重量:{item.weight}kg
           </Text>
+        </View>
+        <View style={{ flexDirection: "column" }}>
+          <Text style={{ fontSize: 20, color: "#333" }}>名称:{item?.name}</Text>
         </View>
       </View>
     );
   };
   return (
-    <View style={{ backgroundColor: '#fff', flex: 1 }}>
+    <View style={{ backgroundColor: "#fff", flex: 1 }}>
       <View style={{ flex: 1 }}>
         <FlatList
-          data={[...state.input_sn_list]}
+          data={[...state.input_sn_list].reverse()}
           renderItem={renderItem}
           ListHeaderComponent={renderHeader}
           keyExtractor={(value) => `key--${value.sn}`}

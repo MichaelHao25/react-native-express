@@ -1,17 +1,17 @@
-import { Button, InputItem, Modal, WhiteSpace } from '@ant-design/react-native';
-import AsyncStorage from '@react-native-community/async-storage';
-import { useFocusEffect } from '@react-navigation/native';
-import React, { useEffect, useRef, useState } from 'react';
-import { PixelRatio, ScrollView, Text, View } from 'react-native';
-import ScanButton from '../../component/ScanButton';
-import { pack_realaddr, pack_scan } from '../../util/api';
-import Print from '../../util/print';
+import { Button, InputItem, Modal, WhiteSpace } from "@ant-design/react-native";
+import AsyncStorage from "@react-native-community/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
+import React, { useEffect, useRef, useState } from "react";
+import { PixelRatio, ScrollView, Text, View } from "react-native";
+import ScanButton from "../../component/ScanButton";
+import { pack_realaddr, pack_scan } from "../../util/api";
+import Print from "../../util/print";
 
 export default ({ navigation, route }) => {
   const blue = useRef();
 
   const [state, setState] = useState({
-    input_sn: '',
+    input_sn: "",
     count: 0,
     price: 0,
     weight: 0,
@@ -30,9 +30,9 @@ export default ({ navigation, route }) => {
   }, []);
   useFocusEffect(
     React.useCallback(() => {
-      AsyncStorage.getItem('QRcode').then((QRcode) => {
+      AsyncStorage.getItem("QRcode").then((QRcode) => {
         if (QRcode) {
-          AsyncStorage.removeItem('QRcode');
+          AsyncStorage.removeItem("QRcode");
           handleRemovePackage({
             nativeEvent: {
               text: QRcode,
@@ -75,34 +75,34 @@ export default ({ navigation, route }) => {
   };
   // print = false 的时候不打印
   const handleRemovePackage = async ({
-    nativeEvent: { text = '', print = true },
+    nativeEvent: { text = "", print = true },
   }) => {
-    console.log('text', text);
-    if (state.text === '' || text === '') {
+    console.log("text", text);
+    if (state.text === "" || text === "") {
       return;
     }
     let res;
     try {
-      if (resList.has(text)) {
-        res = resList.get(text);
+      // if (resList.has(text)) {
+      //   res = resList.get(text);
+      // } else {
+      /**
+       * 根据是否显示真实地址来请求不同的接口
+       */
+      if (route.params.showAddress === true) {
+        res = await pack_realaddr({
+          codeNum: text,
+        });
       } else {
-        /**
-         * 根据是否显示真实地址来请求不同的接口
-         */
-        if (route.params.showAddress === true) {
-          res = await pack_realaddr({
-            codeNum: text,
-          });
-        } else {
-          res = await pack_scan({
-            codeNum: text,
-          });
-        }
-        resList.set(text, res);
-        setResList(resList);
+        res = await pack_scan({
+          codeNum: text,
+        });
       }
+      resList.set(text, res);
+      setResList(resList);
+      // }
     } catch (e) {
-      Modal.alert('提示', '请求失败，请检查接口或者网络！');
+      Modal.alert("提示", "请求失败，请检查接口或者网络！");
     }
     setState((state) => {
       return {
@@ -111,7 +111,7 @@ export default ({ navigation, route }) => {
       };
     });
     if (res?.success !== true) {
-      Modal.alert('提示', res.msg);
+      Modal.alert("提示", res.msg);
       // setState((state) => {
       //     return {
       //         ...state,
@@ -128,7 +128,7 @@ export default ({ navigation, route }) => {
       //     };
       // });
       const data = res.data;
-      console.log('data', data);
+      console.log("data", data);
       // {"client_phone": "0577-26531009", "codeNum": "SJT1620962651", "consignee": {"consignee": "爆小姐", "mobile": "137****0681"}, "createTime": "2021-05-14 11:24:11", "fromChannelID": null, "num": "1", "payment": "到付", "shippingID": "快件", "status": "已入库", "supplierID": "速安达", "toChannelID": "上海青浦"}
       setItem(data);
       const addr = data?.pickup?.addr;
@@ -145,7 +145,7 @@ export default ({ navigation, route }) => {
           client_phone: data.client_phone,
           trueAddr: data.trueAddr,
           num: data.num,
-          pickup_addr: addr ? addr : '',
+          pickup_addr: addr ? addr : "",
         });
       }
     }
@@ -153,39 +153,19 @@ export default ({ navigation, route }) => {
   const renderHeader = () => {
     return (
       <>
-        <View>
-          <InputItem
-            autoCapitalize='none'
-            type='text'
-            placeholder='等待扫描中..'
-            value={state.input_sn}
-            onChangeText={handleChangeText}
-            onSubmitEditing={handleRemovePackage}
-          />
-        </View>
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            paddingHorizontal: 15,
-            paddingVertical: 9,
-            alignItems: 'center',
-            backgroundColor: '#f5f5f9',
-            borderBottomColor: '#ddd',
+            flexDirection: "row",
+            justifyContent: "space-around",
+            paddingVertical: 10,
+
+            borderBottomColor: "#ccc",
             borderBottomWidth: 1 / PixelRatio.get(),
           }}
         >
-          <Text style={{ fontSize: 12, color: '#333' }}>
-            条码: {state.input_sn}
-          </Text>
-          {/* <Button size="small">清除</Button> */}
-        </View>
-
-        <WhiteSpace />
-        <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
           <ScanButton />
           <Button
-            type='warning'
+            type="warning"
             onPress={() =>
               handleRemovePackage({ nativeEvent: { text: state.input_sn } })
             }
@@ -193,18 +173,48 @@ export default ({ navigation, route }) => {
             打印
           </Button>
         </View>
+        <View>
+          <InputItem
+            autoCapitalize="none"
+            type="text"
+            placeholder="等待扫描中.."
+            value={state.input_sn}
+            onChangeText={handleChangeText}
+            onSubmitEditing={handleRemovePackage}
+          />
+        </View>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            paddingHorizontal: 15,
+            paddingVertical: 9,
+            alignItems: "center",
+            backgroundColor: "#f5f5f9",
+            borderBottomColor: "#ccc",
+            borderBottomWidth: 1 / PixelRatio.get(),
+          }}
+        >
+          <Text style={{ fontSize: 12, color: "#333" }}>
+            条码: {state.input_sn}
+          </Text>
+          {/* <Button size="small">清除</Button> */}
+        </View>
+        {/* 
         <WhiteSpace />
+
+        <WhiteSpace /> */}
 
         <View
           style={{
-            flexDirection: 'row',
+            flexDirection: "row",
             paddingHorizontal: 15,
             paddingVertical: 9,
-            backgroundColor: '#f5f5f9',
+            backgroundColor: "#f5f5f9",
           }}
         >
           <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 14, color: '#888' }}>包裹信息</Text>
+            <Text style={{ fontSize: 14, color: "#888" }}>包裹信息</Text>
           </View>
         </View>
       </>
@@ -217,14 +227,14 @@ export default ({ navigation, route }) => {
     return (
       <View
         style={{
-          borderBottomColor: '#ddd',
+          borderBottomColor: "#ddd",
           borderBottomWidth: 1 / PixelRatio.get(),
           paddingHorizontal: 15,
-          flexDirection: 'column',
+          flexDirection: "column",
           //   justifyContent: "space-between",
           //   alignItems: "center",
           paddingVertical: 15,
-          backgroundColor: '#fff',
+          backgroundColor: "#fff",
           margin: 10,
           marginBottom: 0,
           borderRadius: 5,
@@ -237,34 +247,34 @@ export default ({ navigation, route }) => {
         {/*南油 - 深圳 - 快件*/}
         {/*寄：王老板（1888888888）*/}
         {/*收：王小姐（188****8888）*/}
-        <View style={{ flexDirection: 'column' }}>
+        <View style={{ flexDirection: "column" }}>
           <View
             style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
             }}
           >
-            <View style={{ width: '80%' }}>
-              <Text style={{ fontSize: 20, color: '#333' }}>
+            <View style={{ width: "80%" }}>
+              <Text style={{ fontSize: 20, color: "#333" }}>
                 {item.pickup.address}
               </Text>
             </View>
           </View>
 
           <WhiteSpace />
-          <Text style={{ fontSize: 20, color: '#333' }}>
+          <Text style={{ fontSize: 20, color: "#333" }}>
             {item.payment}-{item.status}
           </Text>
           <WhiteSpace />
-          <Text style={{ fontSize: 20, color: '#333' }}>
+          <Text style={{ fontSize: 20, color: "#333" }}>
             寄:{item.pickup.name}({item.pickup.mobile})
           </Text>
           <WhiteSpace />
           <Text
             style={{
               fontSize: 20,
-              color: '#333',
+              color: "#333",
             }}
           >
             收:{item.consignee.consignee}({item.consignee.mobile})
@@ -275,11 +285,11 @@ export default ({ navigation, route }) => {
     );
   };
   return (
-    <ScrollView style={{ backgroundColor: '#fff', flex: 1 }}>
-      <View style={{ flex: 1 }}>
-        {renderHeader()}
+    <View style={{ flex: 1 }}>
+      <ScrollView style={{ backgroundColor: "#fff", flex: 1 }}>
         {renderItem({ item })}
-      </View>
-    </ScrollView>
+      </ScrollView>
+      {renderHeader()}
+    </View>
   );
 };

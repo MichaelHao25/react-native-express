@@ -5,15 +5,15 @@ import {
   Modal,
   Toast,
   WhiteSpace,
-} from '@ant-design/react-native';
-import AsyncStorage from '@react-native-community/async-storage';
-import { useFocusEffect } from '@react-navigation/native';
-import React, { useEffect, useRef, useState } from 'react';
-import { PixelRatio, Text, View } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import ScanButton from '../../component/ScanButton';
-import { pack_addpack, pack_createcode, pack_createpack } from '../../util/api';
-import Print from '../../util/print';
+} from "@ant-design/react-native";
+import AsyncStorage from "@react-native-community/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
+import React, { useEffect, useRef, useState } from "react";
+import { PixelRatio, Text, View } from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import ScanButton from "../../component/ScanButton";
+import { pack_addpack, pack_createcode, pack_createpack } from "../../util/api";
+import Print from "../../util/print";
 /*是否打印*/
 let printStatus = false;
 export default ({ navigation, route }) => {
@@ -23,7 +23,7 @@ export default ({ navigation, route }) => {
    * 基础信息
    */
   const [state, setState] = useState({
-    input_sn: '',
+    input_sn: "",
     input_sn_list: [],
     count: 0,
     price: 0,
@@ -36,7 +36,7 @@ export default ({ navigation, route }) => {
   /**
    * 防止合包成功，但是打印机故障的时候存储上一次的pcode
    */
-  const [prevPCode, setPrevPCode] = useState('');
+  const [prevPCode, setPrevPCode] = useState("");
   /**
    * 初始化连接蓝牙
    */
@@ -54,9 +54,9 @@ export default ({ navigation, route }) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      AsyncStorage.getItem('QRcode').then((QRcode) => {
+      AsyncStorage.getItem("QRcode").then((QRcode) => {
         if (QRcode) {
-          AsyncStorage.removeItem('QRcode');
+          AsyncStorage.removeItem("QRcode");
           handleSubmitEditing({
             nativeEvent: {
               text: QRcode,
@@ -96,13 +96,13 @@ export default ({ navigation, route }) => {
    * 创建一个条码
    */
   const handleCreateQrcode = () => {
-    Modal.alert('警告', '确定生成条码?', [
+    Modal.alert("警告", "确定生成条码?", [
       {
-        text: '取消',
-        style: 'cancel',
+        text: "取消",
+        style: "cancel",
       },
       {
-        text: '确定',
+        text: "确定",
         onPress: () => {
           pack_createcode({
             type: route.params.type + 1,
@@ -147,7 +147,7 @@ export default ({ navigation, route }) => {
     }
 
     pack_addpack({
-      codeNum: [...input_sn_list].join(','),
+      codeNum: [...input_sn_list].join(","),
       type: route.params.type + 1,
     }).then((res) => {
       if (res.success === false) {
@@ -169,7 +169,7 @@ export default ({ navigation, route }) => {
       setState((state) => {
         return {
           ...state,
-          input_sn: '',
+          input_sn: "",
           input_sn_list: pcodeNum ? [pcodeNum] : [],
           count,
           price,
@@ -193,32 +193,32 @@ export default ({ navigation, route }) => {
   };
   const handleMergeAfter = () => {
     if (state.input_sn_list.length === 0) {
-      Modal.alert('提示', '没有找到sn,合包失败!');
+      Modal.alert("提示", "没有找到sn,合包失败!");
       return;
     }
     handleMerge();
   };
   const handleMerge = () => {
-    let content = '';
+    let content = "";
     const res = {
       pcodeNum: state.input_sn_list[0],
     };
 
-    Modal.alert('警告', content, [
+    Modal.alert("警告", content, [
       {
-        text: '取消',
-        style: 'cancel',
+        text: "取消",
+        style: "cancel",
       },
       {
-        text: '确定',
+        text: "确定",
         onPress: () => {
           pack_createpack(res).then((res) => {
             if (res.success === false) {
-              Modal.alert('提示', res.msg);
+              Modal.alert("提示", res.msg);
               setState((state) => {
                 return {
                   ...state,
-                  input_sn: '',
+                  input_sn: "",
                   count: 0,
                   weight: 0,
                   price: 0,
@@ -266,10 +266,10 @@ export default ({ navigation, route }) => {
   };
   const renderRow = ({ title, value }) => {
     const renderContent = () => {
-      if (typeof title === 'function' && typeof value === 'function') {
+      if (typeof title === "function" && typeof value === "function") {
         return (
           <View
-            style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
             {title()}
             {value()}
@@ -278,9 +278,9 @@ export default ({ navigation, route }) => {
       } else {
         return (
           <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 14, color: '#888' }}>
+            <Text style={{ fontSize: 14, color: "#888" }}>
               {title}
-              <Text style={{ fontWeight: 'bold' }}>{value}</Text>
+              <Text style={{ fontWeight: "bold" }}>{value}</Text>
             </Text>
           </View>
         );
@@ -290,11 +290,11 @@ export default ({ navigation, route }) => {
       <>
         <View
           style={{
-            flexDirection: 'column',
+            flexDirection: "column",
             paddingHorizontal: 15,
             paddingVertical: 9,
-            backgroundColor: '#f5f5f9',
-            borderBottomColor: '#ddd',
+            backgroundColor: "#f5f5f9",
+            borderBottomColor: "#ddd",
             borderBottomWidth: 1 / PixelRatio.get(),
           }}
         >
@@ -309,20 +309,20 @@ export default ({ navigation, route }) => {
       <View>
         <View>
           <InputItem
-            autoCapitalize='none'
-            type='text'
-            placeholder='等待扫描中..'
+            autoCapitalize="none"
+            type="text"
+            placeholder="等待扫描中.."
             value={state.input_sn}
             onChangeText={handleChangeText}
             onSubmitEditing={handleSubmitEditing}
           />
         </View>
         {renderRow({
-          title: '拼  包  号:  ',
+          title: "拼  包  号:  ",
           value: state.input_sn_list[0],
         })}
         {renderRow({
-          title: '包裹个数:  ',
+          title: "包裹个数:  ",
           value: state.count,
         })}
         {renderRow({
@@ -337,13 +337,13 @@ export default ({ navigation, route }) => {
           },
         })}
         <WhiteSpace />
-        <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+        <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
           <ScanButton />
-          <Button type='primary' onPress={handleCreateQrcode}>
+          <Button type="primary" onPress={handleCreateQrcode}>
             生成
           </Button>
           <Button
-            type='warning'
+            type="warning"
             onPress={() => {
               printStatus = false;
               handleMergeAfter();
@@ -352,7 +352,7 @@ export default ({ navigation, route }) => {
             拼包
           </Button>
           <Button
-            type='primary'
+            type="primary"
             onPress={() => {
               printStatus = true;
               handleMergeAfter();
@@ -364,14 +364,14 @@ export default ({ navigation, route }) => {
         <WhiteSpace />
         <View
           style={{
-            flexDirection: 'row',
+            flexDirection: "row",
             paddingHorizontal: 15,
             paddingVertical: 9,
-            backgroundColor: '#f5f5f9',
+            backgroundColor: "#f5f5f9",
           }}
         >
           <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 14, color: '#888' }}>包裹信息</Text>
+            <Text style={{ fontSize: 14, color: "#888" }}>包裹信息</Text>
           </View>
         </View>
       </View>
@@ -381,15 +381,15 @@ export default ({ navigation, route }) => {
     return (
       <View
         style={{
-          borderBottomColor: '#ddd',
+          borderBottomColor: "#ddd",
           borderBottomWidth: 1 / PixelRatio.get(),
           paddingHorizontal: 15,
-          flexDirection: 'column',
+          flexDirection: "column",
           paddingVertical: 15,
         }}
       >
         <TouchableOpacity
-          style={{ flexDirection: 'column' }}
+          style={{ flexDirection: "column" }}
           activeOpacity={0.9}
           onPress={() => {
             setExpansion((res) => {
@@ -402,27 +402,27 @@ export default ({ navigation, route }) => {
             });
           }}
         >
-          <Text style={{ fontSize: 20, color: '#333' }}>
-            运单号:{item.codeNum}
+          <Text style={{ fontSize: 20, color: "#333" }}>
+            包号:{item.codeNum}
+          </Text>
+          <Text style={{ fontSize: 20, color: "#333" }}>
+            收件人:{item.consignee.consignee}
           </Text>
           {expansion.includes(item.codeNum) ? (
             <>
               <WhiteSpace />
-              <Text style={{ fontSize: 20, color: '#333' }}>
+              <Text style={{ fontSize: 20, color: "#333" }}>
                 目的站:{item.toChannelID}
               </Text>
               <WhiteSpace />
-              <Text style={{ fontSize: 20, color: '#333' }}>
+              <Text style={{ fontSize: 20, color: "#333" }}>
                 运输方式:{item.shippingID}
               </Text>
               <WhiteSpace />
-              <Text style={{ fontSize: 20, color: '#333' }}>
+              <Text style={{ fontSize: 20, color: "#333" }}>
                 承运商:{item.supplierID}
               </Text>
               <WhiteSpace />
-              <Text style={{ fontSize: 20, color: '#333' }}>
-                收件人:{item.consignee.consignee}
-              </Text>
             </>
           ) : null}
         </TouchableOpacity>
@@ -430,7 +430,7 @@ export default ({ navigation, route }) => {
     );
   };
   return (
-    <View style={{ backgroundColor: '#fff', flex: 1 }}>
+    <View style={{ backgroundColor: "#fff", flex: 1 }}>
       <View style={{ flex: 1 }}>
         <ListView
           ref={ref}
@@ -442,7 +442,6 @@ export default ({ navigation, route }) => {
           displayDate
           paginationWaitingView={() => <></>}
           paginationFetchingView={() => <></>}
-          paginationWaitingView={() => <></>}
           keyExtractor={({ codeNum }) => `key--${codeNum}`}
         />
       </View>

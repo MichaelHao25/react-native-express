@@ -1,4 +1,4 @@
-import { Badge, Grid, List } from "@ant-design/react-native";
+import { Badge, Grid, List, Toast } from "@ant-design/react-native";
 import AsyncStorage from "@react-native-community/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import React, { useEffect, useReducer, useState } from "react";
@@ -6,6 +6,7 @@ import { Image, ScrollView, Text, View } from "react-native";
 import Tts from "react-native-tts";
 import theme from "../../theme";
 import { order_count } from "../../util/api";
+
 export default ({ navigation }) => {
   const [state, dispatch] = useReducer(
     (prevStete, action) => {
@@ -119,7 +120,51 @@ export default ({ navigation }) => {
   ]);
   const [oerder, setOrder] = useState(false);
   useEffect(() => {
-    Tts.speak("辛苦了");
+    Tts.setDucking(true);
+    Tts.engines().then((engines = []) => {
+      if (engines.length === 0) {
+        Toast.fail("tts engines 未安装");
+      }
+    });
+    Tts.getInitStatus().then(
+      (res) => {
+        if (res === "success") {
+          Toast.info("tts engines 初始化完毕");
+        }
+        return res;
+      },
+      (err) => {
+        if (err?.code === "no_engine") {
+          Tts.requestInstallEngine();
+        }
+      }
+    );
+    const handleTTSStart = (event) => {
+      console.log("tts-start", event);
+    };
+    const handleTTSProgress = (event) => {
+      console.log("tts-progress", event);
+    };
+    const handleTTSFinish = (event) => {
+      console.log("tts-finish", event);
+      Tts.stop();
+    };
+    const handleTTSCancel = (event) => {
+      console.log("tts-cancel", event);
+      Tts.stop();
+    };
+    Tts.addEventListener("tts-start", handleTTSStart);
+    Tts.addEventListener("tts-progress", handleTTSProgress);
+    Tts.addEventListener("tts-finish", handleTTSFinish);
+    Tts.addEventListener("tts-cancel", handleTTSCancel);
+    return () => {
+      Tts.removeAllListeners("tts-start", handleTTSStart);
+      Tts.removeAllListeners("tts-progress", handleTTSProgress);
+      Tts.removeAllListeners("tts-finish", handleTTSFinish);
+      Tts.removeAllListeners("tts-cancel", handleTTSCancel);
+    };
+  }, []);
+  useEffect(() => {
     AsyncStorage.getItem("auth").then((res) => {
       const auth = JSON.parse(res);
       const tempList = list.filter((item) => {
@@ -131,6 +176,7 @@ export default ({ navigation }) => {
       setOrder(auth.includes("orders"));
       setList(tempList);
     });
+    Tts.speak("hello");
     // JPush.addNotificationListener(msg => {
     //     order_count().then(
     //         ({data: {end_accept, month_amount, today_amount, wait_accept}}) => {

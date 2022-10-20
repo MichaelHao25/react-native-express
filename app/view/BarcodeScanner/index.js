@@ -1,46 +1,47 @@
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from "@react-native-community/async-storage";
 import {
   DCVBarcodeReader,
   DCVCameraView,
   EnumBarcodeFormat,
   EnumDBRPresetTemplate,
   EnumTorchState,
-} from 'dynamsoft-capture-vision-react-native';
-import React from 'react';
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+} from "dynamsoft-capture-vision-react-native";
+import React from "react";
+import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 
 const option = {
-  mediaType: 'photo',
+  mediaType: "photo",
   maxWidth: 2000,
   maxHeight: 2000,
   quality: 0.7,
 };
 
 const mergeResultsText = (results) => {
-  let str = '';
+  let str = "";
   if (results && results.length > 0) {
     for (let i = 0; i < results.length; i++) {
       str +=
-        results[i].barcodeFormatString + ': ' + results[i].barcodeText + ' \n';
+        results[i].barcodeFormatString + ": " + results[i].barcodeText + " \n";
     }
   } else {
-    str = 'No barcode detected.';
+    str = "No barcode detected.";
   }
   return str;
 };
 
 const modalInitState = {
   isVisible: false,
-  modalText: '',
+  modalText: "",
 };
 
 class BarcodeScanner extends React.Component {
   ifDecodingFile = false;
+  isBack = false;
+  results = null;
+  modalText = "";
   state = {
-    results: null,
     isVisible: false,
-    modalText: '',
   };
 
   decodeFile = async (filePath) => {
@@ -48,8 +49,11 @@ class BarcodeScanner extends React.Component {
   };
 
   saveQRcode(value) {
-    AsyncStorage.setItem('QRcode', value);
-    this.props.navigation.goBack();
+    if (this.isBack === false) {
+      this.isBack = true;
+      AsyncStorage.setItem("QRcode", value);
+      this.props.navigation.goBack();
+    }
   }
   useImagePicker = (imagePickerLauncher) => {
     this.reader
@@ -64,16 +68,16 @@ class BarcodeScanner extends React.Component {
         this.ifDecodingFile = false;
         return false;
       }
-      this.decodeFile(res.assets[0].uri.split('file://')[1])
+      this.decodeFile(res.assets[0].uri.split("file://")[1])
         .then((results) => {
-          let str = '';
+          let str = "";
           if (results && results.length > 0) {
             str = results[0].barcodeText;
           }
+          this.modalText = str;
+          this.results = results[0];
           this.setState({
             isVisible: true,
-            modalText: str,
-            results: results[0],
           });
           this.saveQRcode(str);
         })
@@ -94,12 +98,12 @@ class BarcodeScanner extends React.Component {
 
     // Set the expected barcode count to 0 when you are not sure how many barcodes you are scanning.
     // Set the expected barcode count to 1 can maximize the barcode decoding speed.
-    settings.expectedBarcodesCount = 0;
+    settings.expectedBarcodesCount = 1;
 
     // Set the barcode format to read.
     settings.barcodeFormatIds =
       EnumBarcodeFormat.BF_ONED |
-      EnumBarcodeFormat.BF_QR_CODE |
+      // EnumBarcodeFormat.BF_QR_CODE |
       EnumBarcodeFormat.BF_PDF417 |
       EnumBarcodeFormat.BF_DATAMATRIX;
 
@@ -108,7 +112,7 @@ class BarcodeScanner extends React.Component {
   };
 
   async componentDidMount() {
-    console.log('componentDidMount');
+    console.log("componentDidMount");
     // Create a barcode reader instance.
     this.reader = await DCVBarcodeReader.createInstance();
 
@@ -120,13 +124,13 @@ class BarcodeScanner extends React.Component {
       if (!this.ifDecodingFile) {
         if (results instanceof Array) {
           if (results.length !== 0) {
-            if (this.state.results) {
-              if (this.state.results.barcodeText !== results[0].barcodeText) {
-                this.setState({ results: results[0] });
+            if (this.results) {
+              if (this.results.barcodeText !== results[0].barcodeText) {
+                this.results = results[0];
                 this.saveQRcode(results[0].barcodeText);
               }
             } else {
-              this.setState({ results: results[0] });
+              this.results = results[0];
               this.saveQRcode(results[0].barcodeText);
             }
           }
@@ -144,7 +148,7 @@ class BarcodeScanner extends React.Component {
         <View style={styles.headerRight}>
           <Text
             style={{ paddingRight: 5 }}
-            name={'camera'}
+            name={"camera"}
             onPress={() => {
               this.useImagePicker(launchCamera);
             }}
@@ -153,7 +157,7 @@ class BarcodeScanner extends React.Component {
           </Text>
           <Text
             style={{ paddingLeft: 5 }}
-            name={'folder-images'}
+            name={"folder-images"}
             onPress={() => {
               this.useImagePicker(launchImageLibrary);
             }}
@@ -166,7 +170,7 @@ class BarcodeScanner extends React.Component {
   }
 
   async componentWillUnmount() {
-    console.log('componentWillUnmount');
+    console.log("componentWillUnmount");
     // Stop the barcode decoding thread when your component is unmount.
     await this.reader.stopScanning();
     // Remove the result listener when your component is unmount.
@@ -174,7 +178,7 @@ class BarcodeScanner extends React.Component {
   }
 
   render() {
-    let barcode_text = '';
+    let barcode_text = "";
     // let region = {
     //   regionTop: 30,
     //   regionLeft: 15,
@@ -182,15 +186,15 @@ class BarcodeScanner extends React.Component {
     //   regionRight: 85,
     //   regionMeasuredByPercentage: true,
     // };       // Define the scan region.
-    // let results = this.state.results;
+    // let results = this.results;
     // if (results && results.length > 0) {
     //   for (var i = 0; i < results.length; i++) {
     //     barcode_text +=
     //       results[i].barcodeFormatString + ':' + results[i].barcodeText + '\n';
     //   }
     // }
-    if (this.state.results) {
-      barcode_text = this.state.results.barcodeText;
+    if (this.results) {
+      barcode_text = this.results.barcodeText;
     }
     console.log(barcode_text);
     // console.log(results);
@@ -198,9 +202,6 @@ class BarcodeScanner extends React.Component {
       <DCVCameraView
         style={{
           flex: 1,
-        }}
-        ref={(ref) => {
-          this.scanner = ref;
         }}
         overlayVisible={true}
         torchButton={{
@@ -214,15 +215,15 @@ class BarcodeScanner extends React.Component {
           style={{
             flex: 0.9,
             marginTop: 200,
-            textAlign: 'center',
-            color: 'white',
+            textAlign: "center",
+            color: "white",
             fontSize: 18,
           }}
         >
           {barcode_text}
         </Text>
         <Modal
-          animationType='slide'
+          animationType="slide"
           transparent={true}
           visible={this.state.isVisible}
           onRequestClose={() => {
@@ -237,7 +238,7 @@ class BarcodeScanner extends React.Component {
             style={styles.centeredView}
           >
             <View style={styles.modalView}>
-              <Text style={styles.modalText}>{this.state.modalText}</Text>
+              <Text style={styles.modalText}>{this.modalText}</Text>
             </View>
           </TouchableOpacity>
         </Modal>
@@ -249,18 +250,18 @@ class BarcodeScanner extends React.Component {
 const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
-    backgroundColor: '#00000000',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#00000000",
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 20,
   },
   modalView: {
     margin: 20,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 20,
     padding: 35,
-    alignItems: 'center',
-    shadowColor: '#000',
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
@@ -270,12 +271,12 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   modalText: {
-    textAlign: 'center',
+    textAlign: "center",
   },
   headerRight: {
-    flexDirection: 'row',
+    flexDirection: "row",
     paddingRight: 5,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
 });
 
