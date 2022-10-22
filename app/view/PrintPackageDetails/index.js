@@ -290,6 +290,7 @@ export default ({ navigation, route }) => {
         {renderItem({ item })}
       </ScrollView>
       {renderHeader()}
+      <View style={{ height: 130 }}></View>
     </View>
   );
 };

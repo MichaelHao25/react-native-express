@@ -6,10 +6,18 @@ import {
   EnumDBRPresetTemplate,
   EnumTorchState,
 } from "dynamsoft-capture-vision-react-native";
+import { BarCodeScanner } from "expo-barcode-scanner";
 import React from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
-
+import Sound from "react-native-sound";
+Sound.setCategory("Playback");
+const handleSound = new Sound("di.mp3", Sound.MAIN_BUNDLE, (error) => {
+  if (error) {
+    console.log("failed to load the sound", error);
+    return;
+  }
+});
 const option = {
   mediaType: "photo",
   maxWidth: 2000,
@@ -50,6 +58,7 @@ class BarcodeScanner extends React.Component {
 
   saveQRcode(value) {
     if (this.isBack === false) {
+      handleSound.play();
       this.isBack = true;
       AsyncStorage.setItem("QRcode", value);
       this.props.navigation.goBack();
@@ -113,6 +122,7 @@ class BarcodeScanner extends React.Component {
 
   async componentDidMount() {
     console.log("componentDidMount");
+
     // Create a barcode reader instance.
     this.reader = await DCVBarcodeReader.createInstance();
 
@@ -169,8 +179,7 @@ class BarcodeScanner extends React.Component {
     });
   }
 
-  async componentWillUnmount() {
-    console.log("componentWillUnmount");
+  async componentWillUnmountccc() {
     // Stop the barcode decoding thread when your component is unmount.
     await this.reader.stopScanning();
     // Remove the result listener when your component is unmount.
@@ -196,8 +205,6 @@ class BarcodeScanner extends React.Component {
     if (this.results) {
       barcode_text = this.results.barcodeText;
     }
-    console.log(barcode_text);
-    // console.log(results);
     return (
       <DCVCameraView
         style={{
@@ -222,6 +229,7 @@ class BarcodeScanner extends React.Component {
         >
           {barcode_text}
         </Text>
+        <BarCodeScanner style={{ width: 1000, height: 1000 }}></BarCodeScanner>
         <Modal
           animationType="slide"
           transparent={true}
