@@ -6,7 +6,6 @@ import {
   EnumDBRPresetTemplate,
   EnumTorchState,
 } from "dynamsoft-capture-vision-react-native";
-import { BarCodeScanner } from "expo-barcode-scanner";
 import React from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
@@ -229,7 +228,6 @@ class BarcodeScanner extends React.Component {
         >
           {barcode_text}
         </Text>
-        <BarCodeScanner style={{ width: 1000, height: 1000 }}></BarCodeScanner>
         <Modal
           animationType="slide"
           transparent={true}
