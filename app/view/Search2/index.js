@@ -5,14 +5,14 @@ import {
   Toast,
   WhiteSpace,
   WingBlank,
-} from '@ant-design/react-native';
-import AsyncStorage from '@react-native-community/async-storage';
-import { useFocusEffect } from '@react-navigation/native';
-import React, { useEffect, useRef, useState } from 'react';
-import { FlatList, PixelRatio, Text, View } from 'react-native';
-import ScanButton from '../../component/ScanButton';
-import { order_claim, order_pickup, order_scan_list } from '../../util/api';
-import Print from '../../util/print';
+} from "@ant-design/react-native";
+import AsyncStorage from "@react-native-community/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
+import React, { useEffect, useRef, useState } from "react";
+import { FlatList, PixelRatio, Text, View } from "react-native";
+import ScanButton from "../../component/ScanButton";
+import { order_claim, order_pickup, order_scan_list } from "../../util/api";
+import Print from "../../util/print";
 /**
  * 搜索展示列表
  * @param navigation
@@ -29,15 +29,15 @@ export default ({ navigation, route }) => {
     return {
       page: 1,
       limit: 5,
-      keyword: '',
+      keyword: "",
     };
   });
-  const [extend, setExtend] = useState('');
+  const [extend, setExtend] = useState("");
   useFocusEffect(
     React.useCallback(() => {
-      AsyncStorage.getItem('QRcode').then((QRcode) => {
+      AsyncStorage.getItem("QRcode").then((QRcode) => {
         if (QRcode) {
-          AsyncStorage.removeItem('QRcode');
+          AsyncStorage.removeItem("QRcode");
           handleSubmitEditing({
             nativeEvent: {
               text: QRcode,
@@ -63,7 +63,7 @@ export default ({ navigation, route }) => {
   // }, [params])
   const reloadList = (body = {}) => {
     const paramsValid = Object.keys(body).length !== 0;
-    console.log('paramsValid', paramsValid);
+    console.log("paramsValid", paramsValid);
     setRefreshing(true);
     setEnd(false);
     if (paramsValid) {
@@ -72,7 +72,7 @@ export default ({ navigation, route }) => {
         page: 1,
       });
     } else {
-      console.log('reloadList', params);
+      console.log("reloadList", params);
       onFetch({
         ...params,
         page: 1,
@@ -80,7 +80,7 @@ export default ({ navigation, route }) => {
     }
   };
   const loadMore = () => {
-    console.log('loadMore');
+    console.log("loadMore");
     if (loading === false) {
       onFetch();
     }
@@ -135,13 +135,13 @@ export default ({ navigation, route }) => {
     // ref.current.ulv.getPage()
     // ref.current.ulv.updateRows(,0)
 
-    Modal.alert('警告', '确认?', [
+    Modal.alert("警告", "确认?", [
       {
-        text: '取消',
-        style: 'cancel',
+        text: "取消",
+        style: "cancel",
       },
       {
-        text: '确定',
+        text: "确定",
         onPress: () => {
           order_pickup({ orderID }).then((res) => {
             console.log(res);
@@ -158,7 +158,7 @@ export default ({ navigation, route }) => {
             //     return true;
             // });
             // ref.current.ulv.updateRows(dataSource, 0);
-            Toast.success('成功!', 2, () => {}, false);
+            Toast.success("成功!", 2, () => {}, false);
             handlePrint({ item });
           });
         },
@@ -167,13 +167,13 @@ export default ({ navigation, route }) => {
   };
   // 领取
   const handle_order_claim = ({ orderID }) => {
-    Modal.alert('警告', '确认?', [
+    Modal.alert("警告", "确认?", [
       {
-        text: '取消',
-        style: 'cancel',
+        text: "取消",
+        style: "cancel",
       },
       {
-        text: '确定',
+        text: "确定",
         onPress: () => {
           order_claim({ orderID }).then((res) => {
             console.log(res);
@@ -193,7 +193,7 @@ export default ({ navigation, route }) => {
               }
             });
             setList([...list]);
-            Toast.success('成功!', 2, () => {}, false);
+            Toast.success("成功!", 2, () => {}, false);
           });
         },
       },
@@ -210,8 +210,8 @@ export default ({ navigation, route }) => {
       payment,
       client_phone,
       trueAddr,
-      pickup: { addr: pickup_addr = '' } = {},
-      num = '1',
+      pickup: { addr: pickup_addr = "" } = {},
+      num = "1",
     } = item;
     for (let i = 1; i <= parseInt(num); i++) {
       try {
@@ -258,11 +258,20 @@ export default ({ navigation, route }) => {
   const renderHeader = () => {
     return (
       <>
+        <WhiteSpace />
+        <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
+          {/*<Button type="warning" onPress={handleRemovePackage}>*/}
+          <ScanButton />
+          <Button type="warning" onPress={() => reloadList()}>
+            搜索
+          </Button>
+        </View>
+        <WhiteSpace />
         <View>
           <InputItem
-            autoCapitalize='none'
-            type='text'
-            placeholder='等待扫描中..'
+            autoCapitalize="none"
+            type="text"
+            placeholder="等待扫描中.."
             value={params.keyword}
             onChangeText={handleChangeText}
             onSubmitEditing={handleSubmitEditing}
@@ -270,43 +279,33 @@ export default ({ navigation, route }) => {
         </View>
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
+            flexDirection: "row",
+            justifyContent: "space-between",
             paddingHorizontal: 15,
             paddingVertical: 9,
-            alignItems: 'center',
-            backgroundColor: '#f5f5f9',
-            borderBottomColor: '#ddd',
+            alignItems: "center",
+            backgroundColor: "#f5f5f9",
+            borderBottomColor: "#ddd",
             borderBottomWidth: 1 / PixelRatio.get(),
           }}
         >
-          <Text style={{ fontSize: 12, color: '#333' }}>
+          <Text style={{ fontSize: 12, color: "#333" }}>
             条码:
             {/*{state.input_sn}*/}
           </Text>
           {/* <Button size="small">清除</Button> */}
         </View>
 
-        <WhiteSpace />
-        <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-          {/*<Button type="warning" onPress={handleRemovePackage}>*/}
-          <ScanButton />
-          <Button type='warning' onPress={() => reloadList()}>
-            搜索
-          </Button>
-        </View>
-        <WhiteSpace />
-
         <View
           style={{
-            flexDirection: 'row',
+            flexDirection: "row",
             paddingHorizontal: 15,
             paddingVertical: 9,
-            backgroundColor: '#f5f5f9',
+            backgroundColor: "#f5f5f9",
           }}
         >
           <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 14, color: '#888' }}>包裹信息</Text>
+            <Text style={{ fontSize: 14, color: "#888" }}>包裹信息</Text>
           </View>
         </View>
       </>
@@ -316,14 +315,14 @@ export default ({ navigation, route }) => {
     return (
       <View
         style={{
-          borderBottomColor: '#ddd',
+          borderBottomColor: "#ddd",
           borderBottomWidth: 1 / PixelRatio.get(),
           paddingHorizontal: 15,
-          flexDirection: 'column',
+          flexDirection: "column",
           //   justifyContent: "space-between",
           //   alignItems: "center",
           paddingVertical: 15,
-          backgroundColor: '#fff',
+          backgroundColor: "#fff",
           margin: 10,
           marginBottom: 0,
           borderRadius: 5,
@@ -336,26 +335,26 @@ export default ({ navigation, route }) => {
         {/*南油 - 深圳 - 快件*/}
         {/*寄：王老板（1888888888）*/}
         {/*收：王小姐（188****8888）*/}
-        <View style={{ flexDirection: 'column' }}>
+        <View style={{ flexDirection: "column" }}>
           <Text
             style={{
               fontSize: 20,
-              color: '#333',
+              color: "#333",
             }}
           >
-            最晚取件时间：{item.expected_time.replace(/^.*? /, '')}{' '}
+            最晚取件时间：{item.expected_time.replace(/^.*? /, "")}{" "}
             {item.statusName}
           </Text>
           <WhiteSpace />
           <View
             style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
             }}
           >
-            <View style={{ width: '80%' }}>
-              <Text style={{ fontSize: 20, color: '#333' }}>
+            <View style={{ width: "80%" }}>
+              <Text style={{ fontSize: 20, color: "#333" }}>
                 {item.pickup.address}
               </Text>
             </View>
@@ -372,20 +371,20 @@ export default ({ navigation, route }) => {
           </View>
           {/*{extend === item.orderID ? <>*/}
           <WhiteSpace />
-          <Text style={{ fontSize: 20, color: '#333' }}>
+          <Text style={{ fontSize: 20, color: "#333" }}>
             {item.payment} {item.weight}
           </Text>
           <WhiteSpace />
-          <Text style={{ fontSize: 20, color: '#333' }}>{item.channel}</Text>
+          <Text style={{ fontSize: 20, color: "#333" }}>{item.channel}</Text>
           <WhiteSpace />
-          <Text style={{ fontSize: 20, color: '#333' }}>
+          <Text style={{ fontSize: 20, color: "#333" }}>
             寄:{item.pickup.name}({item.pickup.mobile})
           </Text>
           <WhiteSpace />
           <Text
             style={{
               fontSize: 20,
-              color: '#333',
+              color: "#333",
             }}
           >
             收:{item.consignee.name}({item.consignee.mobile})
@@ -396,7 +395,7 @@ export default ({ navigation, route }) => {
         <WhiteSpace />
         {/*{*/}
         {/*    extend === item.orderID ?*/}
-        <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+        <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
           {/*{item.adminID === 0 ? (*/}
           {/*    <WingBlank size="sm">*/}
           {/*        <Button*/}
@@ -422,9 +421,9 @@ export default ({ navigation, route }) => {
           {/*    </WingBlank>*/}
           {/*) : null}*/}
           {item.status === 1 ? (
-            <WingBlank size='sm'>
+            <WingBlank size="sm">
               <Button
-                type='primary'
+                type="primary"
                 onPress={() => {
                   handlePrint({ item });
                 }}
@@ -440,7 +439,7 @@ export default ({ navigation, route }) => {
     );
   };
   return (
-    <View style={{ backgroundColor: '#fff', flex: 1 }}>
+    <View style={{ backgroundColor: "#fff", flex: 1 }}>
       <View style={{ flex: 1 }}>
         {/*<ListView*/}
         {/*    ref={ref}*/}
@@ -451,9 +450,8 @@ export default ({ navigation, route }) => {
         {/*    keyExtractor={({orderID}) => `key--${orderID}`}*/}
         {/*/>*/}
 
-        {renderHeader()}
         <FlatList
-          style={{ backgroundColor: 'gray' }}
+          style={{ backgroundColor: "gray", flex: 1 }}
           refreshing={refreshing}
           onRefresh={reloadList}
           // ListHeaderComponent={renderHeader}
@@ -468,8 +466,8 @@ export default ({ navigation, route }) => {
           ListFooterComponent={() => {
             return (
               <View>
-                <Text style={{ textAlign: 'center' }}>
-                  {end ? '加载完毕' : '正在疯狂加载中...'}
+                <Text style={{ textAlign: "center" }}>
+                  {end ? "加载完毕" : "正在疯狂加载中..."}
                 </Text>
               </View>
             );
@@ -477,14 +475,15 @@ export default ({ navigation, route }) => {
           ListEmptyComponent={() => {
             return (
               <View style={{ flex: 1 }}>
-                <Text style={{ textAlign: 'center' }}>
-                  {loading ? '' : '暂无数据'}
+                <Text style={{ textAlign: "center" }}>
+                  {loading ? "" : "暂无数据"}
                 </Text>
               </View>
             );
           }}
         />
       </View>
+      {renderHeader()}
     </View>
   );
 };

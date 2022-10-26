@@ -4,52 +4,52 @@ import {
   Modal,
   Toast,
   WhiteSpace,
-} from '@ant-design/react-native';
-import AsyncStorage from '@react-native-community/async-storage';
-import { useFocusEffect } from '@react-navigation/native';
-import React, { useEffect, useRef, useState } from 'react';
-import { FlatList, PixelRatio, Text, View } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import ScanButton from '../../component/ScanButton';
-import { order_storein } from '../../util/api';
-import Print from '../../util/print';
-import Scales from '../../util/scales';
+} from "@ant-design/react-native";
+import AsyncStorage from "@react-native-community/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
+import React, { useEffect, useRef, useState } from "react";
+import { FlatList, PixelRatio, Text, View } from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import ScanButton from "../../component/ScanButton";
+import { order_storein } from "../../util/api";
+import Print from "../../util/print";
+import Scales from "../../util/scales";
 export default ({ navigation, route }) => {
   const ref = useRef();
   const blue = useRef();
   const scales = useRef();
   const [state, setState] = useState({
-    input_sn: '',
+    input_sn: "",
     count: 0,
     weight: 0,
   });
   const [list, setList] = useState([]);
   const [expansion, setExpansion] = useState([]);
-  const [weight, setWeight] = useState('');
+  const [weight, setWeight] = useState("");
   useEffect(() => {
-    AsyncStorage.getItem('WarehouseListDate').then((WarehouseListDate) => {
+    AsyncStorage.getItem("WarehouseListDate").then((WarehouseListDate) => {
       if (!WarehouseListDate) {
-        WarehouseListDate = '0';
+        WarehouseListDate = "0";
       }
-      console.log('WarehouseListDate', WarehouseListDate);
-      console.log('new Date().getDate()', new Date().getDate());
+      console.log("WarehouseListDate", WarehouseListDate);
+      console.log("new Date().getDate()", new Date().getDate());
       if (new Date().getDate() !== parseInt(WarehouseListDate)) {
-        if (WarehouseListDate === '0') {
-          AsyncStorage.getItem('WarehouseList').then((WarehouseList) => {
+        if (WarehouseListDate === "0") {
+          AsyncStorage.getItem("WarehouseList").then((WarehouseList) => {
             if (WarehouseList !== null) {
               setList(JSON.parse(WarehouseList));
             }
           });
           AsyncStorage.setItem(
-            'WarehouseListDate',
+            "WarehouseListDate",
             new Date().getDate().toString()
           );
         } else {
           setList([]);
-          AsyncStorage.setItem('WarehouseList', JSON.stringify([]));
+          AsyncStorage.setItem("WarehouseList", JSON.stringify([]));
         }
       } else {
-        AsyncStorage.getItem('WarehouseList').then((WarehouseList) => {
+        AsyncStorage.getItem("WarehouseList").then((WarehouseList) => {
           if (WarehouseList !== null) {
             setList(JSON.parse(WarehouseList));
           }
@@ -59,7 +59,7 @@ export default ({ navigation, route }) => {
   }, []);
   useEffect(() => {
     return () => {
-      AsyncStorage.setItem('WarehouseList', JSON.stringify(list));
+      AsyncStorage.setItem("WarehouseList", JSON.stringify(list));
     };
   }, [list]);
   /**
@@ -67,22 +67,22 @@ export default ({ navigation, route }) => {
    */
   useEffect(() => {
     navigation.setOptions({ title: route.params.title });
-    if (route.params.type === 'storeInByPrint') {
+    if (route.params.type === "storeInByPrint") {
       blue.current = new Print();
       blue.current.boot().then(() => {
         return blue.current.getPeripheralId();
       });
     }
 
-    if (route.params.type === 'storeInByWeigh') {
+    if (route.params.type === "storeInByWeigh") {
       scales.current = new Scales({
         handleBindNotificationEvent({ data }) {
           const res = data.match(/\d.*?kg/);
           if (res) {
-            const [weight = '0.00 kg'] = res;
+            const [weight = "0.00 kg"] = res;
             setWeight([...weight]);
           } else {
-            setWeight([...'0.00 kg']);
+            setWeight([..."0.00 kg"]);
           }
           // const [weight = '0.00 kg'] = 'data'.match(/\d.*?$/)
         },
@@ -104,20 +104,20 @@ export default ({ navigation, route }) => {
         });
     }
     return () => {
-      if (route.params.type === 'storeInByWeigh') {
+      if (route.params.type === "storeInByWeigh") {
         scales.current.handleUnbindNotificationEvent();
         scales.current.stopNotification();
       }
-      if (route.params.type === 'storeInByPrint') {
+      if (route.params.type === "storeInByPrint") {
         blue.current.disconnect();
       }
     };
   }, []);
   useFocusEffect(
     React.useCallback(() => {
-      AsyncStorage.getItem('QRcode').then((QRcode) => {
+      AsyncStorage.getItem("QRcode").then((QRcode) => {
         if (QRcode) {
-          AsyncStorage.removeItem('QRcode');
+          AsyncStorage.removeItem("QRcode");
           handleSubmitEditing({
             nativeEvent: {
               text: QRcode,
@@ -128,7 +128,7 @@ export default ({ navigation, route }) => {
     }, [state])
   );
   useEffect(() => {
-    console.log('useEffect-weight');
+    console.log("useEffect-weight");
     if (weight) {
       /**
        * 第三步获取到重量信息
@@ -143,7 +143,7 @@ export default ({ navigation, route }) => {
     /**
      * 如果真的话就需要称重，假的话就不用称重
      */
-    if (route.params.type === 'storeInByWeigh') {
+    if (route.params.type === "storeInByWeigh") {
       scales.current.connect().then(() => {
         scales.current.write();
       });
@@ -167,16 +167,16 @@ export default ({ navigation, route }) => {
     /**
      * 如果是真的话就提示重量信息
      */
-    if (route.params.type === 'storeInByWeigh') {
-      let int_weight = parseFloat(weight.join('').replace(/[ kg]/g, ''));
+    if (route.params.type === "storeInByWeigh") {
+      let int_weight = parseFloat(weight.join("").replace(/[ kg]/g, ""));
       if (int_weight <= 0) {
-        Modal.alert('警告', `重量为：${weight.join('')},确定提交`, [
+        Modal.alert("警告", `重量为：${weight.join("")},确定提交`, [
           {
-            text: '取消',
-            style: 'cancel',
+            text: "取消",
+            style: "cancel",
           },
           {
-            text: '确定',
+            text: "确定",
             onPress: () => {
               handle_order_storein(weight);
             },
@@ -222,16 +222,16 @@ export default ({ navigation, route }) => {
   const handle_order_storein = (weight) => {
     const res = {
       codeNum: state.input_sn,
-      weight: weight.join('').replace('kg', ''),
+      weight: weight.join("").replace("kg", ""),
     };
 
     /**
      * 如果不是称重的话就删除重量信息
      */
-    if (route.params.type !== 'storeInByWeigh') {
+    if (route.params.type !== "storeInByWeigh") {
       delete res.weight;
     }
-    console.log('res', res);
+    console.log("res", res);
     order_storein(res).then((res) => {
       const { data, success, msg } = res;
       if (success === false) {
@@ -252,7 +252,7 @@ export default ({ navigation, route }) => {
           }
           return [...list];
         });
-        if (route.params.type === 'storeInByPrint') {
+        if (route.params.type === "storeInByPrint") {
           handlePrint({
             supplier: data.supplier,
             packageNum: data.codeNum,
@@ -287,10 +287,10 @@ export default ({ navigation, route }) => {
   };
   const renderRow = ({ title, value }) => {
     const renderContent = () => {
-      if (typeof title === 'function' && typeof value === 'function') {
+      if (typeof title === "function" && typeof value === "function") {
         return (
           <View
-            style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
             {title()}
             {value()}
@@ -298,10 +298,10 @@ export default ({ navigation, route }) => {
         );
       } else {
         return (
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 14, color: '#888' }}>
+          <View>
+            <Text style={{ fontSize: 14, color: "#888" }}>
               {title}
-              <Text style={{ fontWeight: 'bold' }}>{value}</Text>
+              <Text style={{ fontWeight: "bold" }}>{value}</Text>
             </Text>
           </View>
         );
@@ -311,11 +311,11 @@ export default ({ navigation, route }) => {
       <>
         <View
           style={{
-            flexDirection: 'column',
+            flexDirection: "column",
             paddingHorizontal: 15,
             paddingVertical: 9,
-            backgroundColor: '#f5f5f9',
-            borderBottomColor: '#ddd',
+            backgroundColor: "#f5f5f9",
+            borderBottomColor: "#ddd",
             borderBottomWidth: 1 / PixelRatio.get(),
             height: 40,
           }}
@@ -328,33 +328,11 @@ export default ({ navigation, route }) => {
   const renderHeader = () => {
     return (
       <View>
-        <View>
-          <InputItem
-            autoCapitalize='none'
-            type='text'
-            placeholder='等待扫描中..'
-            value={state.input_sn}
-            onChangeText={handleChangeText}
-            onSubmitEditing={handleSubmitEditing}
-          />
-        </View>
-        {renderRow({
-          title: '包裹个数:  ',
-          value: state.count,
-        })}
-        {renderRow({
-          title: '重        量:  ',
-          value: `${state.weight}kg`,
-        })}
-        {renderRow({
-          title: '订  单  数:  ',
-          value: `${list.length}`,
-        })}
         <WhiteSpace />
-        <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+        <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
           <ScanButton />
           <Button
-            type='primary'
+            type="primary"
             onPress={() => {
               /**
                * 点击按钮，第一步
@@ -370,16 +348,39 @@ export default ({ navigation, route }) => {
           </Button>
         </View>
         <WhiteSpace />
+        <View>
+          <InputItem
+            autoCapitalize="none"
+            type="text"
+            placeholder="等待扫描中.."
+            value={state.input_sn}
+            onChangeText={handleChangeText}
+            onSubmitEditing={handleSubmitEditing}
+          />
+        </View>
+        {renderRow({
+          title: "包裹个数:  ",
+          value: state.count,
+        })}
+        {renderRow({
+          title: "重        量:  ",
+          value: `${state.weight}kg`,
+        })}
+        {renderRow({
+          title: "订  单  数:  ",
+          value: `${list.length}`,
+        })}
+
         <View
           style={{
-            flexDirection: 'row',
+            flexDirection: "row",
             paddingHorizontal: 15,
             paddingVertical: 9,
-            backgroundColor: '#f5f5f9',
+            backgroundColor: "#f5f5f9",
           }}
         >
           <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 14, color: '#888' }}>包裹信息</Text>
+            <Text style={{ fontSize: 14, color: "#888" }}>包裹信息</Text>
           </View>
         </View>
       </View>
@@ -389,15 +390,15 @@ export default ({ navigation, route }) => {
     return (
       <View
         style={{
-          borderBottomColor: '#ddd',
+          borderBottomColor: "#ddd",
           borderBottomWidth: 1 / PixelRatio.get(),
           paddingHorizontal: 15,
-          flexDirection: 'column',
+          flexDirection: "column",
           paddingVertical: 15,
         }}
       >
         <TouchableOpacity
-          style={{ flexDirection: 'column' }}
+          style={{ flexDirection: "column" }}
           activeOpacity={0.9}
           onPress={() => {
             setExpansion((res) => {
@@ -410,15 +411,15 @@ export default ({ navigation, route }) => {
             });
           }}
         >
-          <Text style={{ fontSize: 20, color: '#333' }}>
-            [{item.shippingID}]{' '}
-            <Text style={{ fontWeight: 'bold' }}>{item.toChannelID}</Text>{' '}
+          <Text style={{ fontSize: 20, color: "#333" }}>
+            [{item.shippingID}]{" "}
+            <Text style={{ fontWeight: "bold" }}>{item.toChannelID}</Text>{" "}
             {item.consignee.consignee} {item.weight}KG
           </Text>
           {expansion.includes(item.codeNum) ? (
             <>
               <WhiteSpace />
-              <Text style={{ fontSize: 20, color: '#333' }}>
+              <Text style={{ fontSize: 20, color: "#333" }}>
                 订单号:{item.codeNum}
               </Text>
               {/*<WhiteSpace/>*/}
@@ -432,9 +433,8 @@ export default ({ navigation, route }) => {
     );
   };
   return (
-    <View style={{ backgroundColor: '#fff', flex: 1 }}>
+    <View style={{ backgroundColor: "#fff", flex: 1 }}>
       <View style={{ flex: 1 }}>
-        {renderHeader()}
         <FlatList
           style={{ flex: 1 }}
           keyExtractor={({ codeNum }) => `key--${codeNum}`}
@@ -442,6 +442,7 @@ export default ({ navigation, route }) => {
           data={list}
         />
       </View>
+      {renderHeader()}
     </View>
   );
 };

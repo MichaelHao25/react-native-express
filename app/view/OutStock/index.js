@@ -194,6 +194,14 @@ export default ({ navigation, route }) => {
   const renderHeader = () => {
     return (
       <View>
+        <WhiteSpace />
+        <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
+          <ScanButton />
+          <Button type="warning" onPress={handleOutStock}>
+            出库
+          </Button>
+        </View>
+        <WhiteSpace />
         <Picker
           data={state.carList}
           cols={1}
@@ -243,14 +251,7 @@ export default ({ navigation, route }) => {
             onSubmitEditing={handleSubmitEditing}
           />
         </View>
-        <WhiteSpace />
-        <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
-          <ScanButton />
-          <Button type="warning" onPress={handleOutStock}>
-            出库
-          </Button>
-        </View>
-        <WhiteSpace />
+
         <View
           style={{
             flexDirection: "row",
@@ -311,9 +312,9 @@ export default ({ navigation, route }) => {
     <View style={{ backgroundColor: "#fff", flex: 1 }}>
       <View style={{ flex: 1 }}>
         <FlatList
+          style={{ flex: 1 }}
           data={[...state.input_sn_list].reverse()}
           renderItem={renderItem}
-          ListHeaderComponent={renderHeader}
           keyExtractor={(value) => `key--${value.sn}`}
         />
         {/*<ListView*/}
@@ -327,6 +328,7 @@ export default ({ navigation, route }) => {
         {/*    keyExtractor={(value) => `key--${value.sn}`}*/}
         {/*/>*/}
       </View>
+      {renderHeader()}
     </View>
   );
 };

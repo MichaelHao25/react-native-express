@@ -143,6 +143,7 @@ lintOptions {
                   JPUSH_APPKEY: "6b92b1e34d3b7568b5908bf2",
                   JPUSH_CHANNEL: "developer-default"
           ]
+          missingDimensionStrategy 'react-native-camera', 'general'
     }
     splits {
         abi {
@@ -198,6 +199,7 @@ lintOptions {
 }
 
 dependencies {
+  implementation project(':react-native-camera')
      implementation project(':jpush-react-native')  // 添加 jpush 依赖
       implementation project(':jcore-react-native')  // 添加 jcore 依赖
     implementation fileTree(dir: "libs", include: ["*.jar"])

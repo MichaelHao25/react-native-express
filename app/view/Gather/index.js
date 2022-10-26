@@ -277,7 +277,7 @@ export default ({ navigation, route }) => {
         );
       } else {
         return (
-          <View style={{ flex: 1 }}>
+          <View>
             <Text style={{ fontSize: 14, color: "#888" }}>
               {title}
               <Text style={{ fontWeight: "bold" }}>{value}</Text>
@@ -307,6 +307,32 @@ export default ({ navigation, route }) => {
   const renderHeader = () => {
     return (
       <View>
+        <WhiteSpace />
+        <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
+          <ScanButton />
+          <Button type="primary" onPress={handleCreateQrcode}>
+            生成
+          </Button>
+          <Button
+            type="warning"
+            onPress={() => {
+              printStatus = false;
+              handleMergeAfter();
+            }}
+          >
+            拼包
+          </Button>
+          <Button
+            type="primary"
+            onPress={() => {
+              printStatus = true;
+              handleMergeAfter();
+            }}
+          >
+            打印
+          </Button>
+        </View>
+        <WhiteSpace />
         <View>
           <InputItem
             autoCapitalize="none"
@@ -336,32 +362,7 @@ export default ({ navigation, route }) => {
             return <></>;
           },
         })}
-        <WhiteSpace />
-        <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
-          <ScanButton />
-          <Button type="primary" onPress={handleCreateQrcode}>
-            生成
-          </Button>
-          <Button
-            type="warning"
-            onPress={() => {
-              printStatus = false;
-              handleMergeAfter();
-            }}
-          >
-            拼包
-          </Button>
-          <Button
-            type="primary"
-            onPress={() => {
-              printStatus = true;
-              handleMergeAfter();
-            }}
-          >
-            打印
-          </Button>
-        </View>
-        <WhiteSpace />
+
         <View
           style={{
             flexDirection: "row",
@@ -433,8 +434,8 @@ export default ({ navigation, route }) => {
     <View style={{ backgroundColor: "#fff", flex: 1 }}>
       <View style={{ flex: 1 }}>
         <ListView
+          style={{ flex: 1 }}
           ref={ref}
-          header={renderHeader}
           onFetch={(page = 1, startFetch, abortFetch) => {
             abortFetch();
           }}
@@ -445,6 +446,7 @@ export default ({ navigation, route }) => {
           keyExtractor={({ codeNum }) => `key--${codeNum}`}
         />
       </View>
+      {renderHeader()}
     </View>
   );
 };
