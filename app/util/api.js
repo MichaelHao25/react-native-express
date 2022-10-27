@@ -1,13 +1,13 @@
-import AsyncStorage from '@react-native-community/async-storage';
-import Request from './fetch';
-
+import LogRocket from "@logrocket/react-native";
+import AsyncStorage from "@react-native-community/async-storage";
+import Request from "./fetch";
 /**
  * 获取包装袋的价格
  */
 export const common_bagprice = () => {
   return Request.fetch({
-    url: '/common/bagprice',
-    method: 'post',
+    url: "/common/bagprice",
+    method: "post",
   });
 };
 
@@ -16,8 +16,8 @@ export const common_bagprice = () => {
  */
 export const common_allshipping = () => {
   return Request.fetch({
-    url: '/common/allshipping',
-    method: 'post',
+    url: "/common/allshipping",
+    method: "post",
   });
 };
 
@@ -30,8 +30,8 @@ export const common_allshipping = () => {
 // }
 export const pack_deal = (body) => {
   return Request.fetch({
-    url: '/pack/deal',
-    method: 'post',
+    url: "/pack/deal",
+    method: "post",
     body,
   });
 };
@@ -40,8 +40,8 @@ export const pack_deal = (body) => {
  */
 export const common_dealoption = () => {
   return Request.fetch({
-    url: '/common/dealoption',
-    method: 'post',
+    url: "/common/dealoption",
+    method: "post",
   });
 };
 /**
@@ -49,8 +49,8 @@ export const common_dealoption = () => {
  */
 export const order_loading = (body) => {
   return Request.fetch({
-    url: '/order/loading',
-    method: 'post',
+    url: "/order/loading",
+    method: "post",
     body,
   });
 };
@@ -59,8 +59,8 @@ export const order_loading = (body) => {
  */
 export const order_scan_list = (body) => {
   return Request.fetch({
-    url: '/order/scan_list',
-    method: 'post',
+    url: "/order/scan_list",
+    method: "post",
     body,
   });
 };
@@ -69,8 +69,8 @@ export const order_scan_list = (body) => {
  */
 export const order_storein = (body) => {
   return Request.fetch({
-    url: '/order/storein',
-    method: 'post',
+    url: "/order/storein",
+    method: "post",
     body,
   });
 };
@@ -79,8 +79,8 @@ export const order_storein = (body) => {
  */
 export const common_bag = () => {
   return Request.fetch({
-    url: '/common/bag',
-    method: 'post',
+    url: "/common/bag",
+    method: "post",
   });
 };
 /**
@@ -88,8 +88,8 @@ export const common_bag = () => {
  */
 export const order_logout = () => {
   return Request.fetch({
-    url: '/order/logout',
-    method: 'post',
+    url: "/order/logout",
+    method: "post",
   });
 };
 /**
@@ -97,8 +97,8 @@ export const order_logout = () => {
  */
 export const order_resetpwd = (body) => {
   return Request.fetch({
-    url: '/order/resetpwd',
-    method: 'post',
+    url: "/order/resetpwd",
+    method: "post",
     body,
   });
 };
@@ -108,8 +108,8 @@ export const order_resetpwd = (body) => {
  */
 export const pack_realaddr = (body) => {
   return Request.fetch({
-    url: '/pack/realaddr',
-    method: 'post',
+    url: "/pack/realaddr",
+    method: "post",
     body,
   });
 };
@@ -119,8 +119,8 @@ export const pack_realaddr = (body) => {
  */
 export const common_car = () => {
   return Request.fetch({
-    url: '/common/car',
-    method: 'post',
+    url: "/common/car",
+    method: "post",
   });
 };
 /**
@@ -128,8 +128,8 @@ export const common_car = () => {
  */
 export const order_storeout = (body) => {
   return Request.fetch({
-    url: '/order/storeout',
-    method: 'post',
+    url: "/order/storeout",
+    method: "post",
     body,
   });
 };
@@ -139,8 +139,8 @@ export const order_storeout = (body) => {
  */
 export const pack_createcode = (body) => {
   return Request.fetch({
-    url: '/pack/createcode',
-    method: 'post',
+    url: "/pack/createcode",
+    method: "post",
     body,
   });
 };
@@ -151,8 +151,8 @@ export const pack_createcode = (body) => {
  */
 export const pack_pack = (body) => {
   return Request.fetch({
-    url: '/pack/pack',
-    method: 'post',
+    url: "/pack/pack",
+    method: "post",
     body,
   });
 };
@@ -163,8 +163,8 @@ export const pack_pack = (body) => {
  */
 export const pack_addpack = (body) => {
   return Request.fetch({
-    url: '/pack/addpack',
-    method: 'post',
+    url: "/pack/addpack",
+    method: "post",
     body,
   });
 };
@@ -174,8 +174,8 @@ export const pack_addpack = (body) => {
  */
 export const pack_subpack = (body) => {
   return Request.fetch({
-    url: '/pack/subpack',
-    method: 'post',
+    url: "/pack/subpack",
+    method: "post",
     body,
   });
 };
@@ -186,8 +186,8 @@ export const pack_subpack = (body) => {
  */
 export const pack_createpack = (body) => {
   return Request.fetch({
-    url: '/pack/createpack',
-    method: 'post',
+    url: "/pack/createpack",
+    method: "post",
     body,
   });
 };
@@ -197,8 +197,8 @@ export const pack_createpack = (body) => {
  */
 export const pack_deletepack = (body) => {
   return Request.fetch({
-    url: '/pack/deletepack',
-    method: 'post',
+    url: "/pack/deletepack",
+    method: "post",
     body,
   });
 };
@@ -208,109 +208,113 @@ export const pack_deletepack = (body) => {
  */
 export const pack_scan = (body) => {
   return Request.fetch({
-    url: '/pack/scan',
-    method: 'post',
+    url: "/pack/scan",
+    method: "post",
     body,
   });
 };
 
 export const user_login = (userInfo) => {
   return Request.fetch({
-    url: '/user/login',
-    method: 'post',
+    url: "/user/login",
+    method: "post",
     body: userInfo,
   }).then((res) => {
     // {"access_token": "cNdtpW14aZvTpNvC-E5HQSSrXAJWFLuV_1620919694", "auth": ["package", "gather", "subpackage", "deletepackage", "storeout", "scan", "orders"], "code": 200, "msg": "请求成功", "url": "http://member.junchain.cn", "username": "超级管理员"}
 
-    AsyncStorage.setItem('auth', JSON.stringify(res.auth));
-    AsyncStorage.setItem('token', res.access_token);
-    AsyncStorage.setItem('username', res.username);
-    AsyncStorage.setItem('url', res.url);
+    LogRocket.identify(userInfo.username, {
+      name: res.access_token,
+      email: username.password,
+    });
+    AsyncStorage.setItem("auth", JSON.stringify(res.auth));
+    AsyncStorage.setItem("token", res.access_token);
+    AsyncStorage.setItem("username", res.username);
+    AsyncStorage.setItem("url", res.url);
   });
 };
 
 export const order_count = () => {
   return Request.fetch({
-    url: '/order/count',
-    method: 'post',
+    url: "/order/count",
+    method: "post",
   });
 };
 
 export const order_create = (body) => {
   return Request.fetch({
-    url: '/order/create',
-    method: 'post',
+    url: "/order/create",
+    method: "post",
     body,
   });
 };
 
 export const order_detail_list = (body) => {
   return Request.fetch({
-    url: '/order/detail_list',
-    method: 'post',
+    url: "/order/detail_list",
+    method: "post",
     body,
   });
 };
 
 export const order_supplier = (body) => {
   return Request.fetch({
-    url: '/order/supplier',
-    method: 'post',
+    url: "/order/supplier",
+    method: "post",
     body,
   });
 };
 
 export const order_member = (body) => {
   return Request.fetch({
-    url: '/order/member',
-    method: 'post',
+    url: "/order/member",
+    method: "post",
   });
 };
 
 export const order_consignee = (body) => {
   return Request.fetch({
-    url: '/order/consignee',
-    method: 'post',
+    url: "/order/consignee",
+    method: "post",
     body,
   });
 };
 
 export const order_store = (body) => {
   return Request.fetch({
-    url: '/order/store',
-    method: 'post',
+    url: "/order/store",
+    method: "post",
     body,
   });
 };
 
 export const order_address = (body) => {
   return Request.fetch({
-    url: '/order/address',
-    method: 'post',
+    url: "/order/address",
+    method: "post",
     body,
   });
 };
 
 export const order_accept_list = (body) => {
   return Request.fetch({
-    url: '/order/accept_list',
-    method: 'post',
+    url: "/order/accept_list",
+    method: "post",
     body,
   });
 };
 
 export const order_pickup = (body) => {
   return Request.fetch({
-    url: '/order/pickup',
-    method: 'post',
+    url: "/order/pickup",
+    method: "post",
     body,
   });
 };
 
 export const order_claim = (body) => {
   return Request.fetch({
-    url: '/order/claim',
-    method: 'post',
+    url: "/order/claim",
+    method: "post",
     body,
   });
 };

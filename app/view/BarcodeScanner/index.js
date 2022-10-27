@@ -153,64 +153,95 @@ class BarcodeScanner extends React.Component {
     // }
     const { flashMode } = this.state;
     return (
-      <RNCamera
+      <View
         style={{
           flex: 1,
+          backgroundColor: "#00",
         }}
-        type={RNCamera.Constants.Type.back}
-        flashMode={
-          flashMode
-            ? RNCamera.Constants.FlashMode.torch
-            : RNCamera.Constants.FlashMode.off
-        }
-        androidCameraPermissionOptions={{
-          title: "二维码需要相机",
-          message: "需要相机扫描二维码",
-          buttonPositive: "好",
-          buttonNegative: "取消",
-        }}
-        androidRecordAudioPermissionOptions={{
-          title: "二维码需要相机",
-          message: "需要相机扫描二维码",
-          buttonPositive: "好",
-          buttonNegative: "取消",
-        }}
-        onBarCodeRead={(barcode) => {
-          const { type, data } = barcode;
-          console.log(barcode);
-          if (type !== "QR_CODE") {
-            this.setState({ text: data });
-            this.saveQRcode(data);
-          }
-        }}
-        notAuthorizedView={
-          <View style={{ backgroundColor: "#ccc" }}>
-            <Text style={{ color: "#fff" }}>没有权限</Text>
-          </View>
-        }
       >
-        <Text
+        {/* <View
           style={{
-            position: "absolute",
-            top: 20,
-            left: 20,
-            padding: 5,
-            backgroundColor: "#000",
-            color: "#fff",
-            borderRadius: 5,
+            flex: 1,
           }}
-          onPress={() => {
-            this.setState((prev) => {
-              return {
-                ...prev,
-                flashMode: !prev.flashMode,
-              };
-            });
+        ></View> */}
+        <RNCamera
+          style={{ flex: 1 }}
+          type={RNCamera.Constants.Type.back}
+          captureAudio={false}
+          // ratio={"1:1"}
+          // zoom={0}
+          flashMode={
+            flashMode
+              ? RNCamera.Constants.FlashMode.torch
+              : RNCamera.Constants.FlashMode.off
+          }
+          androidCameraPermissionOptions={{
+            title: "二维码需要相机",
+            message: "需要相机扫描二维码",
+            buttonPositive: "好",
+            buttonNegative: "取消",
           }}
+          androidRecordAudioPermissionOptions={{
+            title: "二维码需要相机",
+            message: "需要相机扫描二维码",
+            buttonPositive: "好",
+            buttonNegative: "取消",
+          }}
+          onBarCodeRead={(barcode) => {
+            const { type, data } = barcode;
+            console.log(barcode);
+            if (type !== "QR_CODE") {
+              this.setState({ text: data });
+              this.saveQRcode(data);
+            }
+          }}
+          barCodeTypes={[RNCamera.Constants.BarCodeType.code128]}
+          // onGoogleVisionBarcodesDetected={(barcode) => {
+          //   const { type, data } = barcode;
+          //   console.log(barcode);
+          //   if (type !== "QR_CODE") {
+          //     this.setState({ text: data });
+          //     this.saveQRcode(data);
+          //   }
+          // }}
+          // barCodeTypes={[
+          //   RNCamera.Constants.GoogleVisionBarcodeDetection.BarcodeType
+          //     .CODE_128,
+          // ]}
+          notAuthorizedView={
+            <View style={{ backgroundColor: "#ccc" }}>
+              <Text style={{ color: "#fff" }}>没有权限</Text>
+            </View>
+          }
         >
-          闪光灯：{flashMode ? "开" : "关"}
-        </Text>
-      </RNCamera>
+          <Text
+            style={{
+              position: "absolute",
+              top: 20,
+              left: 20,
+              padding: 5,
+              backgroundColor: "#000",
+              color: "#fff",
+              borderRadius: 5,
+            }}
+            onPress={() => {
+              this.setState((prev) => {
+                return {
+                  ...prev,
+                  flashMode: !prev.flashMode,
+                };
+              });
+            }}
+          >
+            闪光灯：{flashMode ? "开" : "关"}
+          </Text>
+        </RNCamera>
+        {/* <View
+          style={{
+            flex: 1,
+          }}
+        ></View> */}
+      </View>
     );
   }
 }

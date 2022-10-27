@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@ant-design/react-native": "^4.0.6",
+    "@logrocket/react-native": "^1.7.2",
     "@react-native-community/async-storage": "^1.12.1",
     "@react-native-community/cameraroll": "^4.0.1",
     "@react-native-community/datetimepicker": "^3.5.2",
