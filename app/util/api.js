@@ -224,7 +224,7 @@ export const user_login = (userInfo) => {
 
     LogRocket.identify(userInfo.username, {
       name: res.access_token,
-      email: username.password,
+      email: userInfo.password,
     });
     AsyncStorage.setItem("auth", JSON.stringify(res.auth));
     AsyncStorage.setItem("token", res.access_token);

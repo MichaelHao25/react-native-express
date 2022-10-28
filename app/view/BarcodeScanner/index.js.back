@@ -147,6 +147,11 @@ class BarcodeScanner extends React.Component {
       }
     });
 
+    // Enable video barcode scanning.
+    // If the camera is opened, the barcode reader will start the barcode decoding thread when you triggered the startScanning.
+    // The barcode reader will scan the barcodes continuously before you trigger stopScanning.
+    this.reader.startScanning();
+
     this.props.navigation.setOptions({
       headerRight: () => (
         <View style={styles.headerRight}>
