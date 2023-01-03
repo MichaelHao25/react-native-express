@@ -25,3 +25,5 @@ jcore-react-native
 lintOptions {
 abortOnError false
 }
+
+不能安装 ndk 否则打包会失败

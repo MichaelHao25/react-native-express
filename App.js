@@ -8,7 +8,7 @@ import { StatusBar } from "expo-status-bar";
 import JPush from "jpush-react-native";
 import React, { useEffect, useMemo, useReducer } from "react";
 import "react-native-gesture-handler";
-import { order_logout, user_login } from "./app/util/api";
+import {common_pdakey, order_logout, user_login} from "./app/util/api";
 import AuthContext from "./app/util/AuthContext";
 import { navigationRef } from "./app/util/RootNavigation";
 import BarcodeScanner from "./app/view/BarcodeScanner";
@@ -34,6 +34,7 @@ import Set from "./app/view/Set";
 import TodayList from "./app/view/TodayList";
 import UnpackPackage from "./app/view/UnpackPackage";
 import Warehouse from "./app/view/Warehouse";
+import {ToastAndroid} from "react-native";
 
 const Stack = createStackNavigator();
 
@@ -41,22 +42,27 @@ const App = () => {
   React.useEffect(() => {
     // Initialize the license so that you can use full feature of the Barcode Reader module.
     console.log("二维码服务");
+    common_pdakey().then(res=>{
+      console.log('res.data',res.data)
+
     DCVBarcodeReader.initLicense(
       // 'DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAxLTEwMTIwMDkzNiIsIm9yZ2FuaXphdGlvbklEIjoiMjAwMDAxIn0',
+      // Android/iOS SDK
       // https://www.dynamsoft.com/customer/license/trialLicense?product=dbr#:~:text=%2D-,Android/iOS%20SDK,-Java%2C%20Kotlin%2C%20Objective
-      "DLS2eyJoYW5kc2hha2VDb2RlIjoiMTAxMzcxMDE5LVRYbE5iMkpwYkdWUWNtOXFYMlJpY2ciLCJvcmdhbml6YXRpb25JRCI6IjEwMTM3MTAxOSIsImNoZWNrQ29kZSI6LTYyNzQ0MDk0OX0="
+        res.data
     )
       .then((status) => {
         if (status) {
           console.log(`二维码服务调用:${status}`);
         } else {
-          ToastAndroid.show("二维码扫描服务注册失败！");
+          ToastAndroid.show("二维码扫描服务注册失败！",ToastAndroid.SHORT);
         }
       })
       .catch((e) => {
-        ToastAndroid.show("二维码扫描服务发生了错误！");
         console.log(e);
+        ToastAndroid.show(e.toString(),ToastAndroid.SHORT);
       });
+    })
   }, []);
   useEffect(() => {
     JPush.addConnectEventListener((result) => {

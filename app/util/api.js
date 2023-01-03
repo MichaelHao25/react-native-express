@@ -1,6 +1,19 @@
 import LogRocket from "@logrocket/react-native";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "./fetch";
+
+
+
+/**
+ * 获取二维码扫描器的License
+ */
+export const common_pdakey = () => {
+  return Request.fetch({
+    url: "/common/pdakey",
+    method: "post",
+  });
+};
+
 /**
  * 获取包装袋的价格
  */
