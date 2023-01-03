@@ -27,3 +27,9 @@ abortOnError false
 }
 
 不能安装 ndk 否则打包会失败
+
+升级 React-native 版本
+https://stackoverflow.com/questions/74334977/android-unimodules-react-native-adaptercompiledebugjavawithjavac
+修复 android 打包失败的问题
+
+https://github.com/facebook/react-native/issues/35210
