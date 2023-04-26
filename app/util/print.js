@@ -287,8 +287,41 @@ class Scales {
     }
 
     // 打印机相关的特征
+    getLabel({
 
-    getPrint({
+                 supplierID="###",
+                 channelID="###",
+                 consignee="###",
+                 address="###",
+             }) {
+        this.data = _base64ToArrayBuffer(
+            // 50 70
+            // 每mm八个点
+            // 地址隐藏掉
+            // "TEXT 8 7 0 245 广东省深圳市南山区南海大道\r\n" +
+            encode64gb2312(
+                "! 0 200 200 400 1\r\n" +
+                "PAGE-WIDTH 520\r\n" +
+                "GAP-SENSE 255\r\n" +
+                "SET-TOF 0\r\n" +
+                "LEFT\r\n" +
+                // 10
+                "TEXT 8 7 40 10 " + "承运商："+supplierID + "\r\n" +
+                // 10 + 24 + 10
+                "SETBOLD 2\r\n" +
+                "TEXT 8 7 40 44 " + "目的站："+channelID + "\r\n" +
+                // 44 + 24*2 + 10
+                "TEXT 8 7 40 102 " + "收件人："+consignee + "\r\n" +
+                // 102 + 24*2 + 10
+                "SETBOLD 0\r\n" +
+                "TEXT 8 7 40 160 " + "详细地址："+address + "\r\n" +
+                "FORM\r\n" +
+                "PRINT\r\n"
+            )
+        );
+    }
+
+        getPrint({
                  packageNum = "######",
                  expected_time = "######",
                  name = "######",

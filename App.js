@@ -35,6 +35,7 @@ import TodayList from "./app/view/TodayList";
 import UnpackPackage from "./app/view/UnpackPackage";
 import Warehouse from "./app/view/Warehouse";
 import {ToastAndroid} from "react-native";
+import GoodLabel from "./app/view/GoodLabel";
 
 const Stack = createStackNavigator();
 
@@ -179,6 +180,12 @@ const App = () => {
                   name="scalesTest"
                   options={{ title: "蓝牙秤初始化" }}
                   component={ScalesTest}
+                />
+
+                <Stack.Screen
+                    name="goodLabel"
+                    options={{ title: "随货标签" }}
+                    component={GoodLabel}
                 />
 
                 <Stack.Screen
