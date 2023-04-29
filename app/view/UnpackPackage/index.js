@@ -1,6 +1,4 @@
 import {Button, InputItem, ListView, Modal, WhiteSpace,} from "@ant-design/react-native";
-import AsyncStorage from "@react-native-community/async-storage";
-import {useFocusEffect} from "@react-navigation/native";
 import React, {useState} from "react";
 import {PixelRatio, Text, View} from "react-native";
 import ScanButton from "../../component/ScanButton";
@@ -20,16 +18,6 @@ export default ({navigation, route}) => {
         },
         trigger: "always",
     });
-    useFocusEffect(
-        React.useCallback(() => {
-            AsyncStorage.getItem("QRcode").then((QRcode) => {
-                if (QRcode) {
-                    AsyncStorage.removeItem("QRcode");
-                    handleChangeText(QRcode);
-                }
-            });
-        }, [state])
-    );
     // pack_subpack
     const handleChangeText = (text) => {
         setState((state) => {

@@ -1,16 +1,15 @@
-import { Provider } from "@ant-design/react-native";
+import {Provider} from "@ant-design/react-native";
 import AsyncStorage from "@react-native-community/async-storage";
-import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
-import { DCVBarcodeReader } from "dynamsoft-capture-vision-react-native";
+import {NavigationContainer} from "@react-navigation/native";
+import {createStackNavigator} from "@react-navigation/stack";
 import * as SplashScreen from "expo-splash-screen";
-import { StatusBar } from "expo-status-bar";
+import {StatusBar} from "expo-status-bar";
 import JPush from "jpush-react-native";
-import React, { useEffect, useMemo, useReducer } from "react";
+import React, {useEffect, useMemo, useReducer} from "react";
 import "react-native-gesture-handler";
-import {common_pdakey, order_logout, user_login} from "./app/util/api";
+import {order_logout, user_login} from "./app/util/api";
 import AuthContext from "./app/util/AuthContext";
-import { navigationRef } from "./app/util/RootNavigation";
+import {navigationRef} from "./app/util/RootNavigation";
 import BarcodeScanner from "./app/view/BarcodeScanner";
 import CreateExpress from "./app/view/CreateExpress";
 import Deal from "./app/view/Deal";
@@ -34,37 +33,11 @@ import Set from "./app/view/Set";
 import TodayList from "./app/view/TodayList";
 import UnpackPackage from "./app/view/UnpackPackage";
 import Warehouse from "./app/view/Warehouse";
-import {ToastAndroid} from "react-native";
 import GoodLabel from "./app/view/GoodLabel";
 
 const Stack = createStackNavigator();
 
 const App = () => {
-  React.useEffect(() => {
-    // Initialize the license so that you can use full feature of the Barcode Reader module.
-    console.log("二维码服务");
-    common_pdakey().then(res=>{
-      console.log('res.data',res.data)
-
-    DCVBarcodeReader.initLicense(
-      // 'DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAxLTEwMTIwMDkzNiIsIm9yZ2FuaXphdGlvbklEIjoiMjAwMDAxIn0',
-      // Android/iOS SDK
-      // https://www.dynamsoft.com/customer/license/trialLicense?product=dbr#:~:text=%2D-,Android/iOS%20SDK,-Java%2C%20Kotlin%2C%20Objective
-        res.data
-    )
-      .then((status) => {
-        if (status) {
-          console.log(`二维码服务调用:${status}`);
-        } else {
-          ToastAndroid.show("二维码扫描服务注册失败！",ToastAndroid.SHORT);
-        }
-      })
-      .catch((e) => {
-        console.log(e);
-        ToastAndroid.show(e.toString(),ToastAndroid.SHORT);
-      });
-    })
-  }, []);
   useEffect(() => {
     JPush.addConnectEventListener((result) => {
       console.log("connectListener:" + JSON.stringify(result));

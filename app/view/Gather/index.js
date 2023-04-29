@@ -1,6 +1,4 @@
 import {Button, InputItem, ListView, Modal, Toast, WhiteSpace,} from "@ant-design/react-native";
-import AsyncStorage from "@react-native-community/async-storage";
-import {useFocusEffect} from "@react-navigation/native";
 import React, {useEffect, useRef, useState} from "react";
 import {PixelRatio, Text, View} from "react-native";
 import {TouchableOpacity} from "react-native-gesture-handler";
@@ -62,20 +60,6 @@ export default ({navigation, route}) => {
     },
     trigger: "always",
   });
-  useFocusEffect(
-      React.useCallback(() => {
-        AsyncStorage.getItem("QRcode").then((QRcode) => {
-          if (QRcode) {
-            AsyncStorage.removeItem("QRcode");
-            handleSubmitEditing({
-              nativeEvent: {
-                text: QRcode,
-              },
-            });
-          }
-        });
-      }, [state])
-  );
   /**
    * 打印开始
    * @param item

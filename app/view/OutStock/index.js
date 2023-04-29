@@ -1,6 +1,4 @@
 import {Button, InputItem, List, Modal, Picker, WhiteSpace,} from "@ant-design/react-native";
-import AsyncStorage from "@react-native-community/async-storage";
-import {useFocusEffect} from "@react-navigation/native";
 import React, {useEffect, useRef, useState} from "react";
 import {FlatList, PixelRatio, Text, View} from "react-native";
 import ScanButton from "../../component/ScanButton";
@@ -70,20 +68,6 @@ export default ({navigation, route}) => {
     },
     trigger: "always",
   });
-  useFocusEffect(
-      React.useCallback(() => {
-        AsyncStorage.getItem("QRcode").then((QRcode) => {
-          if (QRcode) {
-            AsyncStorage.removeItem("QRcode");
-            handleSubmitEditing({
-              nativeEvent: {
-                text: QRcode,
-              },
-            });
-          }
-        });
-      }, [state])
-  );
   const handleChangeText = (text) => {
     setState((state) => {
       return {

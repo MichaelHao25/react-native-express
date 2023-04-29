@@ -1,11 +1,10 @@
 import {Button, InputItem, Modal, WhiteSpace} from "@ant-design/react-native";
-import AsyncStorage from "@react-native-community/async-storage";
-import {useFocusEffect} from "@react-navigation/native";
 import React, {useEffect, useRef, useState} from "react";
 import {PixelRatio, ScrollView, Text, View} from "react-native";
 import ScanButton from "../../component/ScanButton";
-import {pack_printlabel, pack_realaddr, pack_scan} from "../../util/api";
+import {pack_printlabel} from "../../util/api";
 import Print from "../../util/print";
+import usePdaScan from "react-native-pda-scan";
 
 export default ({navigation, route}) => {
     const blue = useRef();
@@ -24,24 +23,23 @@ export default ({navigation, route}) => {
             blue.current.disconnect();
         };
     }, []);
-    useFocusEffect(
-        React.useCallback(() => {
-            AsyncStorage.getItem("QRcode").then((QRcode) => {
-                if (QRcode) {
-                    AsyncStorage.removeItem("QRcode");
-                    handleChangeText(QRcode)
-                    handleFetchData(
-                        {codeNum: QRcode}
-                    );
-                }
-            });
-        }, [state])
-    );
+    usePdaScan({
+        onEvent(e) {
+            handleChangeText(e)
+            handleFetchData(
+                {codeNum: e}
+            );
+        },
+        onError(e) {
+            console.log(e);
+        },
+        trigger: "always",
+    });
     const handleFetchData = (body) => {
         pack_printlabel(body).then(res => {
             if (res.success) {
                 setItem(res.data)
-            }else{
+            } else {
                 Modal.alert("提示", res.msg);
             }
         })
