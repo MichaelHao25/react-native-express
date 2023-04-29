@@ -1,48 +1,59 @@
-import {
-  Button,
-  InputItem,
-  List,
-  Picker,
-  WhiteSpace,
-} from "@ant-design/react-native";
+import {Button, InputItem, List, Picker, WhiteSpace,} from "@ant-design/react-native";
 import AsyncStorage from "@react-native-community/async-storage";
-import { useFocusEffect } from "@react-navigation/native";
-import React, { useEffect, useState } from "react";
-import { FlatList, PixelRatio, Text, View } from "react-native";
+import {useFocusEffect} from "@react-navigation/native";
+import React, {useEffect, useState} from "react";
+import {FlatList, PixelRatio, Text, View} from "react-native";
 import ScanButton from "../../component/ScanButton";
-import { common_dealoption, pack_deal } from "../../util/api";
-export default ({ navigation, route }) => {
-  const [list, setList] = useState([]);
-  const [end, setEnd] = useState(true);
-  const [loading, setLoading] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
-  const [params, setParams] = useState(() => {
-    return {
-      type: undefined,
-      codeNum: "",
-    };
-  });
-  const [common_dealoptionList, setCommon_dealoptionList] = useState([]);
-  useFocusEffect(
-    React.useCallback(() => {
-      AsyncStorage.getItem("QRcode").then((QRcode) => {
-        if (QRcode) {
-          AsyncStorage.removeItem("QRcode");
-          handleSubmitEditing({
-            nativeEvent: {
-              text: QRcode,
-            },
-          });
-        }
-      });
-    }, [params])
-  );
-  useEffect(() => {
-    common_dealoption().then((res) => {
-      const { data = {} } = res;
-      const common_dealoptionList = Object.entries(data).map(([key, value]) => {
+import {common_dealoption, pack_deal} from "../../util/api";
+import usePdaScan from "react-native-pda-scan";
+
+export default ({navigation, route}) => {
+    const [list, setList] = useState([]);
+    const [end, setEnd] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
+    const [params, setParams] = useState(() => {
         return {
-          label: value,
+            type: undefined,
+            codeNum: "",
+        };
+    });
+    const [common_dealoptionList, setCommon_dealoptionList] = useState([]);
+    usePdaScan({
+        onEvent(e) {
+            console.log(e);
+            handleSubmitEditing({
+                nativeEvent: {
+                    text: e,
+                },
+            });
+
+        },
+        onError(e) {
+            console.log(e);
+        },
+        trigger: "always",
+    });
+    useFocusEffect(
+        React.useCallback(() => {
+            AsyncStorage.getItem("QRcode").then((QRcode) => {
+                if (QRcode) {
+                    AsyncStorage.removeItem("QRcode");
+                    handleSubmitEditing({
+                        nativeEvent: {
+                            text: QRcode,
+                        },
+                    });
+                }
+            });
+        }, [params])
+    );
+    useEffect(() => {
+        common_dealoption().then((res) => {
+            const {data = {}} = res;
+            const common_dealoptionList = Object.entries(data).map(([key, value]) => {
+                return {
+                    label: value,
           value: key,
         };
       });
@@ -86,30 +97,30 @@ export default ({ navigation, route }) => {
    * @param body
    */
   const onFetch = (body = {}) => {
-    setLoading(true);
-    /**
-     * 是否有参数传过来/true有，false没有
-     */
-    const paramsValid = Object.keys(body).length !== 0;
-    if (paramsValid === false) {
-      if (end) {
-        return;
+      setLoading(true);
+      /**
+       * 是否有参数传过来/true有，false没有
+       */
+      const paramsValid = Object.keys(body).length !== 0;
+      if (paramsValid === false) {
+          if (end) {
+              return;
+          }
       }
-    }
-    debugger;
-    pack_deal(paramsValid ? body : params).then((res) => {
-      debugger;
-      const { data = [] } = res;
-      if (data.length < params.limit) {
-        setEnd(true);
-      } else {
-        setEnd(false);
-      }
-      if (paramsValid) {
-        setRefreshing(false);
-      }
-      setList((list) => (paramsValid ? [...data] : [...list, ...data]));
-      setLoading(false);
+
+      pack_deal(paramsValid ? body : params).then((res) => {
+
+          const {data = []} = res;
+          if (data.length < params.limit) {
+              setEnd(true);
+          } else {
+              setEnd(false);
+          }
+          if (paramsValid) {
+              setRefreshing(false);
+          }
+          setList((list) => (paramsValid ? [...data] : [...list, ...data]));
+          setLoading(false);
       if (paramsValid) {
         setParams((params) => {
           return {

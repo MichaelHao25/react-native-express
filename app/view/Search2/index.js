@@ -1,25 +1,20 @@
-import {
-  Button,
-  InputItem,
-  Modal,
-  Toast,
-  WhiteSpace,
-  WingBlank,
-} from "@ant-design/react-native";
+import {Button, InputItem, Modal, Toast, WhiteSpace, WingBlank,} from "@ant-design/react-native";
 import AsyncStorage from "@react-native-community/async-storage";
-import { useFocusEffect } from "@react-navigation/native";
-import React, { useEffect, useRef, useState } from "react";
-import { FlatList, PixelRatio, Text, View } from "react-native";
+import {useFocusEffect} from "@react-navigation/native";
+import React, {useEffect, useRef, useState} from "react";
+import {FlatList, PixelRatio, Text, View} from "react-native";
 import ScanButton from "../../component/ScanButton";
-import { order_claim, order_pickup, order_scan_list } from "../../util/api";
+import {order_claim, order_pickup, order_scan_list} from "../../util/api";
 import Print from "../../util/print";
+import usePdaScan from "react-native-pda-scan";
+
 /**
  * 搜索展示列表
  * @param navigation
  * @param route
  * @returns {JSX.Element}
  */
-export default ({ navigation, route }) => {
+export default ({navigation, route}) => {
   const blue = useRef();
   const [list, setList] = useState([]);
   const [end, setEnd] = useState(true);
@@ -33,19 +28,34 @@ export default ({ navigation, route }) => {
     };
   });
   const [extend, setExtend] = useState("");
-  useFocusEffect(
-    React.useCallback(() => {
-      AsyncStorage.getItem("QRcode").then((QRcode) => {
-        if (QRcode) {
-          AsyncStorage.removeItem("QRcode");
-          handleSubmitEditing({
-            nativeEvent: {
-              text: QRcode,
-            },
-          });
-        }
+  usePdaScan({
+    onEvent(e) {
+      console.log(e);
+      handleSubmitEditing({
+        nativeEvent: {
+          text: e,
+        },
       });
-    }, [params])
+
+    },
+    onError(e) {
+      console.log(e);
+    },
+    trigger: "always",
+  });
+  useFocusEffect(
+      React.useCallback(() => {
+        AsyncStorage.getItem("QRcode").then((QRcode) => {
+          if (QRcode) {
+            AsyncStorage.removeItem("QRcode");
+            handleSubmitEditing({
+              nativeEvent: {
+                text: QRcode,
+              },
+            });
+          }
+        });
+      }, [params])
   );
   useEffect(() => {
     blue.current = new Print();

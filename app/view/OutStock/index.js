@@ -1,24 +1,12 @@
-import {
-  Button,
-  InputItem,
-  List,
-  Modal,
-  Picker,
-  WhiteSpace,
-} from "@ant-design/react-native";
+import {Button, InputItem, List, Modal, Picker, WhiteSpace,} from "@ant-design/react-native";
 import AsyncStorage from "@react-native-community/async-storage";
-import { useFocusEffect } from "@react-navigation/native";
-import React, { useEffect, useRef, useState } from "react";
-import { FlatList, PixelRatio, Text, View } from "react-native";
+import {useFocusEffect} from "@react-navigation/native";
+import React, {useEffect, useRef, useState} from "react";
+import {FlatList, PixelRatio, Text, View} from "react-native";
 import ScanButton from "../../component/ScanButton";
-import {
-  common_allshipping,
-  common_car,
-  order_loading,
-  order_storeout,
-} from "../../util/api";
+import {common_allshipping, common_car, order_loading, order_storeout,} from "../../util/api";
 
-export default ({ navigation, route }) => {
+export default ({navigation, route}) => {
   const ref = useRef();
 
   const [state, setState] = useState({
@@ -68,19 +56,33 @@ export default ({ navigation, route }) => {
       setAllshipping(allshipping);
     });
   }, []);
-  useFocusEffect(
-    React.useCallback(() => {
-      AsyncStorage.getItem("QRcode").then((QRcode) => {
-        if (QRcode) {
-          AsyncStorage.removeItem("QRcode");
-          handleSubmitEditing({
-            nativeEvent: {
-              text: QRcode,
-            },
-          });
-        }
+  usePdaScan({
+    onEvent(e) {
+      console.log(e);
+      handleSubmitEditing({
+        nativeEvent: {
+          text: e,
+        },
       });
-    }, [state])
+    },
+    onError(e) {
+      console.log(e);
+    },
+    trigger: "always",
+  });
+  useFocusEffect(
+      React.useCallback(() => {
+        AsyncStorage.getItem("QRcode").then((QRcode) => {
+          if (QRcode) {
+            AsyncStorage.removeItem("QRcode");
+            handleSubmitEditing({
+              nativeEvent: {
+                text: QRcode,
+              },
+            });
+          }
+        });
+      }, [state])
   );
   const handleChangeText = (text) => {
     setState((state) => {

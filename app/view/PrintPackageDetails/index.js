@@ -1,53 +1,70 @@
-import { Button, InputItem, Modal, WhiteSpace } from "@ant-design/react-native";
+import {Button, InputItem, Modal, WhiteSpace} from "@ant-design/react-native";
 import AsyncStorage from "@react-native-community/async-storage";
-import { useFocusEffect } from "@react-navigation/native";
-import React, { useEffect, useRef, useState } from "react";
-import { PixelRatio, ScrollView, Text, View } from "react-native";
+import {useFocusEffect} from "@react-navigation/native";
+import React, {useEffect, useRef, useState} from "react";
+import {PixelRatio, ScrollView, Text, View} from "react-native";
 import ScanButton from "../../component/ScanButton";
-import { pack_realaddr, pack_scan } from "../../util/api";
+import {pack_realaddr, pack_scan} from "../../util/api";
 import Print from "../../util/print";
+import usePdaScan from "react-native-pda-scan";
 
-export default ({ navigation, route }) => {
-  const blue = useRef();
+export default ({navigation, route}) => {
+    const blue = useRef();
 
-  const [state, setState] = useState({
-    input_sn: "",
-    count: 0,
-    price: 0,
-    weight: 0,
-  });
-  const [resList, setResList] = useState(new Map());
-  const [item, setItem] = useState({});
-  useEffect(() => {
-    blue.current = new Print();
-    blue.current.boot().then(() => {
-      return blue.current.getPeripheralId();
+    const [state, setState] = useState({
+        input_sn: "",
+        count: 0,
+        price: 0,
+        weight: 0,
     });
+    const [resList, setResList] = useState(new Map());
+    const [item, setItem] = useState({});
+    useEffect(() => {
+        blue.current = new Print();
+        blue.current.boot().then(() => {
+            return blue.current.getPeripheralId();
+        });
 
-    return () => {
-      blue.current.disconnect();
-    };
-  }, []);
-  useFocusEffect(
-    React.useCallback(() => {
-      AsyncStorage.getItem("QRcode").then((QRcode) => {
-        if (QRcode) {
-          AsyncStorage.removeItem("QRcode");
-          handleRemovePackage({
-            nativeEvent: {
-              text: QRcode,
-              print: false,
-            },
-          });
-        }
-      });
-    }, [state, resList])
-  );
-  const handlePrint = async (item) => {
-    const num = item.num;
-    for (let i = 1; i <= parseInt(num); i++) {
-      try {
-        blue.current.getPrint({
+        return () => {
+            blue.current.disconnect();
+        };
+    }, []);
+    usePdaScan({
+        onEvent(e) {
+            console.log(e);
+            // handleChangeText(e);
+            handleRemovePackage({
+                nativeEvent: {
+                    text: e,
+                    print: false,
+                },
+            });
+        },
+        onError(e) {
+            console.log(e);
+        },
+        trigger: "always",
+    });
+    useFocusEffect(
+        React.useCallback(() => {
+            AsyncStorage.getItem("QRcode").then((QRcode) => {
+                if (QRcode) {
+                    AsyncStorage.removeItem("QRcode");
+                    handleRemovePackage({
+                        nativeEvent: {
+                            text: QRcode,
+                            print: false,
+                        },
+                    });
+                }
+            });
+        }, [state, resList])
+    );
+    const handlePrint = async (item) => {
+        const num = item.num;
+        for (let i = 1; i <= parseInt(num); i++) {
+            try {
+                blue.current.getPrint({
           ...item,
           pages: `${i}/${num}`,
         });
@@ -200,7 +217,7 @@ export default ({ navigation, route }) => {
           </Text>
           {/* <Button size="small">清除</Button> */}
         </View>
-        {/* 
+          {/*
         <WhiteSpace />
 
         <WhiteSpace /> */}

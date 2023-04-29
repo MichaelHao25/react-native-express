@@ -1,20 +1,16 @@
-import {
-  Button,
-  InputItem,
-  Modal,
-  Toast,
-  WhiteSpace,
-} from "@ant-design/react-native";
+import {Button, InputItem, Modal, Toast, WhiteSpace,} from "@ant-design/react-native";
 import AsyncStorage from "@react-native-community/async-storage";
-import { useFocusEffect } from "@react-navigation/native";
-import React, { useEffect, useRef, useState } from "react";
-import { FlatList, PixelRatio, Text, View } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import {useFocusEffect} from "@react-navigation/native";
+import React, {useEffect, useRef, useState} from "react";
+import {FlatList, PixelRatio, Text, View} from "react-native";
+import {TouchableOpacity} from "react-native-gesture-handler";
 import ScanButton from "../../component/ScanButton";
-import { order_storein } from "../../util/api";
+import {order_storein} from "../../util/api";
 import Print from "../../util/print";
 import Scales from "../../util/scales";
-export default ({ navigation, route }) => {
+import usePdaScan from "react-native-pda-scan";
+
+export default ({navigation, route}) => {
   const ref = useRef();
   const blue = useRef();
   const scales = useRef();
@@ -95,13 +91,13 @@ export default ({ navigation, route }) => {
         .then(() => {
           return scales.current.connect();
         })
-        .then(() => {
-          return scales.current.retrieveServices();
-        })
-        .then((res) => {
-          scales.current.handleBindNotificationEvent();
-          return scales.current.startNotification();
-        });
+          .then(() => {
+            return scales.current.retrieveServices();
+          })
+          .then((res) => {
+            scales.current.handleBindNotificationEvent();
+            return scales.current.startNotification();
+          });
     }
     return () => {
       if (route.params.type === "storeInByWeigh") {
@@ -113,19 +109,33 @@ export default ({ navigation, route }) => {
       }
     };
   }, []);
-  useFocusEffect(
-    React.useCallback(() => {
-      AsyncStorage.getItem("QRcode").then((QRcode) => {
-        if (QRcode) {
-          AsyncStorage.removeItem("QRcode");
-          handleSubmitEditing({
-            nativeEvent: {
-              text: QRcode,
-            },
-          });
-        }
+  usePdaScan({
+    onEvent(e) {
+      console.log(e);
+      handleSubmitEditing({
+        nativeEvent: {
+          text: e,
+        },
       });
-    }, [state])
+    },
+    onError(e) {
+      console.log(e);
+    },
+    trigger: "always",
+  });
+  useFocusEffect(
+      React.useCallback(() => {
+        AsyncStorage.getItem("QRcode").then((QRcode) => {
+          if (QRcode) {
+            AsyncStorage.removeItem("QRcode");
+            handleSubmitEditing({
+              nativeEvent: {
+                text: QRcode,
+              },
+            });
+          }
+        });
+      }, [state])
   );
   useEffect(() => {
     console.log("useEffect-weight");

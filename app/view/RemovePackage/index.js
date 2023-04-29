@@ -1,56 +1,60 @@
-import {
-  Button,
-  InputItem,
-  ListView,
-  Modal,
-  WhiteSpace,
-} from "@ant-design/react-native";
+import {Button, InputItem, ListView, Modal, WhiteSpace,} from "@ant-design/react-native";
 import AsyncStorage from "@react-native-community/async-storage";
-import { useFocusEffect } from "@react-navigation/native";
-import React, { useRef, useState } from "react";
-import { PixelRatio, Text, View } from "react-native";
+import {useFocusEffect} from "@react-navigation/native";
+import React, {useRef, useState} from "react";
+import {PixelRatio, Text, View} from "react-native";
 import ScanButton from "../../component/ScanButton";
-import { pack_subpack } from "../../util/api";
-export default ({ navigation, route }) => {
-  const ref = useRef();
+import {pack_subpack} from "../../util/api";
+import usePdaScan from "react-native-pda-scan";
 
-  const [state, setState] = useState({
-    input_sn: "",
-    count: 0,
-    price: 0,
-    weight: 0,
-  });
+export default ({navigation, route}) => {
+    const ref = useRef();
 
-  useFocusEffect(
-    React.useCallback(() => {
-      AsyncStorage.getItem("QRcode").then((QRcode) => {
-        if (QRcode) {
-          AsyncStorage.removeItem("QRcode");
-          handleChangeText(QRcode);
-        }
-      });
-    }, [state])
-  );
-
-  // pack_subpack
-  const handleChangeText = (text) => {
-    setState((state) => {
-      return {
-        ...state,
-        input_sn: text,
-      };
+    const [state, setState] = useState({
+        input_sn: "",
+        count: 0,
+        price: 0,
+        weight: 0,
     });
-  };
-  const handleRemovePackage = () => {
-    if (state.input_sn === "") {
-      return;
-    }
-    Modal.alert("警告", "确认移除该包裹?", [
-      {
-        text: "取消",
-        style: "cancel",
-      },
-      {
+
+    useFocusEffect(
+        React.useCallback(() => {
+            AsyncStorage.getItem("QRcode").then((QRcode) => {
+                if (QRcode) {
+                    AsyncStorage.removeItem("QRcode");
+                    handleChangeText(QRcode);
+                }
+            });
+        }, [state])
+    );
+    usePdaScan({
+        onEvent(e) {
+            handleChangeText(e);
+        },
+        onError(e) {
+        },
+        trigger: "always",
+    });
+
+    // pack_subpack
+    const handleChangeText = (text) => {
+        setState((state) => {
+            return {
+                ...state,
+                input_sn: text,
+            };
+        });
+    };
+    const handleRemovePackage = () => {
+        if (state.input_sn === "") {
+            return;
+        }
+        Modal.alert("警告", "确认移除该包裹?", [
+            {
+                text: "取消",
+                style: "cancel",
+            },
+            {
         text: "确定",
         onPress: () => {
           pack_subpack({

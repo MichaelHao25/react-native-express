@@ -1,32 +1,18 @@
-import {
-  Button,
-  Checkbox,
-  InputItem,
-  List,
-  ListView,
-  Modal,
-  Picker,
-  Toast,
-  WhiteSpace,
-} from "@ant-design/react-native";
+import {Button, Checkbox, InputItem, List, ListView, Modal, Picker, Toast, WhiteSpace,} from "@ant-design/react-native";
 import AsyncStorage from "@react-native-community/async-storage";
-import { useFocusEffect } from "@react-navigation/native";
-import React, { useEffect, useRef, useState } from "react";
-import { PixelRatio, Text, View } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import {useFocusEffect} from "@react-navigation/native";
+import React, {useEffect, useRef, useState} from "react";
+import {PixelRatio, Text, View} from "react-native";
+import {TouchableOpacity} from "react-native-gesture-handler";
 import ScanButton from "../../component/ScanButton";
-import {
-  common_bagprice,
-  pack_addpack,
-  pack_createcode,
-  pack_createpack,
-} from "../../util/api";
+import {common_bagprice, pack_addpack, pack_createcode, pack_createpack,} from "../../util/api";
 import Print from "../../util/print";
 import Scales from "../../util/scales";
+import usePdaScan from "react-native-pda-scan";
 
 /*是否打印*/
 let printStatus = false;
-export default ({ navigation, route }) => {
+export default ({navigation, route}) => {
   const ref = useRef();
   const blue = useRef();
   const scales = useRef();
@@ -119,20 +105,33 @@ export default ({ navigation, route }) => {
       });
     });
   }, []);
-
-  useFocusEffect(
-    React.useCallback(() => {
-      AsyncStorage.getItem("QRcode").then((QRcode) => {
-        if (QRcode) {
-          AsyncStorage.removeItem("QRcode");
-          handleSubmitEditing({
-            nativeEvent: {
-              text: QRcode,
-            },
-          });
-        }
+  usePdaScan({
+    onEvent(e) {
+      console.log(e);
+      handleSubmitEditing({
+        nativeEvent: {
+          text: e,
+        },
       });
-    }, [state])
+    },
+    onError(e) {
+      console.log(e);
+    },
+    trigger: "always",
+  });
+  useFocusEffect(
+      React.useCallback(() => {
+        AsyncStorage.getItem("QRcode").then((QRcode) => {
+          if (QRcode) {
+            AsyncStorage.removeItem("QRcode");
+            handleSubmitEditing({
+              nativeEvent: {
+                text: QRcode,
+              },
+            });
+          }
+        });
+      }, [state])
   );
   useEffect(() => {
     console.log("useEffect-weight");
