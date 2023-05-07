@@ -443,7 +443,7 @@ export default ({navigation, route}) => {
         {/*    displayDate*/}
         {/*    keyExtractor={({orderID}) => `key--${orderID}`}*/}
         {/*/>*/}
-
+        {renderHeader()}
         <FlatList
           style={{ backgroundColor: "gray", flex: 1 }}
           refreshing={refreshing}
@@ -477,7 +477,7 @@ export default ({navigation, route}) => {
           }}
         />
       </View>
-      {renderHeader()}
+      {/*{renderHeader()}*/}
     </View>
   );
 };

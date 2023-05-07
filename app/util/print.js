@@ -294,6 +294,15 @@ class Scales {
                  consignee="###",
                  address="###",
              }) {
+        const renderAddress = (address) => {
+            const addressArr = address.split('');
+            let str = "";
+            for (let i = 0; i < addressArr.length; i += 20) {
+                str += "TEXT 8 7 0 " + (155 + 27 * (i / 20)) + " " + addressArr.slice(i / 20 * 20, i / 20 * 20 + 20).join('') + "\r\n"
+            }
+            address.slice(0, 20)
+            return str;
+        }
         this.data = _base64ToArrayBuffer(
             // 50 70
             // 每mm八个点
@@ -306,15 +315,18 @@ class Scales {
                 "SET-TOF 0\r\n" +
                 "LEFT\r\n" +
                 // 10
-                "TEXT 8 7 40 10 " + "承运商："+supplierID + "\r\n" +
-                // 10 + 24 + 10
+                "TEXT 8 7 0 40 " + "承运商：" + supplierID + "\r\n" +
+                // 10 + 48 + 10
                 "SETBOLD 2\r\n" +
-                "TEXT 8 7 40 44 " + "目的站："+channelID + "\r\n" +
-                // 44 + 24*2 + 10
-                "TEXT 8 7 40 102 " + "收件人："+consignee + "\r\n" +
-                // 102 + 24*2 + 10
+                "RIGHT\r\n" +
+                "TEXT 8 7 0 40 " + "目的站：" + channelID + "\r\n" +
+                // 68 + 48 + 10
+                "LEFT\r\n" +
+                "TEXT 8 7 0 84 " + "收件人：" + consignee + "\r\n" +
+                // 174 + 48 + 10
                 "SETBOLD 0\r\n" +
-                "TEXT 8 7 40 160 " + "详细地址："+address + "\r\n" +
+                "TEXT 8 7 0 127 " + "详细地址：" + "\r\n" +
+                renderAddress(address) +
                 "FORM\r\n" +
                 "PRINT\r\n"
             )

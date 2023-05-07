@@ -95,6 +95,7 @@ export default ({navigation, route}) => {
         <View style={{backgroundColor: "#fff", flex: 1}}>
             <View style={{flex: 1}}>
                 <ListView
+                    header={renderHeader}
                     style={{flex: 1}}
                     onFetch={(page = 1, startFetch, abortFetch) => {
                         abortFetch();

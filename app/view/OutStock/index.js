@@ -298,10 +298,11 @@ export default ({navigation, route}) => {
     <View style={{ backgroundColor: "#fff", flex: 1 }}>
       <View style={{ flex: 1 }}>
         <FlatList
-          style={{ flex: 1 }}
-          data={[...state.input_sn_list].reverse()}
-          renderItem={renderItem}
-          keyExtractor={(value) => `key--${value.sn}`}
+            style={{ flex: 1 }}
+            data={[...state.input_sn_list].reverse()}
+            renderItem={renderItem}
+            ListHeaderComponent={renderHeader}
+            keyExtractor={(value) => `key--${value.sn}`}
         />
         {/*<ListView*/}
         {/*    ref={ref}*/}
@@ -314,7 +315,7 @@ export default ({navigation, route}) => {
         {/*    keyExtractor={(value) => `key--${value.sn}`}*/}
         {/*/>*/}
       </View>
-      {renderHeader()}
+      {/*{renderHeader()}*/}
     </View>
   );
 };

@@ -179,17 +179,18 @@ export default ({navigation, route}) => {
     <View style={{ backgroundColor: "#fff", flex: 1 }}>
       <View style={{ flex: 1 }}>
         <ListView
-          ref={ref}
-          style={{ flex: 1 }}
-          onFetch={(page = 1, startFetch, abortFetch) => {
-            abortFetch();
-          }}
-          renderItem={renderItem}
-          displayDate
-          keyExtractor={({ codeNum }) => `key--${codeNum}`}
+            ref={ref}
+            style={{flex: 1}}
+            header={renderHeader}
+            onFetch={(page = 1, startFetch, abortFetch) => {
+                abortFetch();
+            }}
+            renderItem={renderItem}
+            displayDate
+            keyExtractor={({ codeNum }) => `key--${codeNum}`}
         />
       </View>
-      {renderHeader()}
+        {/*{renderHeader()}*/}
     </View>
   );
 };

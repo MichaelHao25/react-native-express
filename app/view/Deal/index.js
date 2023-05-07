@@ -287,7 +287,7 @@ export default ({navigation, route}) => {
         {/*    displayDate*/}
         {/*    keyExtractor={({orderID}) => `key--${orderID}`}*/}
         {/*/>*/}
-
+          {renderHeader()}
         <FlatList
           style={{ backgroundColor: "gray", flex: 1 }}
           refreshing={refreshing}
@@ -309,8 +309,6 @@ export default ({navigation, route}) => {
           //         style={{textAlign: 'center'}}>{loading ? '' : '暂无数据'}</Text></View>
           // }}
         />
-        {renderHeader()}
-        <View style={{ height: 100 }}></View>
       </View>
     </View>
   );

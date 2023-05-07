@@ -430,6 +430,7 @@ export default ({navigation, route}) => {
   return (
     <View style={{ backgroundColor: "#fff", flex: 1 }}>
       <View style={{ flex: 1 }}>
+        {renderHeader()}
         <FlatList
           style={{ flex: 1 }}
           keyExtractor={({ codeNum }) => `key--${codeNum}`}
@@ -437,7 +438,7 @@ export default ({navigation, route}) => {
           data={list}
         />
       </View>
-      {renderHeader()}
+      {/*{renderHeader()}*/}
     </View>
   );
 };

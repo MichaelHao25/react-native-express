@@ -559,20 +559,21 @@ export default ({navigation, route}) => {
     <View style={{ backgroundColor: "#fff", flex: 1 }}>
       <View style={{ flex: 1 }}>
         <ListView
-          ref={ref}
-          style={{ flex: 1 }}
-          onFetch={(page = 1, startFetch, abortFetch) => {
+            ref={ref}
+            style={{ flex: 1 }}
+            onFetch={(page = 1, startFetch, abortFetch) => {
             abortFetch();
           }}
-          renderItem={renderItem}
-          displayDate
-          paginationWaitingView={() => <></>}
-          paginationFetchingView={() => <></>}
-          paginationWaitingView={() => <></>}
-          keyExtractor={({ codeNum }) => `key--${codeNum}`}
+            renderItem={renderItem}
+            header={renderHeader}
+            displayDate
+            paginationWaitingView={() => <></>}
+            paginationFetchingView={() => <></>}
+            paginationWaitingView={() => <></>}
+            keyExtractor={({ codeNum }) => `key--${codeNum}`}
         />
       </View>
-      {renderHeader()}
+      {/*{renderHeader()}*/}
     </View>
   );
 };
