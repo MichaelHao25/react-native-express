@@ -323,26 +323,7 @@ export default ({navigation, route}) => {
   const renderHeader = () => {
     return (
       <View>
-        <WhiteSpace />
-        <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
-          <ScanButton />
-          <Button
-            type="primary"
-            onPress={() => {
-              /**
-               * 点击按钮，第一步
-               */
-              handleSubmitEditing({
-                nativeEvent: {
-                  text: state.input_sn,
-                },
-              });
-            }}
-          >
-            入库
-          </Button>
-        </View>
-        <WhiteSpace />
+
         <View>
           <InputItem
             autoCapitalize="none"
@@ -365,7 +346,26 @@ export default ({navigation, route}) => {
           title: "订  单  数:  ",
           value: `${list.length}`,
         })}
-
+        <WhiteSpace />
+        <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
+          <ScanButton />
+          <Button
+              type="primary"
+              onPress={() => {
+                /**
+                 * 点击按钮，第一步
+                 */
+                handleSubmitEditing({
+                  nativeEvent: {
+                    text: state.input_sn,
+                  },
+                });
+              }}
+          >
+            入库
+          </Button>
+        </View>
+        <WhiteSpace />
         <View
           style={{
             flexDirection: "row",

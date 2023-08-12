@@ -65,11 +65,6 @@ export default ({navigation}) => {
             type: "storeout",
         },
         {
-            icon: require("../../image/set.png"),
-            text: `设置`,
-            type: "normal",
-        },
-        {
             icon: require("../../image/none.png"),
             text: `扫描`,
             type: "scan",
@@ -121,11 +116,16 @@ export default ({navigation}) => {
         {
             icon: require("../../image/none.png"),
             text: `随货标签`,
-            type: "goodLabel",
+            type: "label",
+        },
+        {
+            icon: require("../../image/set.png"),
+            text: `设置`,
+            type: "normal",
         },
     ]);
     const [oerder, setOrder] = useState(false);
-    useEffect(() => {
+    useEffect(eventType => {
         Tts.setDucking(true);
         Tts.engines().then((engines = []) => {
             if (engines.length === 0) {
@@ -135,7 +135,10 @@ export default ({navigation}) => {
         Tts.getInitStatus().then(
             (res) => {
                 if (res === "success") {
-                    Toast.info("tts engines 初始化完毕");
+                    // Toast.info("tts engines 初始化完毕");
+                    ;
+                }else{
+                    Toast.info("tts engines 初始化失败");
                 }
                 return res;
             },
@@ -153,21 +156,19 @@ export default ({navigation}) => {
         };
         const handleTTSFinish = (event) => {
             console.log("tts-finish", event);
-            Tts.stop();
         };
         const handleTTSCancel = (event) => {
             console.log("tts-cancel", event);
-            Tts.stop();
         };
         Tts.addEventListener("tts-start", handleTTSStart);
         Tts.addEventListener("tts-progress", handleTTSProgress);
         Tts.addEventListener("tts-finish", handleTTSFinish);
         Tts.addEventListener("tts-cancel", handleTTSCancel);
-        return () => {
-            Tts.removeAllListeners("tts-start", handleTTSStart);
-            Tts.removeAllListeners("tts-progress", handleTTSProgress);
-            Tts.removeAllListeners("tts-finish", handleTTSFinish);
-            Tts.removeAllListeners("tts-cancel", handleTTSCancel);
+        return eventType => {
+            Tts.removeAllListeners("tts-start");
+            Tts.removeAllListeners("tts-progress");
+            Tts.removeAllListeners("tts-finish");
+            Tts.removeAllListeners("tts-cancel");
         };
     }, []);
     useEffect(() => {
@@ -182,7 +183,7 @@ export default ({navigation}) => {
             setOrder(auth.includes("orders"));
             setList(tempList);
         });
-        // Tts.speak("hello");
+        Tts.speak("hello");
         // JPush.addNotificationListener(msg => {
         //     order_count().then(
         //         ({data: {end_accept, month_amount, today_amount, wait_accept}}) => {
@@ -317,7 +318,7 @@ export default ({navigation}) => {
                 navigation.navigate("deal");
                 break;
             }
-            case "goodLabel": {
+            case "label": {
                 navigation.navigate("goodLabel");
                 break;
             }
@@ -342,16 +343,7 @@ export default ({navigation}) => {
                         // storeout             出库
                         // scan                    扫描
                         // orders                揽件
-                        data={
-                            [
-                                ...list,
-                                {
-                                    icon: require("../../image/none.png"),
-                                    text: `随货标签`,
-                                    type: "goodLabel",
-                                }
-                            ]
-                        }
+                        data={list}
                         renderItem={(item) => {
                             return (
                                 <View

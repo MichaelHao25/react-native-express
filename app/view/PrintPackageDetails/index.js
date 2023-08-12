@@ -153,27 +153,10 @@ export default ({navigation, route}) => {
   const renderHeader = () => {
     return (
       <>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-around",
-            paddingVertical: 10,
 
-            borderBottomColor: "#ccc",
-            borderBottomWidth: 1 / PixelRatio.get(),
-          }}
-        >
-          <ScanButton />
-          <Button
-            type="warning"
-            onPress={() =>
-              handleRemovePackage({ nativeEvent: { text: state.input_sn } })
-            }
-          >
-            打印
-          </Button>
-        </View>
-        <View>
+        <View style={{
+            backgroundColor: "#fff",
+        }}>
           <InputItem
             autoCapitalize="none"
             type="text"
@@ -204,7 +187,26 @@ export default ({navigation, route}) => {
         <WhiteSpace />
 
         <WhiteSpace /> */}
-
+          <View
+              style={{
+                  flexDirection: "row",
+                  justifyContent: "space-around",
+                  paddingVertical: 10,
+                  backgroundColor: "#fff",
+                  borderBottomColor: "#ccc",
+                  borderBottomWidth: 1 / PixelRatio.get(),
+              }}
+          >
+              <ScanButton />
+              <Button
+                  type="warning"
+                  onPress={() =>
+                      handleRemovePackage({ nativeEvent: { text: state.input_sn } })
+                  }
+              >
+                  打印
+              </Button>
+          </View>
         <View
           style={{
             flexDirection: "row",
@@ -286,11 +288,11 @@ export default ({navigation, route}) => {
   };
   return (
     <View style={{ flex: 1 }}>
+      {renderHeader()}
       <ScrollView style={{ backgroundColor: "#fff", flex: 1 }}>
         {renderItem({ item })}
       </ScrollView>
-      {renderHeader()}
-      <View style={{ height: 130 }}></View>
+      {/*<View style={{ height: 130 }}></View>*/}
     </View>
   );
 };

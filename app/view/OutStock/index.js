@@ -3,6 +3,7 @@ import React, {useEffect, useRef, useState} from "react";
 import {FlatList, PixelRatio, Text, View} from "react-native";
 import ScanButton from "../../component/ScanButton";
 import {common_allshipping, common_car, order_loading, order_storeout,} from "../../util/api";
+import usePdaScan from "react-native-pda-scan";
 
 export default ({navigation, route}) => {
   const ref = useRef();
@@ -180,14 +181,6 @@ export default ({navigation, route}) => {
   const renderHeader = () => {
     return (
       <View>
-        <WhiteSpace />
-        <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
-          <ScanButton />
-          <Button type="warning" onPress={handleOutStock}>
-            出库
-          </Button>
-        </View>
-        <WhiteSpace />
         <Picker
           data={state.carList}
           cols={1}
@@ -237,7 +230,14 @@ export default ({navigation, route}) => {
             onSubmitEditing={handleSubmitEditing}
           />
         </View>
-
+        <WhiteSpace />
+        <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
+          <ScanButton />
+          <Button type="warning" onPress={handleOutStock}>
+            出库
+          </Button>
+        </View>
+        <WhiteSpace />
         <View
           style={{
             flexDirection: "row",

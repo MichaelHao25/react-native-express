@@ -301,32 +301,7 @@ export default ({navigation, route}) => {
   const renderHeader = () => {
     return (
       <View>
-        <WhiteSpace />
-        <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
-          <ScanButton />
-          <Button type="primary" onPress={handleCreateQrcode}>
-            生成
-          </Button>
-          <Button
-            type="warning"
-            onPress={() => {
-              printStatus = false;
-              handleMergeAfter();
-            }}
-          >
-            拼包
-          </Button>
-          <Button
-            type="primary"
-            onPress={() => {
-              printStatus = true;
-              handleMergeAfter();
-            }}
-          >
-            打印
-          </Button>
-        </View>
-        <WhiteSpace />
+
         <View>
           <InputItem
             autoCapitalize="none"
@@ -356,7 +331,32 @@ export default ({navigation, route}) => {
             return <></>;
           },
         })}
-
+        <WhiteSpace />
+        <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
+          <ScanButton />
+          <Button type="primary" onPress={handleCreateQrcode}>
+            生成
+          </Button>
+          <Button
+              type="warning"
+              onPress={() => {
+                printStatus = false;
+                handleMergeAfter();
+              }}
+          >
+            拼包
+          </Button>
+          <Button
+              type="primary"
+              onPress={() => {
+                printStatus = true;
+                handleMergeAfter();
+              }}
+          >
+            打印
+          </Button>
+        </View>
+        <WhiteSpace />
         <View
           style={{
             flexDirection: "row",

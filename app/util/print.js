@@ -20,6 +20,11 @@ function _base64ToArrayBuffer(base64) {
 
 class Scales {
     /**
+     * loading 的key
+     * @type {null}
+     */
+    key = null
+    /**
      *  打印机需要的数据
      * @type {undefined}
      */
@@ -226,9 +231,14 @@ class Scales {
      */
     async connect() {
         console.log('this._write', this._write)
-        this.key = Toast.loading("正在连接中...", 0);
+        if (this.key === null) {
+            this.key = Toast.loading("正在连接中...", 0);
+        }
         this.timer = setTimeout(() => {
-            Portal.remove(this.key);
+            if (this.key !== null) {
+                Portal.remove(this.key);
+                this.key = null
+            }
             Toast.fail("指令发送超时请检查打印机！");
         }, 1000 * 10)
         try {
@@ -289,10 +299,10 @@ class Scales {
     // 打印机相关的特征
     getLabel({
 
-                 supplierID="###",
-                 channelID="###",
-                 consignee="###",
-                 address="###",
+                 supplierID = "###",
+                 channelID = "###",
+                 consignee = "###",
+                 address = "###",
              }) {
         const renderAddress = (address) => {
             const addressArr = address.split('');
@@ -315,25 +325,25 @@ class Scales {
                 "SET-TOF 0\r\n" +
                 "LEFT\r\n" +
                 // 10
+                "SETBOLD 2\r\n" +
                 "TEXT 8 7 0 40 " + "承运商：" + supplierID + "\r\n" +
                 // 10 + 48 + 10
-                "SETBOLD 2\r\n" +
                 "RIGHT\r\n" +
                 "TEXT 8 7 0 40 " + "目的站：" + channelID + "\r\n" +
                 // 68 + 48 + 10
                 "LEFT\r\n" +
                 "TEXT 8 7 0 84 " + "收件人：" + consignee + "\r\n" +
                 // 174 + 48 + 10
-                "SETBOLD 0\r\n" +
                 "TEXT 8 7 0 127 " + "详细地址：" + "\r\n" +
                 renderAddress(address) +
+                "SETBOLD 0\r\n" +
                 "FORM\r\n" +
                 "PRINT\r\n"
             )
         );
     }
 
-        getPrint({
+    getPrint({
                  packageNum = "######",
                  expected_time = "######",
                  name = "######",

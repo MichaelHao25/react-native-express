@@ -252,15 +252,7 @@ export default ({navigation, route}) => {
   const renderHeader = () => {
     return (
       <>
-        <WhiteSpace />
-        <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
-          {/*<Button type="warning" onPress={handleRemovePackage}>*/}
-          <ScanButton />
-          <Button type="warning" onPress={() => reloadList()}>
-            搜索
-          </Button>
-        </View>
-        <WhiteSpace />
+
         <View>
           <InputItem
             autoCapitalize="none"
@@ -289,7 +281,15 @@ export default ({navigation, route}) => {
           </Text>
           {/* <Button size="small">清除</Button> */}
         </View>
-
+        <WhiteSpace />
+        <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
+          {/*<Button type="warning" onPress={handleRemovePackage}>*/}
+          <ScanButton />
+          <Button type="warning" onPress={() => reloadList()}>
+            搜索
+          </Button>
+        </View>
+        <WhiteSpace />
         <View
           style={{
             flexDirection: "row",
@@ -368,6 +368,8 @@ export default ({navigation, route}) => {
           <Text style={{ fontSize: 20, color: "#333" }}>
             {item.payment} {item.weight}
           </Text>
+          <WhiteSpace />
+          <Text style={{ fontSize: 20, color: "#333" }}>承运商:{item.supplier}</Text>
           <WhiteSpace />
           <Text style={{ fontSize: 20, color: "#333" }}>{item.channel}</Text>
           <WhiteSpace />

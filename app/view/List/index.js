@@ -358,14 +358,18 @@ export default ({navigation, route}) => {
                 {/*寄：王老板（1888888888）*/}
                 {/*收：王小姐（188****8888）*/}
                 <View style={{flexDirection: "column"}}>
+
+                    <WhiteSpace/>
+                    <Text style={{fontSize: 20, color: "#333"}}>{item.channel}</Text>
+                    <WhiteSpace/>
                     <Text style={{
                         fontSize: 20,
                         color: "#333"
-                    }}>最晚取件时间：{item.expected_time.replace(/^.*? /, '')} {item.statusName}</Text>
+                    }}>收:{item.consignee.name}({item.consignee.mobile})</Text>
                     <WhiteSpace/>
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
                         <View style={{width: '80%'}}><Text
-                            style={{fontSize: 20, color: "#333"}}>{item.pickup.address}</Text></View>
+                            style={{fontSize: 20, color: "#333"}}>{item.pickup.addr}</Text></View>
                         <Button type={"primary"} size={"small"}
                                 onPress={() => setExtend(id => {
                                     if (id === item.orderID) {
@@ -379,16 +383,19 @@ export default ({navigation, route}) => {
                     </View>
                     {extend === item.orderID ? <>
                         <WhiteSpace/>
-                        <Text style={{fontSize: 20, color: "#333"}}>{item.payment} {item.weight}</Text>
-                        <WhiteSpace/>
-                        <Text style={{fontSize: 20, color: "#333"}}>{item.channel}</Text>
-                        <WhiteSpace/>
-                        <Text style={{fontSize: 20, color: "#333"}}>寄:{item.pickup.name}({item.pickup.mobile})</Text>
-                        <WhiteSpace/>
                         <Text style={{
                             fontSize: 20,
                             color: "#333"
-                        }}>收:{item.consignee.name}({item.consignee.mobile})</Text>
+                        }}>最晚取件时间：{item.expected_time.replace(/^.*? /, '')} {item.statusName}</Text>
+                        <WhiteSpace/>
+                        <Text style={{fontSize: 20, color: "#333"}}>{item.payment} {item.weight}</Text>
+                        <WhiteSpace/>
+                        <Text style={{fontSize: 20, color: "#333"}}>寄:{item.pickup.name}({item.pickup.mobile})</Text>
+                        {/*<WhiteSpace/>*/}
+                        {/*<Text style={{*/}
+                        {/*    fontSize: 20,*/}
+                        {/*    color: "#333"*/}
+                        {/*}}>收:{item.consignee.name}({item.consignee.mobile})</Text>*/}
                     </> : null
                     }
                 </View>

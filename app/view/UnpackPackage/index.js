@@ -55,13 +55,7 @@ export default ({navigation, route}) => {
     const renderHeader = () => {
         return (
             <>
-                <WhiteSpace/>
-                <View style={{flexDirection: "row", justifyContent: "space-around"}}>
-                    <ScanButton/>
-                    <Button type="warning" onPress={handleRemovePackage}>
-                        拆包
-                    </Button>
-                </View>
+
                 <View>
                     <InputItem
                         autoCapitalize="none"
@@ -88,6 +82,13 @@ export default ({navigation, route}) => {
                     </Text>
                     {/* <Button size="small">清除</Button> */}
                 </View>
+                <WhiteSpace/>
+                <View style={{flexDirection: "row", justifyContent: "space-around"}}>
+                    <ScanButton/>
+                    <Button type="warning" onPress={handleRemovePackage}>
+                        拆包
+                    </Button>
+                </View>
             </>
         );
     };
@@ -102,8 +103,6 @@ export default ({navigation, route}) => {
                     }}
                 />
             </View>
-            {renderHeader()}
-            <View style={{height: 150}}></View>
         </View>
     );
 };
